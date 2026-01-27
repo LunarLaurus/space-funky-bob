@@ -14,15 +14,15 @@ Write-Host "========================================"
 Write-Host ""
 
 # Check if ROM file provided
-if ($args.Count -eq 0) {
-    Write-Host "Usage: .\test_workflow.ps1 <rom_name.smc | path_to_rom.smc>"
-    Write-Host ""
-    Write-Host "Example:"
-    Write-Host "  .\test_workflow.ps1 SpaceFunkyBob.smc"
-    exit 1
-}
+$DefaultRom = "B.O.B. (U) [!].smc"
 
-$RomArg = $args[0]
+if ($args.Count -eq 0) {
+    Write-Host "No ROM specified, using default: $DefaultRom"
+    $RomArg = $DefaultRom
+}
+else {
+    $RomArg = $args[0]
+}
 
 # Resolve ROM path
 if (Test-Path $RomArg -PathType Leaf) {

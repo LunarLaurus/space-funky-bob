@@ -13,14 +13,16 @@ echo "B.O.B. ROM Analysis Workflow"
 echo "========================================"
 echo ""
 
-# Check if ROM file provided
+# Check if ROM file provided as argument
+DEFAULT_ROM="B.O.B. (U) [!].smc"
+
 if [ $# -eq 0 ]; then
-    echo "Usage: ./test_workflow.sh <rom_name.smc | path_to_rom.smc>"
-    echo ""
-    echo "Example:"
-    echo "  ./test_workflow.sh SpaceFunkyBob.smc"
-    exit 1
+    echo "No ROM specified, using default: $DEFAULT_ROM"
+    ROM_ARG="$DEFAULT_ROM"
+else
+    ROM_ARG="$1"
 fi
+
 
 ROM_ARG="$1"
 
