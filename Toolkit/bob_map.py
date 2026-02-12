@@ -402,11 +402,43 @@ def generate_html_visualization(regions, rom_size, output_path):
             border-left: 4px solid;
             background: #2d2d2d;
             font-size: 13px;
+            cursor: pointer;
+        }
+        .region-item:hover {
+            background: #3d3d3d;
+        }
+        
+        /* Responsive design */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            h1 {
+                font-size: 20px;
+            }
+            .legend {
+                flex-direction: column;
+                gap: 8px;
+            }
+            .info {
+                font-size: 12px;
+            }
+            .region-map {
+                height: 40px;
+            }
+            .region-item {
+                font-size: 11px;
+                padding: 6px;
+            }
+            .tooltip {
+                font-size: 10px;
+                max-width: 200px;
+            }
         }
     </style>
 </head>
 <body>
-    <h1>🎮 B.O.B. ROM Memory Map</h1>
+    <h1>B.O.B. ROM Memory Map</h1>
     <div class="info">
         ROM Size: """ + hex(rom_size) + """ (""" + str(rom_size) + """ bytes)
     </div>
@@ -481,6 +513,18 @@ def generate_html_visualization(regions, rom_size, output_path):
             
             div.addEventListener('mouseleave', () => {
                 tooltipEl.style.display = 'none';
+            });
+            
+            // Click to scroll to region in list
+            div.addEventListener('click', () => {
+                const listItems = listEl.querySelectorAll('.region-item');
+                listItems.forEach(item => {
+                    if (item.textContent.includes(region.start_hex)) {
+                        item.scrollIntoView({behavior: 'smooth', block: 'center'});
+                        item.style.background = '#3d3d3d';
+                        setTimeout(() => item.style.background = '', 1000);
+                    }
+                });
             });
             
             mapEl.appendChild(div);

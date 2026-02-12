@@ -5,7 +5,7 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROM_DIR="$SCRIPT_DIR/../rom"
-TOOLKIT_DIR="$SCRIPT_DIR/../Toolkit"
+TOOLKIT_DIR="$SCRIPT_DIR/../toolkit"
 OUTPUT_DIR="$SCRIPT_DIR/analysis_output"
 
 echo "========================================"
@@ -36,12 +36,12 @@ else
     exit 1
 fi
 
-echo "✓ ROM file: $ROM_FILE"
+echo "[OK] ROM file: $ROM_FILE"
 echo ""
 
 # Create output directory
 mkdir -p "$OUTPUT_DIR"
-echo "✓ Output directory: $OUTPUT_DIR/"
+echo "[OK] Output directory: $OUTPUT_DIR/"
 echo ""
 
 # Step 1: Run decoder unit tests
@@ -70,10 +70,10 @@ echo "Analysis Complete!"
 echo "========================================"
 echo ""
 echo "Generated files:"
-echo "  📄 $OUTPUT_DIR/candidates.json      - Compressed block candidates"
-echo "  📄 $OUTPUT_DIR/rom_map.json         - ROM region classifications"
-echo "  🌐 $OUTPUT_DIR/rom_map.html         - Interactive visualization"
-echo "  📦 $OUTPUT_DIR/decompressed_*.bin   - Decompressed data files"
+echo "  [FILE] $OUTPUT_DIR/candidates.json      - Compressed block candidates"
+echo "  [FILE] $OUTPUT_DIR/rom_map.json         - ROM region classifications"
+echo "  [HTML] $OUTPUT_DIR/rom_map.html         - Interactive visualization"
+echo "  [DATA] $OUTPUT_DIR/decompressed_*.bin   - Decompressed data files"
 echo ""
 echo "Next steps:"
 echo "  1. Open $OUTPUT_DIR/rom_map.html in your browser"

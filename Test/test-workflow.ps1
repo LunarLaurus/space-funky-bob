@@ -3,10 +3,11 @@
 
 $ErrorActionPreference = "Stop"
 
+$Timestamp  = Get-Date -Format "yyyyMMdd_HHmmss"
 $ScriptDir  = Split-Path -Parent $MyInvocation.MyCommand.Path
 $RomDir     = Join-Path $ScriptDir "..\rom"
-$ToolkitDir = Join-Path $ScriptDir "..\Toolkit"
-$OutputDir  = Join-Path $ScriptDir "analysis_output"
+$ToolkitDir = Join-Path $ScriptDir "..\toolkit"
+$OutputDir  = Join-Path $ScriptDir "..\analysis\output_$Timestamp"
 
 Write-Host "========================================"
 Write-Host "B.O.B. ROM Analysis Workflow"
@@ -14,7 +15,8 @@ Write-Host "========================================"
 Write-Host ""
 
 # Check if ROM file provided
-$DefaultRom = "B.O.B. (U) [!].smc"
+# Default ROM filename
+$DefaultRom = 'B.O.B. (U) [!].smc'
 
 if ($args.Count -eq 0) {
     Write-Host "No ROM specified, using default: $DefaultRom"
@@ -25,10 +27,12 @@ else {
 }
 
 # Resolve ROM path
-if (Test-Path $RomArg -PathType Leaf) {
-    $RomFile = $RomArg
+# First, check if $RomArg is an absolute or relative path that exists
+# Resolve ROM path
+if (Test-Path -LiteralPath $RomArg -PathType Leaf) {
+    $RomFile = (Resolve-Path -LiteralPath $RomArg).ProviderPath
 }
-elseif (Test-Path (Join-Path $RomDir $RomArg) -PathType Leaf) {
+elseif (Test-Path -LiteralPath (Join-Path $RomDir $RomArg) -PathType Leaf) {
     $RomFile = Join-Path $RomDir $RomArg
 }
 else {
@@ -36,14 +40,14 @@ else {
     exit 1
 }
 
-Write-Host ("✓ ROM file: {0}" -f $RomFile)
+Write-Host ("ROM file: {0}" -f $RomFile)
 Write-Host ""
 
 # Create output directory
 if (-not (Test-Path $OutputDir)) {
     New-Item -ItemType Directory -Path $OutputDir | Out-Null
 }
-Write-Host ("✓ Output directory: {0}\" -f $OutputDir)
+Write-Host ("Output directory: {0}\" -f $OutputDir)
 Write-Host ""
 
 # Step 1: Run decoder unit tests

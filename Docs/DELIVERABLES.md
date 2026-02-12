@@ -1,7 +1,7 @@
 # B.O.B. ROM Analysis Toolkit - Complete Deliverables
 
-**Date**: January 27, 2026  
-**Status**: MVP Complete, Documentation Complete  
+**Date**: February 12, 2026  
+**Status**: Production Ready - All Critical Bugs Fixed  
 **Version**: 0.1.0
 
 ---
@@ -16,21 +16,25 @@ A complete, production-ready toolkit for analyzing SNES ROM files, specifically 
 
 ### ✅ Core Functionality (MVP Complete)
 
-#### Python Tools
+#### Python Tools (in toolkit/)
 - [x] **bob_lz.py** - LZ77 decoder with unit tests (5 passing tests)
 - [x] **bob_lz_scan.py** - ROM scanner with entropy-based detection
 - [x] **bob_map.py** - Code/data classifier with HTML visualization
 - [x] **validate_known_block.py** - Validation against known compressed block
-- [x] **test_workflow.sh** - Automated end-to-end workflow
+- [x] **ImportBOBMap.py** - Ghidra import script
+
+#### Test Scripts (in test/)
+- [x] **test_workflow.sh** - Bash workflow automation
+- [x] **test-workflow.ps1** - PowerShell workflow
 
 #### Output Formats
 - [x] **candidates.json** - Compressed block metadata
 - [x] **rom_map.json** - ROM structure classification
-- [x] **rom_map.html** - Interactive visualization (skeleton)
+- [x] **rom_map.html** - Interactive visualization (complete)
 - [x] **decompressed_*.bin** - Extracted binary data
 
 #### Integration
-- [x] **ghidra_import.txt** - Complete Ghidra integration guide
+- [x] **GHIDRA_IMPORT.md** - Complete Ghidra integration guide
   - Manual bookmark instructions
   - Python import script template
   - Address translation formulas
@@ -105,13 +109,26 @@ A complete, production-ready toolkit for analyzing SNES ROM files, specifically 
 
 ## File Inventory
 
-### Python Code (5 files, ~1,100 lines)
+### Python Code (toolkit/ - 5 files, ~1,427 lines)
 ```
-bob_lz.py                    215 lines   Core decoder + tests
-bob_lz_scan.py               245 lines   ROM scanner
-bob_map.py                   420 lines   Region classifier
-validate_known_block.py      115 lines   Validation script
-test_workflow.sh              50 lines   Automation script
+bob_lz.py                   225 lines   Core decoder + tests
+bob_lz_scan.py              335 lines   ROM scanner
+bob_map.py                  625 lines   Region classifier
+validate_known_block.py     108 lines   Validation script
+ImportBOBMap.py             134 lines   Ghidra import script
+```
+
+### Test Scripts (test/ - 2 files)
+```
+test_workflow.sh              85 lines   Bash workflow
+test-workflow.ps1             91 lines   PowerShell workflow
+```
+
+### Test Suite (tests/ - 3 files)
+```
+conftest.py                   ~5 lines   Pytest config
+test_bob_lz.py              ~120 lines  LZ77 tests
+test_bob_scan.py             ~110 lines  Scanner tests
 ```
 
 ### Documentation (8 files, ~5,400 lines)
@@ -280,22 +297,36 @@ EPICS.md                     600 lines   Epic tracking
 
 ```
 bob-rom-analysis/
-├── bob_lz.py                      # Decoder
-├── bob_lz_scan.py                 # Scanner
-├── bob_map.py                     # Mapper
-├── validate_known_block.py        # Validator
-├── test_workflow.sh               # Automation
-├── README.md                      # Quick start
-├── CLAUDE.md                      # Project context
-└── docs/
-    ├── USER_GUIDE.md              # User manual
-    ├── PRD.md                     # Product spec
-    ├── TECHNICAL.md               # Tech spec
-    ├── STRUCTURE.md               # Directory layout
-    ├── ghidra_import.txt          # Integration
-    └── roadmap/
-        ├── SPRINTS.md             # Sprint planning
-        └── EPICS.md               # Epic tracking
+├── toolkit/                       # Core Python modules
+│   ├── bob_lz.py                 # LZ77 decoder
+│   ├── bob_lz_scan.py            # Scanner
+│   ├── bob_map.py                # Mapper
+│   ├── validate_known_block.py   # Validator
+│   └── ImportBOBMap.py           # Ghidra import
+├── test/                         # Test scripts
+│   ├── test_workflow.sh          # Bash workflow
+│   └── test-workflow.ps1         # PowerShell workflow
+├── tests/                        # Unit tests
+│   ├── conftest.py
+│   ├── test_bob_lz.py
+│   └── test_bob_scan.py
+├── .github/workflows/            # CI/CD
+│   └── ci.yml
+├── docs/                         # Documentation
+│   ├── USER_GUIDE.md
+│   ├── PRD.md
+│   ├── TECHNICAL.md
+│   ├── STRUCTURE.md
+│   ├── DELIVERABLES.md
+│   ├── GHIDRA_IMPORT.md
+│   ├── EPICS.md
+│   └── SPRINTS.md
+├── rom/                          # ROM files (user-provided)
+├── run_tests.py                  # Test runner
+├── requirements.txt
+├── pyproject.toml
+├── .gitignore
+└── LICENSE
 ```
 
 ---

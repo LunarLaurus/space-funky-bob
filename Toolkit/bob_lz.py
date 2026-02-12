@@ -171,7 +171,7 @@ def test_bob_lz():
     result, consumed = bob_lz_decompress(compressed, 8)
     assert result == expected, f"Test 1 failed: {result} != {expected}"
     assert consumed == 9, f"Test 1 consumed {consumed}, expected 9"
-    print("✓ Test 1: Literal bytes")
+    print("[PASS] Test 1: Literal bytes")
     
     # Test 2: Overlapping copy with backreference  
     # Create "ABC" then copy dist=3, len=8 to get "ABCABCAB"
@@ -189,7 +189,7 @@ def test_bob_lz():
     expected = b"ABCABCAB"
     result, consumed = bob_lz_decompress(compressed, 8)
     assert result == expected, f"Test 2 failed: got {result!r}, expected {expected!r}"
-    print("✓ Test 2: Overlapping copy")
+    print("[PASS] Test 2: Overlapping copy")
     
     # Test 3: Invalid distance (zero)
     compressed = bytes([0x80, 0x00, 0x00])
@@ -198,7 +198,7 @@ def test_bob_lz():
         assert False, "Test 3 should have raised ValueError"
     except ValueError as e:
         assert "invalid distance 0" in str(e)
-        print("✓ Test 3: Zero distance error")
+        print("[PASS] Test 3: Zero distance error")
     
     # Test 4: Invalid distance (too large)
     # After one literal "A", try to copy from distance 2047 (which is > current output size of 1)
@@ -209,16 +209,16 @@ def test_bob_lz():
         assert False, "Test 4 should have raised ValueError"
     except ValueError as e:
         assert "invalid distance" in str(e) or "distance" in str(e).lower()
-        print("✓ Test 4: Distance too large error")
+        print("[PASS] Test 4: Distance too large error")
     
     # Test 5: Exploratory mode
     compressed = bytes([0x00, 0x48, 0x45, 0x4C, 0x4C, 0x4F, 0x20, 0x42, 0x4F])
     result, consumed, error = bob_lz_decompress_exploratory(compressed)
     assert error is None
     assert result == b"HELLO BO"
-    print("✓ Test 5: Exploratory decompression")
+    print("[PASS] Test 5: Exploratory decompression")
     
-    print("\nAll tests passed! ✓")
+    print("\nAll tests passed! [SUCCESS]")
 
 
 if __name__ == "__main__":

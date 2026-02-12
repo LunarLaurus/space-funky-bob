@@ -1,0 +1,17 @@
+# B.O.B. ROM Analysis Toolkit
+# No external dependencies - pure Python 3.8+ standard library
+
+# This project uses only Python standard library modules:
+# - argparse
+# - collections
+# - json
+# - math
+# - pathlib
+# - struct
+# - sys
+
+# Optional development dependencies (uncomment if needed):
+# pytest>=7.0.0
+# black>=22.0.0
+# flake8>=4.0.0
+# mypy>=0.950

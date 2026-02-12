@@ -16,7 +16,12 @@ import math
 import os
 import struct
 from pathlib import Path
-from bob_lz import bob_lz_decompress, bob_lz_decompress_exploratory
+
+# Handle both module and standalone imports
+try:
+    from .bob_lz import bob_lz_decompress, bob_lz_decompress_exploratory
+except ImportError:
+    from bob_lz import bob_lz_decompress, bob_lz_decompress_exploratory
 
 
 def detect_rom_header(rom_data):
@@ -153,18 +158,30 @@ def looks_like_tile_data(data):
     if len(data) < 32:
         return False
     
-    # SNES tiles are often 2bpp or 4bpp with low entropy
+    # SNES tiles are often 2bpp or 4bpp with moderate entropy
+    # Very low entropy (<0.5) usually indicates empty/filler data
+    entropy = calculate_entropy(data)
+    if entropy < 0.5:
+        return False  # Too low entropy, likely empty data
+    
     # Check for patterns typical of graphics data
     zero_count = data.count(0)
     low_byte_count = sum(1 for b in data if b < 16)
     
-    # Graphics often have many zeros and low values
-    if zero_count > len(data) * 0.3:
-        return True
-    if low_byte_count > len(data) * 0.5:
-        return True
+    # Graphics often have some zeros and low values, but not overwhelmingly so
+    if zero_count > len(data) * 0.4:  # Reduced from 0.3
+        return False  # Too many zeros, likely empty
+    if low_byte_count > len(data) * 0.6:  # Reduced from 0.5
+        return False  # Too many low bytes, likely empty
     
-    return False
+    # Look for more balanced graphics patterns
+    # Real tile data has varied patterns, not just zeros
+    unique_bytes = len(set(data))
+    if unique_bytes < 8:  # Need some variety
+        return False
+    
+    # Accept as potential tile data if it has moderate entropy and reasonable patterns
+    return True
 
 
 def looks_like_compressed(data):
@@ -173,8 +190,11 @@ def looks_like_compressed(data):
         return False
     
     entropy = calculate_entropy(data)
-    # Compressed data typically has high entropy (6.5-8.0)
-    return 6.0 < entropy < 8.0
+    # Compressed data can have a wide range of entropy
+    # B.O.B. data with mostly literals can have entropy as low as 2.5
+    # Very low entropy (<2.0) is likely structured/repeated data
+    # Very high entropy (>7.8) might be encrypted/compressed with different scheme
+    return 2.0 < entropy < 8.0
 
 
 def scan_rom_for_compressed_blocks(rom_data, header_offset, outdir):
@@ -200,7 +220,7 @@ def scan_rom_for_compressed_blocks(rom_data, header_offset, outdir):
     print(f"Scanning ROM of size {len(rom)} bytes...")
     
     # Scan with stride (every 16 bytes to balance speed vs coverage)
-    stride = 16
+    stride = 4
     for offset in range(0, len(rom) - 16, stride):
         if offset % 0x10000 == 0:
             print(f"Progress: {offset / len(rom) * 100:.1f}%")
@@ -225,8 +245,10 @@ def scan_rom_for_compressed_blocks(rom_data, header_offset, outdir):
                     
                     is_tile_data = looks_like_tile_data(decompressed)
                     
-                    # Accept if entropy dropped or looks like tile data
-                    if entropy_drop > 0.5 or is_tile_data:
+                    # Accept if entropy dropped OR looks like reasonable data
+                    # Low entropy (<1.0) typically indicates empty/filler data, not real compressed blocks
+                    # For valid decompression with reasonable output, accept even without entropy drop
+                    if (entropy_drop > 0.1) or (is_tile_data and dec_entropy > 1.0) or (consumed > 50 and dec_entropy > 1.5):
                         candidate = {
                             "offset": hex(offset + header_offset),
                             "offset_int": offset + header_offset,

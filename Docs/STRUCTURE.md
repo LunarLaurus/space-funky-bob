@@ -8,46 +8,51 @@ bob-rom-analysis/
 │
 ├── README.md                      # Quick start guide (user-facing)
 ├── CLAUDE.md                      # Complete project context (AI context)
-├── LICENSE                        # MIT License (to be added)
-├── .gitignore                     # Git ignore rules (to be added)
+├── LICENSE                        # MIT License
+├── .gitignore                     # Git ignore rules
+├── requirements.txt               # Python dependencies (stdlib only)
+├── pyproject.toml                # Python package config
+├── run_tests.py                  # Test runner script
 │
-├── bob_lz.py                      # Core: LZ77 decoder + unit tests
-├── bob_lz_scan.py                 # Core: ROM scanner
-├── bob_map.py                     # Core: Region classifier
-├── validate_known_block.py        # Core: Validation script
-├── test_workflow.sh               # Automation: Complete workflow script
+├── toolkit/                      # Core Python modules
+│   ├── bob_lz.py                 # Core: LZ77 decoder + unit tests
+│   ├── bob_lz_scan.py            # Core: ROM scanner
+│   ├── bob_map.py                # Core: Region classifier
+│   ├── validate_known_block.py    # Core: Validation script
+│   └── ImportBOBMap.py           # Ghidra import script
 │
-├── docs/                          # All documentation
-│   ├── USER_GUIDE.md              # End-user documentation
-│   ├── TECHNICAL.md               # Technical design document
-│   ├── PRD.md                     # Product requirements document
-│   ├── ghidra_import.txt          # Ghidra integration instructions
-│   │
-│   └── roadmap/                   # Sprint planning & tracking
-│       ├── SPRINTS.md             # Sprint plans and stories
-│       └── EPICS.md               # Epic tracking and priorities
+├── test/                         # Test scripts
+│   ├── test_workflow.sh          # Bash workflow automation
+│   └── test-workflow.ps1         # PowerShell workflow
 │
-├── tests/                         # Unit tests (future)
-│   ├── test_bob_lz.py             # LZ77 decoder tests
-│   ├── test_bob_lz_scan.py        # Scanner tests
-│   ├── test_bob_map.py            # Mapper tests
-│   └── fixtures/                  # Test data
-│       └── test_rom.smc           # Minimal test ROM
+├── rom/                          # ROM files (user-provided)
+│   └── B.O.B. (U) [!].smc       # Test ROM
 │
-├── examples/                      # Example scripts (future)
-│   ├── extract_specific_block.py  # Extract known block
-│   ├── batch_analyze.py           # Batch processing
-│   └── custom_heuristics.py       # Custom scanning
+├── docs/                         # All documentation
+│   ├── USER_GUIDE.md             # End-user documentation
+│   ├── TECHNICAL.md              # Technical design document
+│   ├── PRD.md                    # Product requirements document
+│   ├── STRUCTURE.md              # This file
+│   ├── DELIVERABLES.md           # Deliverables tracking
+│   ├── EPICS.md                  # Epic tracking
+│   ├── SPRINTS.md                # Sprint planning
+│   ├── GHIDRA_IMPORT.md         # Ghidra integration guide
+│   └── roadmap/                  # Sprint planning & tracking (legacy)
 │
-├── analysis_output/               # Default output directory (generated)
-│   ├── candidates.json            # Found compressed blocks
-│   ├── rom_map.json               # ROM structure map
-│   ├── rom_map.html               # Interactive visualization
-│   └── decompressed_*.bin         # Extracted data files
+├── tests/                        # Unit tests
+│   ├── conftest.py               # Pytest configuration
+│   ├── test_bob_lz.py           # LZ77 decoder tests
+│   └── test_bob_scan.py         # Scanner tests
 │
-└── scripts/                       # Utility scripts (future)
-    ├── benchmark.py               # Performance benchmarking
-    ├── validate_all.py            # Validate all test ROMs
+├── .github/                      # GitHub configuration
+│   └── workflows/
+│       └── ci.yml                # CI/CD pipeline
+│
+└── analysis_output/              # Default output directory (generated)
+    ├── candidates.json           # Found compressed blocks
+    ├── rom_map.json              # ROM structure map
+    ├── rom_map.html              # Interactive visualization
+    └── decompressed_*.bin        # Extracted data files
     └── generate_docs.py           # Auto-generate documentation
 ```
 

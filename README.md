@@ -49,25 +49,25 @@ cd bob-rom-analysis
 ### 1. Test the Decoder
 
 ```bash
-python bob_lz.py
+python toolkit/bob_lz.py
 ```
 
 Expected output:
 ```
 Running B.O.B. LZ decoder unit tests...
-✓ Test 1: Literal bytes
-✓ Test 2: Overlapping copy
-✓ Test 3: Zero distance error
-✓ Test 4: Distance too large error
-✓ Test 5: Exploratory decompression
+[PASS] Test 1: Literal bytes
+[PASS] Test 2: Overlapping copy
+[PASS] Test 3: Zero distance error
+[PASS] Test 4: Distance too large error
+[PASS] Test 5: Exploratory decompression
 
-All tests passed! ✓
+All tests passed! [SUCCESS]
 ```
 
 ### 2. Scan ROM for Compressed Blocks
 
 ```bash
-python bob_lz_scan.py --rom SpaceFunkyBob.sfc --outdir out/
+python toolkit/bob_lz_scan.py --rom SpaceFunkyBob.sfc --outdir out/
 ```
 
 Output:
@@ -77,7 +77,7 @@ Output:
 ### 3. Generate ROM Map
 
 ```bash
-python bob_map.py --rom SpaceFunkyBob.sfc --candidates out/candidates.json --outdir out/
+python toolkit/bob_map.py --rom SpaceFunkyBob.sfc --candidates out/candidates.json --outdir out/
 ```
 
 Output:
@@ -86,16 +86,18 @@ Output:
 
 ### 4. Import into Ghidra
 
-Follow instructions in `ghidra_import.txt` to load annotations into Ghidra.
+Follow instructions in `docs/GHIDRA_IMPORT.md` or use `toolkit/ImportBOBMap.py` to load annotations into Ghidra.
 
 ## File Descriptions
 
 | File | Purpose |
 |------|---------|
-| `bob_lz.py` | LZ77 decoder with unit tests |
-| `bob_lz_scan.py` | ROM scanner for compressed blocks |
-| `bob_map.py` | Region classifier (code/data/compressed) |
-| `ghidra_import.txt` | Ghidra import instructions + Python script |
+| `toolkit/bob_lz.py` | LZ77 decoder with unit tests |
+| `toolkit/bob_lz_scan.py` | ROM scanner for compressed blocks |
+| `toolkit/bob_map.py` | Region classifier (code/data/compressed) |
+| `toolkit/validate_known_block.py` | Validation against known block |
+| `test/test_workflow.sh` | Automated workflow script |
+| `docs/ghidra_import.txt` | Ghidra import instructions + Python script |
 | `README.md` | This file |
 
 ## Technical Details
@@ -148,7 +150,7 @@ Follow instructions in `ghidra_import.txt` to load annotations into Ghidra.
 ### Scan Only a Specific Region
 
 ```bash
-# Modify bob_lz_scan.py line ~120 to set custom range
+# Modify toolkit/bob_lz_scan.py line ~120 to set custom range
 # Example: scan 0x10000 to 0x20000
 # for offset in range(0x10000, 0x20000, stride):
 ```
@@ -206,7 +208,7 @@ header_offset = 512 if len(rom) % 1024 == 512 else 0
 compressed_offset = 0x1AD34 + header_offset
 expected_dec_size = 0x822
 
-from bob_lz import bob_lz_decompress
+from toolkit.bob_lz import bob_lz_decompress
 compressed_data = rom[compressed_offset:compressed_offset + 0x1000]  # Read enough
 decompressed, consumed = bob_lz_decompress(compressed_data, expected_dec_size)
 
@@ -220,7 +222,7 @@ assert len(decompressed) == expected_dec_size
 You can add known compressed blocks to validate the scanner:
 
 ```python
-# Add to bob_lz.py test suite
+# Add to toolkit/bob_lz.py test suite
 def test_known_bob_block():
     # Example: known compressed block from ROM offset 0x1AD34
     rom = open('bob.smc', 'rb').read()

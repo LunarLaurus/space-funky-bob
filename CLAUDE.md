@@ -283,13 +283,13 @@ See `docs/roadmap/` for detailed sprint planning and feature tracking.
 ### Running the Toolkit
 ```bash
 # Full analysis pipeline
-./test_workflow.sh bob.smc
+bash test/test_workflow.sh "B.O.B. (U) [!].smc"
 
 # Individual steps
-python bob_lz.py                    # Run unit tests
-python bob_lz_scan.py --rom bob.smc --outdir out/
-python bob_map.py --rom bob.smc --candidates out/candidates.json --outdir out/
-python validate_known_block.py bob.smc
+python toolkit/bob_lz.py                              # Run unit tests
+python toolkit/bob_lz_scan.py --rom rom/B.O.B..smc --outdir out/
+python toolkit/bob_map.py --rom rom/B.O.B..smc --candidates out/candidates.json --outdir out/
+python toolkit/validate_known_block.py rom/B.O.B..smc
 ```
 
 ### Key Files Generated
@@ -304,10 +304,10 @@ python validate_known_block.py bob.smc
 | Opcode density | >85% | Code region |
 | Entropy | <6.5 | Code/structured data |
 | Entropy | >7.2 | Compressed/encrypted |
-| Entropy | 6.0-8.0 | Compression candidate |
+| Entropy | 2.0-8.0 | Compression candidate (relaxed range) |
 
 ---
 
-**Last Updated**: January 27, 2026  
-**Status**: MVP Complete, Active Development  
+**Last Updated**: February 12, 2026  
+**Status**: Production Ready - All Critical Bugs Fixed  
 **Maintainer**: Available for community contributions

@@ -54,7 +54,7 @@ def validate_known_block(rom_path):
         
         # Validate
         if len(decompressed) == expected_dec_size:
-            print(f"\n✓ SUCCESS!")
+            print(f"\n[SUCCESS]!")
             print(f"  Consumed: {consumed} bytes (0x{consumed:X})")
             print(f"  Decompressed: {len(decompressed)} bytes (0x{len(decompressed):X})")
             print(f"  Compression ratio: {consumed / len(decompressed) * 100:.1f}%")
@@ -75,13 +75,13 @@ def validate_known_block(rom_path):
             
             return True
         else:
-            print(f"\n✗ FAILED: Size mismatch")
+            print(f"\n[FAILED] Size mismatch")
             print(f"  Expected: {expected_dec_size} bytes")
             print(f"  Got: {len(decompressed)} bytes")
             return False
             
     except ValueError as e:
-        print(f"\n✗ FAILED: Decompression error")
+        print(f"\n[FAILED] Decompression error")
         print(f"  Error: {e}")
         return False
 

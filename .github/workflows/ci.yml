@@ -1,0 +1,62 @@
+name: B.O.B. ROM Analysis Tests
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: ['3.8', '3.9', '3.10', '3.11', '3.12']
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Test with custom runner
+      run: |
+        python run_tests.py
+
+    - name: Test LZ decoder directly
+      run: |
+        python toolkit/bob_lz.py
+
+    - name: Test scanner imports
+      run: |
+        python -c "import sys; sys.path.insert(0, 'toolkit'); from bob_lz_scan import calculate_entropy; print('Scanner import OK')"
+
+    - name: Test mapper imports
+      run: |
+        python -c "import sys; sys.path.insert(0, 'toolkit'); from bob_map import OPCODES; print(f'Mapper import OK - {len(OPCODES)} opcodes')"
+
+  lint:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Check Python syntax
+      run: |
+        python -m py_compile toolkit/bob_lz.py
+        python -m py_compile toolkit/bob_lz_scan.py
+        python -m py_compile toolkit/bob_map.py
+        python -m py_compile toolkit/validate_known_block.py
+        echo "All Python files compile successfully"
+
+    - name: Check for common issues
+      run: |
+        python -c "import ast; [ast.parse(open(f).read()) for f in ['toolkit/bob_lz.py', 'toolkit/bob_lz_scan.py', 'toolkit/bob_map.py', 'toolkit/validate_known_block.py']]; print('All files parse OK')"
