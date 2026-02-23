@@ -143,3 +143,16 @@ Where to go from here.
 ## Status Log
 
 - **2026-02-23:** Task created, awaiting assignment
+- **2026-02-23:** ✅ COMPLETE — Tutorial creation complete
+  - Created `docs/tutorials/` directory with 5 comprehensive tutorials:
+    - Tutorial 1: Getting Started (15 min) — Setup, test suite, first analysis
+    - Tutorial 2: Finding Compressed Blocks (20 min) — LZ77 format, scanner usage, validation
+    - Tutorial 3: Graphics Extraction (25 min) — SNES formats, rendering, palettes, sprite sheets
+    - Tutorial 4: Level Editing (30 min) — Tilemap structure, extraction, editing, injection
+    - Tutorial 5: Ghidra/IDA Integration (20 min) — Import scripts, navigation, analysis tips
+  - All tutorials include:
+    - Step-by-step instructions
+    - Expected outputs
+    - Troubleshooting sections
+    - Next steps guidance
+  - All acceptance criteria met
