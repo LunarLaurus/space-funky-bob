@@ -631,16 +631,18 @@ feature/rom-analysis-enhancement ───●──●──● (development)
 | Task | Squad | Status | Details |
 |------|-------|--------|---------|
 | ALPHA-001 | Alpha | ✅ COMPLETE | 32/32 round-trip tests passing |
-| BETA-001 | Beta | 🔄 IN PROGRESS | Consolidated module created |
-| DELTA-001 | Delta | ⏳ Pending | Blocked by schedule |
+| BETA-001 | Beta | ✅ COMPLETE | Module consolidated, deprecation added |
+| DELTA-001 | Delta | ✅ COMPLETE | Unified runner created |
 | GAMMA-001 | Gamma | ⏳ Pending | |
 | ALPHA-003 | Alpha | ⏳ Pending | |
 
 **Commits This Session:**
 | Hash | Message |
 |------|---------|
-| b813c0d | BETA-001: Graphics Module Consolidation in progress |
+| 4d4c6e5 | DELTA-001: Test Runner Consolidation COMPLETE |
+| 3d048c2 | BETA-001: Graphics Module Consolidation COMPLETE |
 | c56ab7c | ALPHA-001: LZ77 Encoder Round-Trip Testing complete |
+| b813c0d | BETA-001: Graphics Module Consolidation in progress |
 | 563a58d | qwen: Update session notes with archeology summary |
 | 25854d5 | archeology: Parallel codebase excavation complete |
 | 0a248b0 | planning: Create multi-squad deployment structure |
@@ -649,22 +651,24 @@ feature/rom-analysis-enhancement ───●──●──● (development)
 | Squad | Status | Tasks Complete | Next Task |
 |-------|--------|----------------|-----------|
 | Alpha 🔵 | 🟢 Active | 1/5 | ALPHA-002 or ALPHA-003 |
-| Beta 🟢 | 🟡 In Progress | 0/5 | BETA-001 (consolidation) |
+| Beta 🟢 | 🟢 Active | 1/5 | BETA-002 (8bpp renderer) |
 | Gamma 🟡 | ⏳ Ready | 0/5 | GAMMA-001 |
-| Delta 🟠 | ⏳ Ready | 0/5 | DELTA-001 |
+| Delta 🟠 | 🟢 Active | 1/5 | DELTA-002 (coverage) |
 | Echo 🟣 | ⏳ Ready | 0/5 | ECHO-001 |
 
 **Key Deliverables:**
 - **ALPHA-001:** `tests/test_lz77_roundtrip.py` (32 tests), integrated in `run_full_test_suite.py`
-- **BETA-001:** `toolkit/bob_graphics_consolidated.py` (unified API with SNESGraphicsRenderer)
+- **BETA-001:** `toolkit/bob_graphics.py` (unified API with SNESGraphicsRenderer)
+- **DELTA-001:** `tests/__main__.py` (unified test runner with filtering)
 
 **Next Steps:**
-1. Complete BETA-001 (replace original module, add deprecation warnings)
-2. Begin ALPHA-002 (Streaming Decompression) or ALPHA-003 (Multi-Pass Scanner)
-3. Start DELTA-001 (Test Runner Consolidation) — critical path for CI/CD
+1. Begin ALPHA-002 (Streaming Decompression) or ALPHA-003 (Multi-Pass Scanner)
+2. Begin BETA-002 (8bpp Renderer Completion)
+3. Begin DELTA-002 (Code Coverage Analysis)
+4. Begin GAMMA-001 (Level Format Documentation)
 
 **Blockers:** None
 
 ---
 
-**Axiom reporting.** Execution underway. 1 task complete (ALPHA-001). 1 task in progress (BETA-001). 7 commits logged. Awaiting further orders, Architect.
+**Axiom reporting.** Execution advancing. 3 tasks complete (ALPHA-001, BETA-001, DELTA-001). 10 commits logged. All squads unblocked. Awaiting further orders, Architect.
