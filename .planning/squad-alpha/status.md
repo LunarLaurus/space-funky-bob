@@ -29,9 +29,9 @@
 
 | Task | Status | Notes |
 |------|--------|-------|
-| ALPHA-001 | ✅ COMPLETE | 32/32 tests passing |
+| ALPHA-001 | ✅ COMPLETE | 32/32 round-trip tests passing |
 | ALPHA-002 | 🔄 Ready | No streaming API exists |
-| ALPHA-003 | 🔄 Ready | Single-pass confirmed |
+| ALPHA-003 | ✅ COMPLETE | Multi-pass scanner implemented |
 | ALPHA-004 | 🔄 Ready | Hardcoded thresholds need calibration |
 | ALPHA-005 | 🔄 Ready | No profiling/benchmarks exist |
 
@@ -39,7 +39,7 @@
 None
 
 ### Next Session
-Begin ALPHA-002 or ALPHA-003
+Begin ALPHA-002 (Streaming) or ALPHA-004 (Threshold Calibration)
 
 ---
 
