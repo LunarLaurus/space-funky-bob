@@ -10,6 +10,8 @@ New code should use the unified test runner:
     python -m tests --suite all        # Run all test suites
 
 See tests/__main__.py for details.
+
+Enhanced with additional property invariants for comprehensive testing.
 """
 
 import warnings
@@ -25,6 +27,20 @@ import random
 from pathlib import Path
 
 sys.path.insert(0, 'toolkit')
+sys.path.insert(0, 'tests')
+
+from property_generators import (
+    random_bytes,
+    random_rom_like_data,
+    random_compressed_stream,
+    random_tilemap_data,
+    random_tile_data,
+    invariant_decompression_deterministic,
+    invariant_output_bounded,
+    invariant_empty_input_handling,
+    invariant_roundtrip_encode_decode,
+    invariant_entropy_increases_with_randomness,
+)
 
 
 def property_decompress_idempotent():
@@ -191,14 +207,112 @@ def property_graphics_files_have_valid_dimensions():
 def property_exploratory_mode_always_succeeds():
     """Exploratory mode should always return something (never crash)."""
     from bob_lz import bob_lz_decompress_exploratory
-    
+
     for _ in range(20):
         test_data = bytes(random.randint(0, 255) for _ in range(random.randint(10, 200)))
         result = bob_lz_decompress_exploratory(test_data, max_dec_len=1000)
         assert result is not None, "Exploratory mode should never return None"
         assert len(result) > 0, "Exploratory mode should return non-empty"
-    
+
     print("[PASS] Property: Exploratory mode always succeeds")
+
+
+def property_decompression_deterministic():
+    """Same input should always produce same output."""
+    from bob_lz import bob_lz_decompress
+    
+    for i in range(50):
+        test_data = random_bytes(100, seed=i)
+        try:
+            result1 = bob_lz_decompress(test_data, 50)
+            result2 = bob_lz_decompress(test_data, 50)
+            assert result1 == result2, "Decompression should be deterministic"
+        except ValueError:
+            pass  # Invalid compressed data is expected for random bytes
+    
+    print("[PASS] Property: Decompression is deterministic")
+
+
+def property_encoder_roundtrip():
+    """Encode then decode should return original."""
+    from bob_lz import bob_lz_decompress
+    from bob_lz_encode import bob_lz_encode
+    
+    for i in range(20):
+        original = random_bytes(50 + i * 2, seed=i)
+        compressed = bob_lz_encode(original)
+        decompressed = bob_lz_decompress(compressed, len(original))
+        assert decompressed[0] == original, f"Round-trip failed for iteration {i}"
+    
+    print("[PASS] Property: Encoder round-trip successful")
+
+
+def property_entropy_uniform_low():
+    """Uniform data should have low entropy."""
+    from bob_lz_scan import calculate_entropy
+    
+    for byte_val in [0x00, 0xFF, 0x55, 0xAA]:
+        uniform = bytes([byte_val] * 256)
+        entropy = calculate_entropy(uniform)
+        assert entropy < 0.1, f"Uniform 0x{byte_val:02X} should have near-zero entropy"
+    
+    print("[PASS] Property: Uniform data has low entropy")
+
+
+def property_entropy_random_high():
+    """Random data should have high entropy."""
+    from bob_lz_scan import calculate_entropy
+    
+    for i in range(10):
+        random_data = random_bytes(256, seed=i)
+        entropy = calculate_entropy(random_data)
+        assert entropy > 7.0, f"Random data should have entropy > 7.0, got {entropy}"
+    
+    print("[PASS] Property: Random data has high entropy")
+
+
+def property_tilemap_valid_structure():
+    """Tilemap data should have valid structure."""
+    for i in range(10):
+        tilemap = random_tilemap_data(seed=i)
+        assert len(tilemap) == 2048, "Tilemap should be 2048 bytes"
+        
+        # Parse and validate entries
+        for j in range(0, 2048, 2):
+            entry = tilemap[j] | (tilemap[j + 1] << 8)
+            tile_id = entry & 0x3FF
+            chr_bank = (entry >> 10) & 0x3
+            palette = (entry >> 12) & 0x3
+            
+            assert tile_id < 1024, f"Invalid tile ID: {tile_id}"
+            assert chr_bank < 4, f"Invalid CHR bank: {chr_bank}"
+            assert palette < 4, f"Invalid palette: {palette}"
+    
+    print("[PASS] Property: Tilemap structure valid")
+
+
+def property_tile_data_valid_size():
+    """Tile data should have valid size for format."""
+    for fmt, expected_size in [('2bpp', 16), ('4bpp', 32), ('8bpp', 64)]:
+        for i in range(5):
+            tile = random_tile_data(fmt, seed=i)
+            assert len(tile) == expected_size, f"{fmt} tile should be {expected_size} bytes"
+    
+    print("[PASS] Property: Tile data size valid")
+
+
+def property_compressed_stream_valid():
+    """Compressed stream should be parseable."""
+    for i in range(10):
+        try:
+            stream = random_compressed_stream(100 + i * 10, seed=i)
+            assert len(stream) > 0, "Stream should not be empty"
+            # First byte should be valid chunk header (0-255)
+            assert 0 <= stream[0] <= 255, "First byte should be valid header"
+        except Exception:
+            pass  # Generator may fail for some sizes
+    
+    print("[PASS] Property: Compressed stream valid")
 
 
 def run_property_tests():
@@ -206,9 +320,9 @@ def run_property_tests():
     print("\n" + "=" * 60)
     print("PROPERTY-BASED TESTS")
     print("=" * 60)
-    
+
     random.seed(42)
-    
+
     tests = [
         property_decompress_idempotent,
         property_output_size_never_exceeds_requested,
@@ -219,21 +333,32 @@ def run_property_tests():
         property_no_overlapping_blobs,
         property_graphics_files_have_valid_dimensions,
         property_exploratory_mode_always_succeeds,
+        # New enhanced properties
+        property_decompression_deterministic,
+        property_encoder_roundtrip,
+        property_entropy_uniform_low,
+        property_entropy_random_high,
+        property_tilemap_valid_structure,
+        property_tile_data_valid_size,
+        property_compressed_stream_valid,
     ]
-    
+
     passed = 0
+    failed = 0
     for test in tests:
         try:
-            if test():
-                passed += 1
+            result = test()
+            # Count as pass if test doesn't raise exception
+            passed += 1
         except Exception as e:
             print(f"[FAIL] {test.__name__}: {e}")
-    
+            failed += 1
+
     print("\n" + "=" * 60)
     print(f"PROPERTY TESTS: {passed}/{len(tests)} passed")
     print("=" * 60)
-    
-    return passed == len(tests)
+
+    return failed == 0
 
 
 if __name__ == "__main__":

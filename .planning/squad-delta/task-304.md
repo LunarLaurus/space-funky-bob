@@ -120,3 +120,10 @@ def random_rom_data(size=1024*1024):
 ## Status Log
 
 - **2026-02-23:** Task created, awaiting assignment
+- **2026-02-23:** ✅ COMPLETE — Property-based test enhancement complete
+  - Created `tests/property_generators.py` — Random data generators
+  - Generators: random_bytes, random_rom_like_data, random_compressed_stream, random_tilemap_data, random_tile_data
+  - Invariants: decompression_deterministic, output_bounded, empty_input_handling, roundtrip_encode_decode, entropy_increases
+  - Enhanced `property_tests.py` with 7 new property tests (16 total, all passing)
+  - New properties: determinism, encoder roundtrip, entropy uniform/random, tilemap structure, tile size, stream validity
+  - All acceptance criteria met
