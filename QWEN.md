@@ -753,7 +753,14 @@ worldlevel    equ 10   ; World 7 - World Maps (1-3)
 
 **Refinement Tasks Complete:**
 - ✅ ECHO-001: wiki.html level counts fixed (81 levels from source)
+- ✅ ECHO-004: docs/SOURCE_REFERENCE.md created (authoritative reference)
 - ✅ ALPHA-001: Enemy ID 38 verified — "Backarm Emerge" (source: BORG.A line 37)
+- ✅ BETA-001: Extraction scripts enhanced with EQUATES.H references
+
+**Refinement Tasks Pending:**
+- ⏳ ECHO-002: Add Worlds 4-8 full tables to wiki.html (blocked by .gitignore)
+- ⏳ ECHO-003: Add JSON clarification note to wiki.html
+- ⏳ BETA-002: Add CLI arguments to extraction scripts
 
 ---
 
