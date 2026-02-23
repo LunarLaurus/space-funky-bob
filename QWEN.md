@@ -614,13 +614,13 @@ feature/rom-analysis-enhancement ───●──●──● (development)
 
 ### Current Session (2026-02-23) — EXECUTION IN PROGRESS
 
-**Session Status:** 🔄 ACTIVE — 4/25 Tasks Complete
+**Session Status:** 🔄 ACTIVE — 5/25 Tasks Complete
 
 **Session Summary:**
 - ✅ Branch created: `feature/rom-analysis-enhancement`
 - ✅ Planning complete: 5 squads, 25 tasks deployed
 - ✅ Archeology complete: Full codebase excavation
-- ✅ Execution phase: 4 tasks completed
+- ✅ Execution phase: 5 tasks completed
 
 **Tasks Completed:**
 | Task | Squad | Status | Deliverable |
@@ -629,35 +629,34 @@ feature/rom-analysis-enhancement ───●──●──● (development)
 | BETA-001 | Beta | ✅ COMPLETE | Unified graphics module (`toolkit/bob_graphics.py`) |
 | DELTA-001 | Delta | ✅ COMPLETE | Unified test runner (`tests/__main__.py`) |
 | GAMMA-001 | Gamma | ✅ COMPLETE | Level format spec (`docs/LEVEL_FORMAT_COMPLETE.md`) |
+| ALPHA-003 | Alpha | ✅ COMPLETE | Multi-pass scanner (`toolkit/bob_lz_scan.py`) |
 
-**Commits This Session (14 total):**
+**Commits This Session (16 total):**
 | Hash | Message |
 |------|---------|
+| 5ff0532 | ALPHA-003: Multi-Pass Scanner Implementation COMPLETE |
+| e581a46 | qwen: Update session progress — 4/25 tasks complete |
 | c965db5 | GAMMA-001: Level Format Documentation COMPLETE |
 | 4b6cb30 | qwen: Final session state — READY FOR RESUMPTION |
 | 0dac385 | cleanup: Remove debug files and stage bob_lz_scan.py |
-| 6d89278 | qwen: Update session notes with 3-task completion |
-| 4d4c6e5 | DELTA-001: Test Runner Consolidation COMPLETE |
-| 3d048c2 | BETA-001: Graphics Module Consolidation COMPLETE |
-| c56ab7c | ALPHA-001: LZ77 Encoder Round-Trip Testing complete |
 
 **Squad Status Summary:**
 | Squad | Tasks Complete | Next Task | Priority |
 |-------|----------------|-----------|----------|
-| Alpha 🔵 | 1/5 | ALPHA-002 or ALPHA-003 | P1 |
+| Alpha 🔵 | 2/5 | ALPHA-002 or ALPHA-004 | P1 |
 | Beta 🟢 | 1/5 | BETA-002 (8bpp renderer) | P1 |
 | Gamma 🟡 | 1/5 | GAMMA-002 (validation tests) | P1 |
 | Delta 🟠 | 1/5 | DELTA-002 (coverage analysis) | P1 |
 | Echo 🟣 | 0/5 | ECHO-001 (Sphinx docs) | P1 |
 
 **Recommended Next Actions:**
-1. **ALPHA-003** (P1) — Multi-Pass Scanner (performance foundational)
-2. **BETA-002** (P1) — 8bpp Renderer Completion
+1. **BETA-002** (P1) — 8bpp Renderer Completion
+2. **DELTA-002** (P1) — Code Coverage Analysis
 3. **GAMMA-002** (P1) — Tilemap Extraction Validation
-4. **DELTA-002** (P1) — Code Coverage Analysis
+4. **ALPHA-004** (P1) — Entropy Threshold Calibration
 
 **Blockers:** None
 
 ---
 
-**Axiom reporting.** Session resumed. 4/25 tasks complete. 14 commits logged. All squads unblocked. Execution continuing, Architect.
+**Axiom reporting.** Session advancing. 5/25 tasks complete. 16 commits logged. All squads unblocked. Execution continuing, Architect.
