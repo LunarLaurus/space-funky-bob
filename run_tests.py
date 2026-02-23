@@ -1,8 +1,24 @@
 #!/usr/bin/env python3
 """Simple test runner for B.O.B. ROM Analysis Toolkit
 
-Runs all tests without requiring pytest (for zero-dependency compatibility).
+⚠️  DEPRECATED: Use `python -m tests` instead.
+
+This runner is retained for backward compatibility.
+New code should use the unified test runner:
+    python -m tests                  # Run all tests
+    python -m tests --verbose        # Verbose output
+    python -m tests --filter lz77    # Run specific tests
+    python -m tests --format json    # JSON output
+
+See tests/__main__.py for details.
 """
+
+import warnings
+warnings.warn(
+    "run_tests.py is deprecated. Use 'python -m tests' (unified test runner) instead.",
+    DeprecationWarning,
+    stacklevel=2
+)
 
 import sys
 import os

@@ -36,17 +36,17 @@
 
 | Task | Status | Notes |
 |------|--------|-------|
-| DELTA-001 | 🔴 P0-CRITICAL | Blocks DELTA-005 |
-| DELTA-002 | 🔄 Ready | No coverage measurement |
-| DELTA-003 | 🔄 Ready | Edge cases needed |
-| DELTA-004 | 🔄 Ready | Expand property tests |
-| DELTA-005 | 🔄 Ready | No CI/CD exists |
+| DELTA-001 | ✅ COMPLETE | Unified runner created, deprecation warnings added |
+| DELTA-002 | 🔄 Ready | Can now begin (coverage measurement) |
+| DELTA-003 | 🔄 Ready | Can now begin |
+| DELTA-004 | 🔄 Ready | Can now begin |
+| DELTA-005 | 🔄 Ready | Can now begin (CI/CD uses unified runner) |
 
 ### Blockers
-None (but DELTA-001 blocks DELTA-005)
+None — DELTA-001 complete, squad unblocked
 
 ### Next Session
-Begin DELTA-001: Test Runner Consolidation
+Begin DELTA-002: Code Coverage Analysis
 
 ---
 

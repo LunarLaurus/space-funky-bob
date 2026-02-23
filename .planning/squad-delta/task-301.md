@@ -139,3 +139,10 @@ Total: 65 passed, 0 failed
 ## Status Log
 
 - **2026-02-23:** Task created, awaiting assignment
+- **2026-02-23:** Execution started — created unified runner
+- **2026-02-23:** ✅ COMPLETE — DELTA-001 consolidation done
+  - Created `tests/__main__.py` unified test runner
+  - Supports: --verbose, --quiet, --filter, --format (text/json), --suite
+  - Added deprecation warnings to run_tests.py and property_tests.py
+  - Unified runner tested: pytest suite with filter works
+  - All acceptance criteria met
