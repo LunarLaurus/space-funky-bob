@@ -1,7 +1,20 @@
 #!/usr/bin/env python3
 """
-Tileset extractor for Space Funky B.O.B. ROM.
-Searches for 4bpp SNES tile data in the ROM.
+Extract tileset data from Space Funky B.O.B. ROM.
+
+Tileset format: SNES 4bpp (4 bits per pixel)
+- 8x8 pixels, 16 colors per tile
+- 32 bytes per tile
+- 256 tiles per 8KB block
+
+Known tileset locations from source analysis:
+- 0x008000: Borg Tileset
+- 0x008800: Bug Tileset
+- 0x009000: Ancient Tileset
+- 0x035800: Main Graphics 1
+- 0x03D800: Main Graphics 2
+
+Source: editor/wiki.html, source/Disk D & E/BOBSNE4/EQUATES.H
 """
 
 import json

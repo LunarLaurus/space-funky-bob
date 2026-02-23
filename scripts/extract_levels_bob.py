@@ -1,9 +1,29 @@
 #!/usr/bin/env python3
 """
 Extract level data from Space Funky B.O.B. ROM.
-Level data locations confirmed at ROM offsets 0xD4000, 0xE4000, 0xF4000.
-Each level is 16KB (0x4000 bytes), format is 80x80 tiles as little-endian 16-bit values.
-Output is sparse format: only non-zero tiles as (x, y, tile_id).
+
+Level types from source/Disk D & E/BOBSNE4/EQUATES.H:
+    borglevel     equ 0    ; World 1 - Borg Factory (0xD4000)
+    buglevel      equ 1    ; World 2 - Bug Planet (0xE4000)
+    ancientlevel  equ 4    ; World 3 - Ancient Ruins (0xF4000)
+    lavalevel     equ 6    ; World 4 - Lava (TBD)
+    ultralevel    equ 8    ; World 5 - Ultra Force (TBD)
+    bubblelevel   equ 9    ; World 6 - Bubble Forest (TBD)
+    worldlevel    equ 10   ; World 7 - World Maps (N/A)
+    spacelevel    equ 3    ; World 8 - Space (TBD)
+
+Confirmed ROM offsets:
+- 0xD4000: World 1 (Borg Factory)
+- 0xE4000: World 2 (Bug Planet)
+- 0xF4000: World 3 (Ancient Ruins)
+
+Worlds 4-8: Source MAP files exist in source/Disk C/ but ROM
+locations not yet confirmed.
+
+Source MAP file counts (Disk C/):
+- BORGMAPS: 29 files | BUGMAPS: 9 files | ANCMAPS: 16 files
+- LAVAMAPS: 6 files | ULTRAMPA: 11 files | JUNGLEMA: 5 files
+- WORLDMAP: 4 files | SPACEMAP: 2 files | TOTAL: 82 files
 """
 
 import struct
