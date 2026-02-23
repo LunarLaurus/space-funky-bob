@@ -157,3 +157,16 @@ def define_tilemap_structure():
 ## Status Log
 
 - **2026-02-23:** Task created, awaiting assignment
+- **2026-02-23:** ✅ COMPLETE — IDA Pro import script complete
+  - Created `toolkit/ImportBOBMapIDA.py` — IDA Pro import script
+  - Features:
+    - Automatic segment creation for regions
+    - Bookmarks at key locations
+    - Region comments with type/size/confidence
+    - Symbolic names for regions
+    - TilemapEntry data type definition (16-bit structure)
+    - Vector table analysis (COP, BRK, ABORT, NMI, RESET, IRQ)
+    - Error handling and progress reporting
+  - Created `tests/test_ida_import.py` with 17 tests (all passing)
+  - Feature parity with Ghidra import script
+  - All acceptance criteria met
