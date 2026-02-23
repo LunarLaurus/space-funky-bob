@@ -97,3 +97,11 @@ def bob_lz_decompress_stream(src_bytes, chunk_size=4096):
 ## Status Log
 
 - **2026-02-23:** Task created, awaiting assignment
+- **2026-02-23:** ✅ COMPLETE — Streaming decompression API implemented
+  - Added `bob_lz_decompress_stream()` — Generator-based streaming API
+  - Yields chunks as they become available (default 4096 bytes)
+  - Memory efficient: sliding window retained, output chunked
+  - Backward compatible: existing API unchanged
+  - Created `tests/test_lz77_stream.py` with 18 tests (all passing)
+  - Test coverage: basic (4), equivalence (4), chunk boundaries (3), memory efficiency (2), error handling (2), generator behavior (3)
+  - All acceptance criteria met
