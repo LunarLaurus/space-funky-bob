@@ -173,12 +173,12 @@ def snes_color_to_rgb(snes_value: int) -> Tuple[int, int, int]:
 def extract_palette(rom_data: bytes, offset: int, num_colors: int = 16) -> List[Tuple[int, int, int]]:
     """
     Extract SNES palette from ROM data.
-    
+
     Args:
         rom_data: ROM data
         offset: Offset where palette begins
         num_colors: Number of colors to extract
-    
+
     Returns:
         List of (R, G, B) tuples
     """
@@ -189,6 +189,54 @@ def extract_palette(rom_data: bytes, offset: int, num_colors: int = 16) -> List[
         value = rom_data[offset + i * 2] | (rom_data[offset + i * 2 + 1] << 8)
         palette.append(snes_color_to_rgb(value))
     return palette
+
+
+def save_palette(palette: List[Tuple[int, int, int]], output_path: str) -> None:
+    """Save palette to JSON file."""
+    import json
+    data = {
+        'num_colors': len(palette),
+        'colors': [{'r': c[0], 'g': c[1], 'b': c[2]} for c in palette]
+    }
+    with open(output_path, 'w') as f:
+        json.dump(data, f, indent=2)
+
+
+def load_palette(input_path: str) -> List[Tuple[int, int, int]]:
+    """Load palette from JSON file."""
+    import json
+    with open(input_path) as f:
+        data = json.load(f)
+    return [(c['r'], c['g'], c['b']) for c in data['colors']]
+
+
+def find_palette_in_data(data: bytes, num_colors: int = 16) -> List[int]:
+    """
+    Find potential palette data in ROM using heuristics.
+
+    Looks for sequences of 16-bit values that look like SNES palettes.
+
+    Args:
+        data: Data to search
+        num_colors: Expected palette size
+
+    Returns:
+        List of offsets where palettes may be located
+    """
+    offsets = []
+
+    for offset in range(0, len(data) - num_colors * 2, 2):
+        is_palette = True
+        for i in range(num_colors):
+            value = data[offset + i * 2] | (data[offset + i * 2 + 1] << 8)
+            if value > 0x7FFF:
+                is_palette = False
+                break
+
+        if is_palette:
+            offsets.append(offset)
+
+    return offsets
 
 
 # =============================================================================

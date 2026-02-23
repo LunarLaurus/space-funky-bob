@@ -197,6 +197,183 @@ def looks_like_compressed(data):
     return 2.0 < entropy < 8.0
 
 
+def merge_adjacent_regions(regions, max_gap=256):
+    """
+    Merge adjacent or overlapping regions.
+    
+    Args:
+        regions: List of region dicts with 'region_start' and 'region_end'
+        max_gap: Maximum gap between regions to merge
+    
+    Returns:
+        Merged list of regions
+    """
+    if not regions:
+        return []
+    
+    # Sort by start position
+    sorted_regions = sorted(regions, key=lambda r: r['region_start'])
+    merged = [sorted_regions[0].copy()]
+    
+    for region in sorted_regions[1:]:
+        last = merged[-1]
+        gap = region['region_start'] - last['region_end']
+        
+        if gap <= max_gap:
+            # Merge: extend the end position
+            last['region_end'] = max(last['region_end'], region['region_end'])
+            last['entropy'] = (last.get('entropy', 0) + region.get('entropy', 0)) / 2
+        else:
+            merged.append(region.copy())
+    
+    return merged
+
+
+def coarse_entropy_scan(rom_data, stride=256, entropy_threshold=6.5, chunk_size=64):
+    """
+    Pass 1: Quick entropy scan to identify candidate regions.
+    
+    Args:
+        rom_data: ROM data
+        stride: Scan stride (default 256 bytes)
+        entropy_threshold: Minimum entropy to consider (default 6.5)
+        chunk_size: Size of each entropy sample
+    
+    Returns:
+        List of candidate region dicts
+    """
+    candidates = []
+    
+    for offset in range(0, len(rom_data) - chunk_size, stride):
+        chunk = rom_data[offset:offset + chunk_size]
+        entropy = calculate_entropy(chunk)
+        
+        if entropy > entropy_threshold:
+            candidates.append({
+                'offset': offset,
+                'entropy': entropy,
+                'region_start': max(0, offset - 128),
+                'region_end': min(len(rom_data), offset + chunk_size + 128)
+            })
+    
+    # Merge adjacent regions
+    merged = merge_adjacent_regions(candidates, max_gap=256)
+    return merged
+
+
+def fine_scan(rom_data, regions, test_sizes, stride=16):
+    """
+    Pass 2: Fine-grained scan within candidate regions.
+    
+    Args:
+        rom_data: ROM data
+        regions: Candidate regions from coarse scan
+        test_sizes: Decompressed sizes to test
+        stride: Fine scan stride (default 16 bytes)
+    
+    Returns:
+        List of compressed block candidates
+    """
+    from bob_lz import bob_lz_decompress_exploratory
+    
+    candidates = []
+    
+    for region in regions:
+        start = region['region_start']
+        end = region['region_end']
+        
+        for offset in range(start, end, stride):
+            if offset + 16 >= len(rom_data):
+                break
+            
+            # Quick heuristic check first
+            chunk = rom_data[offset:offset + 64]
+            if not looks_like_compressed(chunk):
+                continue
+            
+            # Try decompression with different sizes
+            for dec_size in test_sizes:
+                if offset + dec_size > len(rom_data):
+                    continue
+                
+                compressed = rom_data[offset:offset + dec_size]
+                result, consumed, error = bob_lz_decompress_exploratory(compressed, dec_size * 2)
+                
+                if error is None and len(result) > 0:
+                    # Check if result looks like valid data
+                    if looks_like_tile_data(result):
+                        candidates.append({
+                            'offset': offset,
+                            'compressed_size': consumed,
+                            'decompressed_size': len(result),
+                            'entropy': region.get('entropy', 0),
+                            'confidence': 'high'
+                        })
+                        break  # Found a match, skip other sizes
+    
+    return candidates
+
+
+def multipass_scan(rom_data, header_offset=0, outdir=None, fast=True):
+    """
+    Multi-pass ROM scanner for compressed block detection.
+    
+    Args:
+        rom_data: Full ROM data
+        header_offset: ROM header offset (0 or 512)
+        outdir: Output directory for results
+        fast: Use optimized settings
+    
+    Returns:
+        List of candidates with metadata
+    """
+    rom = rom_data[header_offset:]
+    
+    # Test sizes for decompression
+    test_sizes = [0x800, 0x1000, 0x2000, 0x4000, 0x822]
+    
+    # Pass settings based on mode
+    if fast:
+        coarse_stride = 256
+        fine_stride = 16
+        entropy_threshold = 6.0
+    else:
+        coarse_stride = 128
+        fine_stride = 8
+        entropy_threshold = 5.5
+    
+    print(f"Multi-pass scan starting...")
+    print(f"  ROM size: {len(rom):,} bytes")
+    print(f"  Coarse stride: {coarse_stride}, Fine stride: {fine_stride}")
+    print(f"  Entropy threshold: {entropy_threshold}")
+    
+    # Pass 1: Coarse entropy scan
+    print("\n[Pass 1/2] Coarse entropy scan...")
+    regions = coarse_entropy_scan(rom, stride=coarse_stride, entropy_threshold=entropy_threshold)
+    print(f"  Found {len(regions)} candidate regions")
+    
+    # Pass 2: Fine scan with decompression
+    print("\n[Pass 2/2] Fine scan with decompression...")
+    candidates = fine_scan(rom, regions, test_sizes, stride=fine_stride)
+    print(f"  Found {len(candidates)} compressed blocks")
+    
+    # Sort by offset
+    candidates.sort(key=lambda c: c['offset'])
+    
+    # Save results
+    if outdir:
+        outdir = Path(outdir)
+        outdir.mkdir(parents=True, exist_ok=True)
+        
+        # Save candidates JSON
+        candidates_path = outdir / 'candidates_multipass.json'
+        with open(candidates_path, 'w') as f:
+            json.dump({'candidates': candidates}, f, indent=2)
+        print(f"\nSaved {len(candidates)} candidates to {candidates_path}")
+    
+    return candidates
+
+
 def scan_rom_for_compressed_blocks(rom_data, header_offset, outdir, fast=True):
     """
     Scan ROM for compressed blocks using fast heuristics.
@@ -311,32 +488,37 @@ def main():
     parser = argparse.ArgumentParser(description="Scan SNES ROM for B.O.B. compressed blocks")
     parser.add_argument("--rom", required=True, help="Path to ROM file")
     parser.add_argument("--outdir", default="out", help="Output directory")
+    parser.add_argument("--multipass", action="store_true", help="Use multi-pass scanning (faster)")
+    parser.add_argument("--thorough", action="store_true", help="Use thorough (slow) mode")
     args = parser.parse_args()
-    
+
     # Read ROM
     rom_path = Path(args.rom)
     if not rom_path.exists():
         print(f"Error: ROM file not found: {rom_path}")
         return 1
-    
+
     rom_data = rom_path.read_bytes()
     print(f"Loaded ROM: {len(rom_data)} bytes ({len(rom_data) / 1024 / 1024:.2f} MB)")
-    
+
     # Detect header
     has_header, header_offset, title = detect_rom_header(rom_data)
     print(f"ROM title: '{title}'")
     print(f"Copier header: {'yes' if has_header else 'no'} (offset: {header_offset})")
-    
+
     # Detect mapping
     mapping = detect_rom_mapping(rom_data, header_offset)
     print(f"ROM mapping: {mapping}")
-    
+
     # Create output directory
     outdir = Path(args.outdir)
     outdir.mkdir(exist_ok=True)
-    
-    # Scan for compressed blocks
-    candidates = scan_rom_for_compressed_blocks(rom_data, header_offset, outdir)
+
+    # Scan for compressed blocks (use multi-pass if requested)
+    if args.multipass:
+        candidates = multipass_scan(rom_data, header_offset, outdir, fast=not args.thorough)
+    else:
+        candidates = scan_rom_for_compressed_blocks(rom_data, header_offset, outdir, fast=not args.thorough)
     
     # Save candidates.json
     output = {
