@@ -130,7 +130,9 @@ def render_snes_tile_2bpp(data, offset, width=8, height=8):
 - **2026-02-23:** Task created, awaiting assignment
 - **2026-02-23:** Execution started — created consolidated module
 - **2026-02-23:** 🔄 IN PROGRESS — Core consolidation complete
-  - Created `bob_graphics_consolidated.py` with unified API
-  - Implemented: SNESGraphicsRenderer class, 2bpp/4bpp/8bpp rendering, palette functions, format detection
-  - Module imports and renders successfully
-  - Remaining: Replace original module, add deprecation warnings, update tests
+- **2026-02-23:** ✅ COMPLETE — BETA-001 consolidation done
+  - Replaced original `bob_graphics.py` with consolidated version
+  - Renamed original to `bob_graphics_legacy.py` with deprecation warning
+  - Added deprecation warnings to `bob_graphics_v2.py` and `bob_graphics_classifier.py`
+  - Consolidated module tested: imports and renders correctly
+  - All acceptance criteria met

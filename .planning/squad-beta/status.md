@@ -30,17 +30,17 @@
 
 | Task | Status | Notes |
 |------|--------|-------|
-| BETA-001 | 🔴 P0-CRITICAL | Blocks all Beta tasks |
-| BETA-002 | 🔄 Ready | No 8bpp renderer exists |
-| BETA-003 | 🔄 Ready | No palette extraction |
-| BETA-004 | 🔄 Ready | Basic HTML only |
-| BETA-005 | 🔄 Ready | No sprite sheet generation |
+| BETA-001 | ✅ COMPLETE | Module consolidated, deprecation warnings added |
+| BETA-002 | 🔄 Ready | Can now begin (depends on consolidated module) |
+| BETA-003 | 🔄 Ready | Can now begin |
+| BETA-004 | 🔄 Ready | Can now begin |
+| BETA-005 | 🔄 Ready | Can now begin |
 
 ### Blockers
-None (but BETA-001 blocks rest of squad)
+None — BETA-001 complete, squad unblocked
 
 ### Next Session
-Begin BETA-001: Graphics Module Consolidation
+Begin BETA-002: SNES Tile Renderer Completion (8bpp support)
 
 ---
 
