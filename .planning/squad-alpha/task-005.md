@@ -131,3 +131,13 @@ def benchmark_scan(rom_path, iterations=5):
 ## Status Log
 
 - **2026-02-23:** Task created, awaiting assignment
+- **2026-02-23:** ✅ COMPLETE — Performance profiling infrastructure complete
+  - Created `benchmarks/benchmark_scan.py` — Full benchmark suite
+  - Benchmarks: entropy calculation, header detection, full ROM scan
+  - Statistics: mean, median, stdev, min, max
+  - Created `docs/PERFORMANCE.md` — Performance documentation
+  - Documented: baseline measurements, optimization techniques, targets
+  - Created `tests/test_benchmarks.py` with 11 tests (all passing)
+  - Baseline established: ~30-60s for 1MB scan (fast mode)
+  - Multi-pass scanner (ALPHA-003) already provides ~2x speedup
+  - All acceptance criteria met
