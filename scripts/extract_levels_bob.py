@@ -26,10 +26,42 @@ Source MAP file counts (Disk C/):
 - WORLDMAP: 4 files | SPACEMAP: 2 files | TOTAL: 82 files
 """
 
+import argparse
 import struct
 import json
 import os
 from pathlib import Path
+
+
+def parse_args():
+    parser = argparse.ArgumentParser(
+        description='Extract level data from Space Funky B.O.B. ROM',
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog='''
+Source: source/Disk D & E/BOBSNE4/EQUATES.H
+MAP files: source/Disk C/ (82 files across 8 directories)
+        '''
+    )
+    parser.add_argument(
+        '--rom', '-r',
+        type=str,
+        default=None,
+        help='ROM file path (default: ../rom/B.O.B._edit.smc)'
+    )
+    parser.add_argument(
+        '--output', '-o',
+        type=str,
+        default=None,
+        help='Output directory (default: ../data/levels)'
+    )
+    parser.add_argument(
+        '--worlds', '-w',
+        type=str,
+        default='all',
+        help='Comma-separated list of worlds to extract (default: all)'
+    )
+    return parser.parse_args()
+
 
 # Auto-detect paths relative to this script
 SCRIPT_DIR = Path(__file__).parent.parent
@@ -151,15 +183,24 @@ def verify_extraction(levels: dict):
 
 
 def main():
+    args = parse_args()
+    
+    # Resolve paths
+    rom_path = Path(args.rom) if args.rom else ROM_PATH
+    output_dir = Path(args.output) if args.output else OUTPUT_DIR
+    
     print("Space Funky B.O.B. Level Extractor")
     print("=" * 40)
+    print(f"ROM: {rom_path}")
+    print(f"Output: {output_dir}")
+    print(f"Worlds: {args.worlds}")
 
-    if not os.path.exists(ROM_PATH):
-        print(f"ERROR: ROM not found at {ROM_PATH}")
+    if not os.path.exists(rom_path):
+        print(f"ERROR: ROM not found at {rom_path}")
         return 1
 
-    levels = extract_all_levels(ROM_PATH)
-    save_levels(levels, OUTPUT_DIR)
+    levels = extract_all_levels(rom_path)
+    save_levels(levels, output_dir)
 
     if not verify_extraction(levels):
         print("WARNING: Verification failed!")

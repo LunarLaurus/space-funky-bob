@@ -17,11 +17,26 @@ Known tileset locations from source analysis:
 Source: editor/wiki.html, source/Disk D & E/BOBSNE4/EQUATES.H
 """
 
+import argparse
 import json
 import os
 from pathlib import Path
 from typing import List, Tuple
 from dataclasses import dataclass
+
+
+def parse_args():
+    parser = argparse.ArgumentParser(
+        description='Extract tileset data from Space Funky B.O.B. ROM'
+    )
+    parser.add_argument('--rom', '-r', type=str, default=None,
+                        help='ROM file path')
+    parser.add_argument('--output', '-o', type=str, default=None,
+                        help='Output directory')
+    parser.add_argument('--offsets', type=str, default=None,
+                        help='Comma-separated hex offsets to extract')
+    return parser.parse_args()
+
 
 # Auto-detect paths relative to this script
 SCRIPT_DIR = Path(__file__).parent.parent
@@ -283,23 +298,27 @@ def save_candidates_report(candidates: List[TilesetLocation], output_path: Path)
 
 
 def main():
-    import json
-
+    args = parse_args()
+    
+    # Resolve paths
+    rom_path = Path(args.rom) if args.rom else ROM_PATH
+    output_dir = Path(args.output) if args.output else OUTPUT_DIR
+    
     print("=" * 60)
     print("Space Funky B.O.B. Tileset Extractor")
     print("=" * 60)
 
-    if not os.path.exists(ROM_PATH):
-        print(f"ERROR: ROM not found at {ROM_PATH}")
+    if not os.path.exists(rom_path):
+        print(f"ERROR: ROM not found at {rom_path}")
         return 1
 
-    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    output_dir.mkdir(parents=True, exist_ok=True)
 
-    candidates = find_tileset_candidates(ROM_PATH)
+    candidates = find_tileset_candidates(rom_path)
 
     print(f"\nFound {len(candidates)} tileset candidates")
 
-    save_candidates_report(candidates, OUTPUT_DIR / "candidates_report.json")
+    save_candidates_report(candidates, output_dir / "candidates_report.json")
 
     print("\n--- Extracting known tilesets ---")
     for known in KNOWN_TILESETS:
@@ -307,7 +326,7 @@ def main():
         size = known["size"]
         name = known.get("name", f"known_{offset:06X}")
 
-        tiles = extract_tiles(ROM_PATH, offset, size // TILE_SIZE)
+        tiles = extract_tiles(rom_path, offset, size // TILE_SIZE)
 
         metadata = {
             "rom_offset": f"0x{offset:06X}",
@@ -316,8 +335,8 @@ def main():
             "source": "known_location",
         }
 
-        save_tileset_png(tiles, OUTPUT_DIR / f"tileset_{name}.png")
-        save_tileset_json(tiles, OUTPUT_DIR / f"tileset_{name}.json", metadata)
+        save_tileset_png(tiles, output_dir / f"tileset_{name}.png")
+        save_tileset_json(tiles, output_dir / f"tileset_{name}.json", metadata)
 
     print(
         f"\n--- Extracting auto-detected tilesets ({len(candidates[:10])} candidates) ---"
@@ -330,7 +349,7 @@ def main():
         print(f"  Reason: {candidate.reason}")
 
         tiles = extract_tiles(
-            ROM_PATH, candidate.rom_offset, min(candidate.num_tiles, 256)
+            rom_path, candidate.rom_offset, min(candidate.num_tiles, 256)
         )
 
         base_name = f"tileset_{candidate.rom_offset:06X}"
@@ -343,12 +362,12 @@ def main():
             "reason": candidate.reason,
         }
 
-        save_tileset_png(tiles, OUTPUT_DIR / f"{base_name}.png")
-        save_tileset_json(tiles, OUTPUT_DIR / f"{base_name}.json", metadata)
+        save_tileset_png(tiles, output_dir / f"{base_name}.png")
+        save_tileset_json(tiles, output_dir / f"{base_name}.json", metadata)
 
     print("\n" + "=" * 60)
     print("Extraction complete!")
-    print(f"Output directory: {OUTPUT_DIR}")
+    print(f"Output directory: {output_dir}")
 
     return 0
 
