@@ -124,3 +124,13 @@ def verify_checksum(rom_data):
 ## Status Log
 
 - **2026-02-23:** Task created, awaiting assignment
+- **2026-02-23:** ✅ COMPLETE — ROM injection safety implemented
+  - Added `create_backup()` — Timestamped backup creation
+  - Added `validate_injection()` — Bounds and size validation
+  - Added `verify_checksum()` — SNES checksum verification
+  - Added `verify_injection_area()` — Protected region detection
+  - Added `dry_run_inject()` — Simulation without modification
+  - CLI options: `--dry-run`, `--backup`, `--verify-checksum`
+  - Created `tests/test_injection_safety.py` with 19 tests (all passing)
+  - Test coverage: backup (2), validation (6), checksum (2), area (3), dry-run (4), integration (2)
+  - All acceptance criteria met
