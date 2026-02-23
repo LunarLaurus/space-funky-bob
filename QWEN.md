@@ -697,47 +697,60 @@ feature/rom-analysis-enhancement ───●──●──● (development)
 
 #### Ground Truth — Source Code Authority
 
-**Source:** `source/Disk C/*.MAP` (82 MAP files) + `source/Disk D & E/BOBSNE4/EQUATES.H`
+**Source:** `source/Disk C/*.MAP` (82 MAP files) + `source/Disk D & E/BOBSNE4/EQUATES.H` + `source/Disk D & E/BOBSNE3/INITLEVE.A`
 
-**Game Structure:**
-- **3 Actual Game Worlds:** Borg Factory, Bug Planet, Ancient Ruins
-- **8 Level Categories** (tileset/theme types): borg, bug, space, ancient, lava, ultra, bubble, world
-- **World Maps:** 3 screens (worldlevel, worldlevel2, worldlevel3)
+**Game Structure (VERIFIED FROM SOURCE):**
+- **3 Actual Game Worlds** (world 0, 1, 2) — defined in `maxmaps` table
+- **8 Level Categories** (tileset/theme types) — mixed WITHIN worlds, NOT separate worlds
+- **CRITICAL:** Lava, Ultra, Bubble levels exist WITHIN Worlds 1-2, NOT as separate worlds
+
+**World Composition (from `themapsequence1/2/3`):**
+| World | Levels | Tileset Types Used |
+|-------|--------|-------------------|
+| World 0 | 14 levels | borglevel (0), buglevel (1) |
+| World 1 | 19 levels | ancientlevel (4), borglevel2 (2), **lavalevel (6)** |
+| World 2 | 17 levels | ultralevel (8), **bubblelevel (9)**, borglevel3 (3) |
 
 **Level Categories (per EQUATES.H):**
 ```assembly
-borglevel     equ 0    ; World 1 - Borg Factory (ROM: 0xD4000)
-buglevel      equ 1    ; World 2 - Bug Planet (ROM: 0xE4000)
-ancientlevel  equ 4    ; World 3 - Ancient Ruins (ROM: 0xF4000)
-spacelevel    equ 3    ; Space levels (ROM: TBD)
-lavalevel     equ 6    ; Lava levels (ROM: TBD)
-ultralevel    equ 8    ; Ultra Force levels (ROM: TBD)
-bubblelevel   equ 9    ; Bubble Forest levels (ROM: TBD)
+borglevel     equ 0    ; Borg Factory tileset (World 0)
+buglevel      equ 1    ; Bug Planet tileset (World 0)
+spacelevel    equ 3    ; Space tileset (cut/unused)
+ancientlevel  equ 4    ; Ancient Ruins tileset (World 1)
+lavalevel     equ 6    ; Lava tileset (World 1) ← EXISTS IN WORLD 1
+ultralevel    equ 8    ; Ultra Force tileset (World 2) ← EXISTS IN WORLD 2
+bubblelevel   equ 9    ; Bubble Forest tileset (World 2) ← EXISTS IN WORLD 2
 worldlevel    equ 10   ; World map screens (1-3)
+borglevel2    equ 14   ; Borg variant (ladders/elevators)
+borglevel3    equ 15   ; Borg variant (World 2)
+borglevel4    equ 16   ; Borg variant (screen lifter)
 ```
 
 **Music Themes (per EQUATES.H):**
 ```assembly
-borgtheme     equ 3    ; World 1 theme
-bugtheme      equ 4    ; World 2 theme (also bubbletheme)
-anctheme      equ 5    ; World 3 theme (also lavatheme)
-ultratheme    equ 6    ; Ultra Force theme
+borgtheme     equ 3    ; World 0 theme
+bugtheme      equ 4    ; World 0/2 theme (Bug/Bubble share)
+anctheme      equ 5    ; World 1 theme (Ancient/Lava share)
+lavatheme     equ 5    ; Shares with Ancient
+ultratheme    equ 6    ; World 2 theme
+bubbletheme   equ 4    ; Shares with Bug
 ```
 
 **MAP File Counts (source/Disk C/):**
-| Directory | MAP Files | Category |
-|-----------|-----------|----------|
-| BORGMAPS | 29 | World 1 - Borg Factory |
-| BUGMAPS | 9 | World 2 - Bug Planet |
-| ANCMAPS | 16 | World 3 - Ancient Ruins |
-| LAVAMAPS | 6 | Lava (cut/unused?) |
-| JUNGLEMA | 5 | Bubble Forest (cut/unused?) |
-| ULTRAMPA | 11 | Ultra Force (cut/unused?) |
+| Directory | MAP Files | Used By |
+|-----------|-----------|---------|
+| BORGMAPS | 29 | All 3 worlds (Borg levels) |
+| BUGMAPS | 9 | World 0 (Bug levels) |
+| JUNGLEMA | 5 | World 1 (Ancient levels) |
+| LAVAMAPS | 6 | World 1 (Lava levels) ← |
+| ULTRAMPA | 11 | World 2 (Ultra levels) ← |
+| ANCMAPS | 16 | Ancient/boss maps |
 | WORLDMAP | 4 | World map screens |
-| SPACEMAP | 2 | Space (cut/unused?) |
-| **TOTAL** | **82** | **8 categories** |
+| SPACEMAP | 2 | Space levels (cut/unused) |
+| **TOTAL** | **82** | |
 
 **Note:** JSON files are working artifacts from analysis, NOT authoritative sources.
+See `docs/SOURCE_CODE_LEVEL_ANALYSIS.md` for complete source-verified architecture.
 
 #### bob_data Integration Summary
 
