@@ -1,0 +1,37 @@
+# Coverage configuration for B.O.B. ROM Analysis Toolkit
+
+[run]
+source = toolkit
+branch = True
+parallel = True
+omit =
+    toolkit/bob_graphics_legacy.py
+    toolkit/bob_graphics_test_suite.py
+    toolkit/USAGE.py
+
+[report]
+exclude_lines =
+    pragma: no cover
+    def __repr__
+    raise AssertionError
+    raise NotImplementedError
+    if __name__ == .__main__.:
+    # Don't complain about missing debug-only code
+    def __str__
+    # Don't complain if tests don't hit defensive assertion code
+    raise NotImplementedError
+    # Don't complain about non-runnable code
+    if __name__ == .__main__.:
+precision = 1
+show_missing = True
+skip_covered = True
+
+[html]
+directory = htmlcov
+title = B.O.B. Toolkit Coverage Report
+
+[xml]
+output = coverage.xml
+
+[json]
+output = coverage.json
