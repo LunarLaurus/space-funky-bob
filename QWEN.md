@@ -697,32 +697,45 @@ feature/rom-analysis-enhancement ───●──●──● (development)
 
 #### Ground Truth — Source Code Authority
 
-**Source:** `source/Disk C/*.MAP` (81 MAP files) + `source/Disk D & E/BOBSNE4/EQUATES.H`
+**Source:** `source/Disk C/*.MAP` (82 MAP files) + `source/Disk D & E/BOBSNE4/EQUATES.H`
+
+**Game Structure:**
+- **3 Actual Game Worlds:** Borg Factory, Bug Planet, Ancient Ruins
+- **8 Level Categories** (tileset/theme types): borg, bug, space, ancient, lava, ultra, bubble, world
+- **World Maps:** 3 screens (worldlevel, worldlevel2, worldlevel3)
 
 **Level Categories (per EQUATES.H):**
 ```assembly
-borglevel     equ 0    ; World 1 - Borg Factory
-buglevel      equ 1    ; World 2 - Bug Planet
-spacelevel    equ 3    ; World 8 - Space
-ancientlevel  equ 4    ; World 3 - Ancient Ruins
-lavalevel     equ 6    ; World 4 - Lava
-ultralevel    equ 8    ; World 5 - Ultra Force
-bubblelevel   equ 9    ; World 6 - Bubble Forest
-worldlevel    equ 10   ; World 7 - World Maps (1-3)
+borglevel     equ 0    ; World 1 - Borg Factory (ROM: 0xD4000)
+buglevel      equ 1    ; World 2 - Bug Planet (ROM: 0xE4000)
+ancientlevel  equ 4    ; World 3 - Ancient Ruins (ROM: 0xF4000)
+spacelevel    equ 3    ; Space levels (ROM: TBD)
+lavalevel     equ 6    ; Lava levels (ROM: TBD)
+ultralevel    equ 8    ; Ultra Force levels (ROM: TBD)
+bubblelevel   equ 9    ; Bubble Forest levels (ROM: TBD)
+worldlevel    equ 10   ; World map screens (1-3)
+```
+
+**Music Themes (per EQUATES.H):**
+```assembly
+borgtheme     equ 3    ; World 1 theme
+bugtheme      equ 4    ; World 2 theme (also bubbletheme)
+anctheme      equ 5    ; World 3 theme (also lavatheme)
+ultratheme    equ 6    ; Ultra Force theme
 ```
 
 **MAP File Counts (source/Disk C/):**
-| Directory | MAP Files | Type |
-|-----------|-----------|------|
-| BORGMAPS | 29 | Borg Factory |
-| BUGMAPS | 8 | Bug Planet |
-| ANCMAPS | 16 | Ancient Ruins |
-| LAVAMAPS | 6 | Lava |
-| JUNGLEMA | 5 | Bubble Forest |
-| ULTRAMPA | 11 | Ultra Force |
-| WORLDMAP | 4 | World Maps |
-| SPACEMAP | 2 | Space |
-| **TOTAL** | **81** | **8 categories** |
+| Directory | MAP Files | Category |
+|-----------|-----------|----------|
+| BORGMAPS | 29 | World 1 - Borg Factory |
+| BUGMAPS | 9 | World 2 - Bug Planet |
+| ANCMAPS | 16 | World 3 - Ancient Ruins |
+| LAVAMAPS | 6 | Lava (cut/unused?) |
+| JUNGLEMA | 5 | Bubble Forest (cut/unused?) |
+| ULTRAMPA | 11 | Ultra Force (cut/unused?) |
+| WORLDMAP | 4 | World map screens |
+| SPACEMAP | 2 | Space (cut/unused?) |
+| **TOTAL** | **82** | **8 categories** |
 
 **Note:** JSON files are working artifacts from analysis, NOT authoritative sources.
 
