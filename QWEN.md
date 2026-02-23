@@ -20,23 +20,42 @@
 3. **Repeat cycle** — Continue until stopped or critical blocker encountered
 4. **Commit regularly** — All work must be committed to git with descriptive messages
 5. **Update QWEN.md** — Keep session notes and task status current
+6. **Push after each task** — After completing each task, push to remote origin
+7. **Reload before next task** — After pushing, reload QWEN.md and directives before processing next task
+
+**Push Protocol:**
+```bash
+# After completing each task:
+git add <files>
+git commit -m "<task-id>: <description>"
+git push -u origin feature/rom-analysis-enhancement
+
+# Then reload:
+# - Re-read QWEN.md
+# - Re-read .planning/README.md
+# - Verify task status
+# - Proceed to next task
+```
 
 **Escalation Criteria (Consult Architect Only If):**
 - Critical blocker preventing all forward progress
 - Decision required that fundamentally changes project scope
 - External dependency unavailable (e.g., ROM file required for testing)
 - Security or legal concern identified
+- Push fails repeatedly (network/permission issues)
 
 **Default Behavior:**
 - If uncertain → Proceed with best judgment
-- If task complete → Create next task
+- If task complete → Commit, push, reload, create next task
 - If all tasks complete → Analyze codebase, create new tasks
 - If blocked on one task → Switch to another squad's tasks
+- After push → Reload QWEN.md before continuing
 
 **Reporting Cadence:**
 - Update QWEN.md session notes every 3-5 commits
 - Update task status files upon completion
 - Summarize progress at 25%, 50%, 75%, 100% completion
+- Push to remote after EVERY task completion
 
 ---
 
