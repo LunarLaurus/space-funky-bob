@@ -109,3 +109,14 @@ function filterRegions(type) {
 ## Status Log
 
 - **2026-02-23:** Task created, awaiting assignment
+- **2026-02-23:** ✅ COMPLETE — HTML ROM map enhancement complete
+  - Enhanced `bob_map.py` HTML visualization with:
+    - Interactive legend with filter buttons (All, Code, Compressed, Graphics, Data, Unknown)
+    - Search box for filtering by offset, type, or size
+    - Region count display
+    - Click-to-scroll between map and list views
+    - Hover tooltips with region details
+    - Responsive CSS design
+  - JavaScript functions: `filterRegions()`, `searchRegions()`, `matchesFilter()`, `matchesSearch()`
+  - Created `tests/test_html_visualization.py` with 12 tests (all passing)
+  - All acceptance criteria met
