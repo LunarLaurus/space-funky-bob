@@ -1,133 +1,49 @@
-# Task ALPHA-005: Performance Profiling & Optimization
+# Squad Alpha — Status Log
 
-**Squad:** Alpha (Core Analysis Engine)  
-**Priority:** P2 (Medium)  
-**Complexity:** Medium  
-**Estimated Effort:** 6-8 hours  
-**Status:** ⏳ Pending
+## Day 1 (2026-02-23) — Parallel Archeology Complete
 
----
+### Codebase Findings
 
-## Objective
+**LZ77 Decoder (`bob_lz.py`):**
+- ✅ Mature: 5 built-in tests + 8 pytest tests
+- Functions: `bob_lz_decompress()`, `bob_lz_decompress_exploratory()`
+- Format confirmed: 8-bit chunk header, 11-bit distance, 5-bit length+3
 
-Profile the core analysis pipeline to identify performance bottlenecks, then optimize hot paths to achieve 2x performance improvement on 1MB ROM scans.
+**LZ77 Encoder (`bob_lz_encode.py`):**
+- ⚠️ Has 6 built-in round-trip tests but no standalone test file
+- Functions: `bob_lz_encode()`, `bob_lz_encode_exhaustive()`
+- Already tests known ROM block (0x1AD34)
+- **Recommendation:** ALPHA-001 focus on edge cases, not basic validation
 
----
+**ROM Scanner (`bob_lz_scan.py`):**
+- ⚠️ Single-pass only (stride=16 default)
+- Entropy threshold: 6.0-8.0
+- **ALPHA-003 confirmed:** Multi-pass needed
 
-## Context
+**Region Mapper (`bob_map.py`):**
+- ✅ Functional with 48 opcode table
+- Opcode density analysis working
+- **ALPHA-005 opportunity:** Optimization potential
 
-Current performance baseline (from QWEN.md):
-- LZ scan (stride=16) on 1MB ROM: ~30-60 seconds
-- ROM mapping: ~5-10 seconds
-- Full pipeline: <2 minutes
+### Task Status
 
-Target performance:
-- LZ scan: <30 seconds
-- ROM mapping: <5 seconds
-- Full pipeline: <1 minute
+| Task | Status | Notes |
+|------|--------|-------|
+| ALPHA-001 | 🔄 Ready | Encoder has tests — expand edge cases |
+| ALPHA-002 | 🔄 Ready | No streaming API exists |
+| ALPHA-003 | 🔄 Ready | Single-pass confirmed |
+| ALPHA-004 | 🔄 Ready | Hardcoded thresholds need calibration |
+| ALPHA-005 | 🔄 Ready | No profiling/benchmarks exist |
 
-This task will use profiling tools to identify bottlenecks and apply targeted optimizations.
+### Blockers
+None
 
----
-
-## Acceptance Criteria
-
-- [ ] Baseline benchmarks: Measure current performance on reference ROM
-- [ ] Profiling report: Identify top 3 bottlenecks with cProfile
-- [ ] Optimization 1: Entropy calculation (likely candidate for vectorization)
-- [ ] Optimization 2: ROM I/O (reduce file reads)
-- [ ] Optimization 3: Opcode density calculation (optimize 65816 disassembly)
-- [ ] Benchmark suite: `benchmarks/benchmark_scan.py` for regression testing
-- [ ] Performance gain: 2x improvement over baseline
-- [ ] Documentation: `docs/PERFORMANCE.md` with optimization techniques
-
----
-
-## Technical Notes
-
-### Profiling Setup
-```python
-import cProfile
-import pstats
-
-def profile_scan():
-    profiler = cProfile.Profile()
-    profiler.enable()
-    
-    # Run full scan
-    from toolkit.bob_lz_scan import scan_rom
-    candidates = scan_rom(rom_data)
-    
-    profiler.disable()
-    stats = pstats.Stats(profiler)
-    stats.sort_stats('cumulative')
-    stats.print_stats(20)  # Top 20 functions
-```
-
-### Likely Optimizations
-
-1. **Entropy Calculation:**
-   - Use NumPy for vectorized histogram (if dependency allowed)
-   - Cache frequency calculations for overlapping windows
-   - Use integer arithmetic where possible
-
-2. **ROM I/O:**
-   - Memory-map ROM file instead of loading entirely
-   - Batch reads for sequential access patterns
-
-3. **Opcode Density:**
-   - Pre-compute opcode validity table
-   - Use bytearray for faster indexing
-   - Early exit when density already below threshold
-
-### Benchmark Suite
-```python
-# benchmarks/benchmark_scan.py
-import time
-
-def benchmark_scan(rom_path, iterations=5):
-    rom_data = open(rom_path, 'rb').read()
-    times = []
-    for _ in range(iterations):
-        start = time.time()
-        scan_rom(rom_data)
-        times.append(time.time() - start)
-    return {
-        'mean': sum(times) / len(times),
-        'min': min(times),
-        'max': max(times)
-    }
-```
+### Next Session
+Begin ALPHA-001: LZ77 Encoder Round-Trip Testing
 
 ---
 
-## Files to Modify
-
-- `toolkit/bob_lz_scan.py` — Optimize entropy calculation
-- `toolkit/bob_map.py` — Optimize opcode density
-- `benchmarks/benchmark_scan.py` — New benchmark suite
-- `docs/PERFORMANCE.md` — New documentation
-
----
-
-## Dependencies
-
-- **Blocks:** None
-- **Blocked by:** ALPHA-002, ALPHA-003 (optimize after features complete)
-
----
-
-## Test Plan
-
-1. Create `benchmarks/benchmark_scan.py`
-2. Run baseline benchmarks, record results
-3. Apply optimizations one at a time
-4. Verify correctness after each optimization (no regressions)
-5. Record final performance metrics
-6. Add performance regression test to CI
-
----
-
-## Status Log
-
-- **2026-02-23:** Task created, awaiting assignment
+**Lead:** TBD  
+**Members:** TBD  
+**Started:** 2026-02-23  
+**Target Complete:** 2026-03-05 (Day 10)
