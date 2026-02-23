@@ -637,12 +637,12 @@ feature/rom-analysis-enhancement ───●──●──● (development)
 | DELTA-003 | Delta | ✅ COMPLETE | 25 LZ77 edge case tests |
 | GAMMA-003 | Gamma | ✅ COMPLETE | Safety checks + 19 tests |
 
-**Commits This Session (24 total):**
+**Commits This Session (26 total):**
 | Hash | Message |
 |------|---------|
+| 32fab53 | safety: Add injection safety features |
+| d7ce59e | qwen: Update — 11/25 tasks (44%) |
 | af48d62 | GAMMA-003: ROM Injection Safety COMPLETE |
-| 4f97d1a | qwen: Update — 10/25 tasks (40%) |
-| 3ed7735 | GAMMA-002 + DELTA-003 COMPLETE |
 
 **Squad Status Summary:**
 | Squad | Tasks Complete | Next Task | Priority |
