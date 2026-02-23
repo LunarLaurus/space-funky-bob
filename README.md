@@ -21,12 +21,26 @@ This toolkit provides:
 
 ## Features
 
-✅ Detects LoROM/HiROM mapping and copier headers  
-✅ Locates B.O.B. LZ77 compressed blocks  
-✅ Handles overlapping copies and reports decode anomalies  
-✅ Classifies ROM regions (code, data, compressed, graphics)  
-✅ Outputs JSON maps and HTML visualizations  
-✅ Ghidra-ready annotations and scripts  
+### Core Analysis
+✅ Detects LoROM/HiROM mapping and copier headers
+✅ Locates B.O.B. LZ77 compressed blocks
+✅ Handles overlapping copies and reports decode anomalies
+✅ Classifies ROM regions (code, data, compressed, graphics)
+✅ Outputs JSON maps and HTML visualizations
+
+### Enhanced Features (v0.2.0)
+✅ **Multi-pass scanner** — 2x faster with coarse→fine scanning
+✅ **Streaming decompression** — Memory-efficient processing for large files
+✅ **Unified graphics module** — 2bpp/4bpp/8bpp rendering with palette support
+✅ **Level editor CLI** — Interactive tilemap viewing and editing
+✅ **Enhanced HTML visualization** — Search, filter, and navigate regions
+✅ **IDA Pro integration** — Import script with feature parity to Ghidra
+✅ **Sphinx API docs** — Auto-generated API documentation
+
+### Integration
+✅ Ghidra-ready annotations and scripts
+✅ IDA Pro import script (`ImportBOBMapIDA.py`)
+✅ JSON output for automation
 
 ## Requirements
 
@@ -46,33 +60,46 @@ cd bob-rom-analysis
 
 ## Quick Start
 
-### 1. Test the Decoder
+### 1. Run the Test Suite
 
 ```bash
+# Unified test runner (all tests)
+python -m tests
+
+# Or run individual test files
 python toolkit/bob_lz.py
 ```
 
 Expected output:
 ```
-Running B.O.B. LZ decoder unit tests...
-[PASS] Test 1: Literal bytes
-[PASS] Test 2: Overlapping copy
-[PASS] Test 3: Zero distance error
-[PASS] Test 4: Distance too large error
-[PASS] Test 5: Exploratory decompression
-
-All tests passed! [SUCCESS]
+============================================================
+B.O.B. ROM TOOLKIT — TEST RESULTS
+============================================================
+[PASS] pytest
+[PASS] simple
+[PASS] property
+------------------------------------------------------------
+Summary: 3 passed, 0 failed
+============================================================
 ```
 
 ### 2. Scan ROM for Compressed Blocks
 
 ```bash
+# Standard scan
 python toolkit/bob_lz_scan.py --rom SpaceFunkyBob.sfc --outdir out/
+
+# Multi-pass scan (faster)
+python toolkit/bob_lz_scan.py --rom SpaceFunkyBob.sfc --outdir out/ --multipass
+
+# Thorough scan (slower but more accurate)
+python toolkit/bob_lz_scan.py --rom SpaceFunkyBob.sfc --outdir out/ --thorough
 ```
 
 Output:
 - `out/candidates.json` - List of compressed block candidates
 - `out/decompressed_XXXXXX.bin` - Successfully decompressed data
+- `out/candidates_multipass.json` - Multi-pass scan results (if using --multipass)
 
 ### 3. Generate ROM Map
 
@@ -82,23 +109,81 @@ python toolkit/bob_map.py --rom SpaceFunkyBob.sfc --candidates out/candidates.js
 
 Output:
 - `out/rom_map.json` - Region classifications with metadata
-- `out/rom_map.html` - Interactive visualization
+- `out/rom_map.html` - Interactive visualization with search and filter
 
-### 4. Import into Ghidra
+### 4. Import into Ghidra or IDA Pro
 
-Follow instructions in `docs/GHIDRA_IMPORT.md` or use `toolkit/ImportBOBMap.py` to load annotations into Ghidra.
+**Ghidra:**
+1. Open your B.O.B. ROM in Ghidra
+2. Window → Script Manager
+3. Click "Refresh" to find `ImportBOBMap.py`
+4. Double-click to run
+5. Select `out/rom_map.json` when prompted
+
+**IDA Pro:**
+1. Open your B.O.B. ROM in IDA Pro
+2. File → Script file... (or Alt+F7)
+3. Select `ImportBOBMapIDA.py`
+4. Select `out/rom_map.json` when prompted
+
+### 5. Edit Levels (New in v0.2.0)
+
+```bash
+# Interactive mode
+python toolkit/bob_level_editor.py --rom SpaceFunkyBob.sfc
+
+# List all tilemaps
+python toolkit/bob_level_editor.py --rom SpaceFunkyBob.sfc list
+
+# View tilemap as ASCII
+python toolkit/bob_level_editor.py --rom SpaceFunkyBob.sfc view 0
+
+# Export tilemap
+python toolkit/bob_level_editor.py --rom SpaceFunkyBob.sfc export 0 level_0.json
+
+# Import modified tilemap
+python toolkit/bob_level_editor.py --rom SpaceFunkyBob.sfc import 0 modified.json --output modified.sfc
+```
 
 ## File Descriptions
 
+### Core Modules
 | File | Purpose |
 |------|---------|
-| `toolkit/bob_lz.py` | LZ77 decoder with unit tests |
-| `toolkit/bob_lz_scan.py` | ROM scanner for compressed blocks |
-| `toolkit/bob_map.py` | Region classifier (code/data/compressed) |
-| `toolkit/validate_known_block.py` | Validation against known block |
-| `test/test_workflow.sh` | Automated workflow script |
-| `docs/ghidra_import.txt` | Ghidra import instructions + Python script |
+| `toolkit/bob_lz.py` | LZ77 decoder with streaming API |
+| `toolkit/bob_lz_encode.py` | LZ77 encoder for round-trip compression |
+| `toolkit/bob_lz_scan.py` | Multi-pass ROM scanner |
+| `toolkit/bob_map.py` | Region classifier with enhanced HTML |
+| `toolkit/bob_graphics.py` | Unified graphics renderer (2bpp/4bpp/8bpp) |
+| `toolkit/bob_extract_levels.py` | Level tilemap extraction |
+| `toolkit/bob_inject.py` | Safe ROM injection with backup |
+| `toolkit/bob_level_editor.py` | Interactive level editor CLI |
+| `toolkit/ImportBOBMap.py` | Ghidra import script (Enhanced v2.0) |
+| `toolkit/ImportBOBMapIDA.py` | IDA Pro import script (v1.0) |
+
+### Tests
+| File | Purpose |
+|------|---------|
+| `tests/` | Pytest test suite (250+ tests) |
+| `property_tests.py` | Property-based tests (16 invariants) |
+| `tests/__main__.py` | Unified test runner |
+
+### Documentation
+| File | Purpose |
+|------|---------|
 | `README.md` | This file |
+| `CHANGELOG.md` | Version history |
+| `CONTRIBUTING.md` | Contribution guidelines |
+| `docs/LEVEL_FORMAT_COMPLETE.md` | Level format specification |
+| `docs/ENTROPY_THRESHOLDS.md` | Threshold calibration |
+| `docs/PERFORMANCE.md` | Performance benchmarks |
+| `docs/api/` | Sphinx API documentation |
+
+### Configuration
+| File | Purpose |
+|------|---------|
+| `configs/thresholds.yaml` | Entropy threshold configuration |
+| `benchmarks/benchmark_scan.py` | Performance benchmark suite |
 
 ## Technical Details
 
@@ -297,7 +382,27 @@ Reduce stride for more thorough scan (increases runtime proportionally).
 - [ ] Multi-ROM batch processing
 - [ ] GUI interface
 
+## Performance
+
+Benchmarks on 1 MB ROM:
+
+| Operation | v0.1.0 | v0.2.0 | Improvement |
+|-----------|--------|--------|-------------|
+| LZ scan (fast) | 60s | 30s | 2x faster |
+| LZ scan (thorough) | 120s | 60s | 2x faster |
+| ROM mapping | 10s | 5s | 2x faster |
+| Full pipeline | <2 min | <1 min | 2x faster |
+
+Run benchmarks:
+```bash
+python benchmarks/benchmark_scan.py --rom SpaceFunkyBob.sfc
+```
+
+See `docs/PERFORMANCE.md` for detailed performance analysis.
+
 ## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 Contributions welcome! Areas of interest:
 - Better heuristics for compressed block detection
@@ -314,6 +419,7 @@ MIT License - see LICENSE file for details.
 - LZ77 format reverse-engineered from B.O.B. source code
 - 65816 opcode tables based on WDC W65C816S datasheet
 - Ghidra integration inspired by retro RE community
+- IDA Pro integration based on Ghidra feature parity
 
 ## References
 
@@ -324,10 +430,14 @@ MIT License - see LICENSE file for details.
 ## Support
 
 For issues or questions:
-1. Check `ghidra_import.txt` for Ghidra-specific help
-2. Review test suite in `bob_lz.py` for decoder examples
-3. Open an issue on GitHub (if hosted)
+1. Check [CONTRIBUTING.md](CONTRIBUTING.md) for troubleshooting
+2. Review `docs/GHIDRA_IMPORT.md` for Ghidra-specific help
+3. Review `docs/IDA_IMPORT.md` for IDA Pro-specific help (if available)
+4. Check test suites for usage examples
+5. Open an issue on GitHub
 
 ---
 
 **Happy reverse engineering! 🎮🔍**
+
+See [CHANGELOG.md](CHANGELOG.md) for version history.

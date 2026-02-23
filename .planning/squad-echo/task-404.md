@@ -123,3 +123,16 @@ The existing documentation (`USER_GUIDE.md`, `README.md`, etc.) describes the v0
 ## Status Log
 
 - **2026-02-23:** Task created, awaiting assignment
+- **2026-02-23:** ✅ COMPLETE — User guide update complete
+  - Created `CHANGELOG.md` — Version history with v0.1.0 and v0.2.0
+  - Created `CONTRIBUTING.md` — Contribution guidelines
+  - Updated `README.md`:
+    - Added Enhanced Features section (v0.2.0)
+    - Updated Quick Start with unified test runner
+    - Added multi-pass scanner examples
+    - Added Ghidra and IDA Pro import instructions
+    - Added Level Editor CLI examples
+    - Updated File Descriptions with new modules
+    - Added Performance section with benchmarks
+    - Updated Contributing, Credits, Support sections
+  - All acceptance criteria met
