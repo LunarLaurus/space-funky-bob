@@ -112,3 +112,9 @@ def find_optimal_threshold(entropies, labels):
 ## Status Log
 
 - **2026-02-23:** Task created, awaiting assignment
+- **2026-02-23:** ✅ COMPLETE — Entropy threshold calibration complete
+  - Created `configs/thresholds.yaml` — Calibrated threshold configuration
+  - Created `docs/ENTROPY_THRESHOLDS.md` — Threshold methodology documentation
+  - Created `tests/test_entropy_thresholds.py` — 15 tests (all passing)
+  - Documented: entropy ranges by type, threshold derivation, validation results
+  - All acceptance criteria met

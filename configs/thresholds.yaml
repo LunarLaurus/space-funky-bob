@@ -1,0 +1,37 @@
+# Entropy Threshold Configuration for B.O.B. ROM Scanner
+# Generated: 2026-02-23
+# Methodology: See docs/ENTROPY_THRESHOLDS.md
+
+# Scanner thresholds
+scanner:
+  # Compressed block detection
+  compressed_min: 6.5      # Minimum entropy for compressed data
+  compressed_high: 7.2     # High confidence threshold
+  
+  # Graphics detection
+  graphics_max: 4.5        # Maximum entropy for graphics
+  graphics_min_variance: 8 # Minimum unique bytes for valid graphics
+  
+  # Code detection
+  code_max: 6.5            # Maximum entropy for code
+  opcode_density_min: 0.85 # Minimum valid opcode ratio
+  
+  # Data (default unclassified)
+  data_min: 4.5            # Minimum entropy for data
+  data_max: 7.2            # Maximum entropy for data
+
+# Multi-pass scanner settings
+multipass:
+  coarse_stride: 256       # Pass 1 stride (bytes)
+  fine_stride: 16          # Pass 2 stride (bytes)
+  entropy_threshold: 6.0   # Pass 1 entropy threshold
+  chunk_size: 64           # Entropy sample size (bytes)
+  merge_gap: 256           # Max gap to merge regions (bytes)
+
+# Test sizes for decompression attempts
+test_sizes:
+  - 0x800    # 2KB
+  - 0x1000   # 4KB
+  - 0x2000   # 8KB
+  - 0x4000   # 16KB
+  - 0x822    # Known B.O.B. block size
