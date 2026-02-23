@@ -686,18 +686,47 @@ feature/rom-analysis-enhancement ───●──●──● (development)
 
 ---
 
-### v0.3.0 Session — bob_data Integration
+### v0.3.0 Session — bob_data Integration & Refinement
 
-**Session Status:** 🔄 IN PROGRESS — Integration Complete, Awaiting Commit
+**Session Status:** 🔄 REFINEMENT PHASE — Source-Verified Planning Complete
 
 **Branch:** `feature/v0.3.0-enhancements`
 **Created:** 2026-02-23
 **Integration Date:** 2026-02-23
+**Commit:** `62d3e7a` — "integrate: bob_data (pickle branch) content for v0.3.0"
 
-#### bob_data ("pickle" branch) Integration Summary
+#### Ground Truth — Source Code Authority
 
-**Source:** Friend's development directory (`bob_data/`)
-**Integration Scope:** Web editor, extracted data, documentation, extraction scripts
+**Source:** `source/Disk C/*.MAP` (81 MAP files) + `source/Disk D & E/BOBSNE4/EQUATES.H`
+
+**Level Categories (per EQUATES.H):**
+```assembly
+borglevel     equ 0    ; World 1 - Borg Factory
+buglevel      equ 1    ; World 2 - Bug Planet
+spacelevel    equ 3    ; World 8 - Space
+ancientlevel  equ 4    ; World 3 - Ancient Ruins
+lavalevel     equ 6    ; World 4 - Lava
+ultralevel    equ 8    ; World 5 - Ultra Force
+bubblelevel   equ 9    ; World 6 - Bubble Forest
+worldlevel    equ 10   ; World 7 - World Maps (1-3)
+```
+
+**MAP File Counts (source/Disk C/):**
+| Directory | MAP Files | Type |
+|-----------|-----------|------|
+| BORGMAPS | 29 | Borg Factory |
+| BUGMAPS | 8 | Bug Planet |
+| ANCMAPS | 16 | Ancient Ruins |
+| LAVAMAPS | 6 | Lava |
+| JUNGLEMA | 5 | Bubble Forest |
+| ULTRAMPA | 11 | Ultra Force |
+| WORLDMAP | 4 | World Maps |
+| SPACEMAP | 2 | Space |
+| **TOTAL** | **81** | **8 categories** |
+
+**Note:** JSON files are working artifacts from analysis, NOT authoritative sources.
+
+#### bob_data Integration Summary
 
 **Files Integrated:**
 | Category | Files | Destination |
@@ -709,21 +738,11 @@ feature/rom-analysis-enhancement ───●──●──● (development)
 | Extraction Scripts | 2 files | `scripts/` (with path fixes) |
 | Documentation | 2 files | `docs/` (WIKI_INTEGRATION.md, LEVEL_EDITOR_GUIDE.md) |
 
-**Validation Results:**
-- ✅ Enemy database: 98% consistent (1 missing enemy ID 101, 1 name mismatch ID 38)
-- ✅ Tileset data: 100% consistent (12/12 offsets match)
-- ⚠️ Level data: wiki.html incomplete (only documents Worlds 1-3 of 8)
-- ✅ Editor code: Byte-for-byte identical (no merge needed)
-
-**Critical Intelligence Files:**
-- `editor/wiki.html` (897 lines) — Complete ROM specification, enemy database, tile reference
-- `editor/WIKI.md` (293 lines) — Condensed wiki
-- `editor/CORRELATION_MAP.md` (~200 lines) — Architecture documentation
-
-**Skipped (per Architect directive):**
-- `branch-001-lz77/` — Empty
-- `branch-002-level-pointers/` — Older revision
-- `branch-003-rom-export/` — Older revision
+**Validation vs Source:**
+- ⚠️ "85+ levels" claim — **INCORRECT** (81 MAP files in source)
+- ⚠️ wiki.html Worlds 4-8 — Missing (source has all 8 categories)
+- ✅ Enemy ID 101 — Present in source (FLOWER.ASP in BOBSNE1/)
+- ⚠️ Enemy ID 38 name — Verify against BOBSNE2/ assembly
 
 **Sub-Agent Analysis Completed:**
 - INTEG-001: Module comparison (toolkit vs bob_data)
@@ -732,10 +751,47 @@ feature/rom-analysis-enhancement ───●──●──● (development)
 - INTEG-004: Tileset validation
 - INTEG-005: API endpoint verification
 
-**Recommended Follow-up:**
-1. Update wiki.html to include Worlds 4-8
-2. Add API endpoints section to wiki.html
-3. Reconcile enemy ID 101 (Ancient Flower) and ID 38 name mismatch
+---
+
+### v0.3.0 Session — Refinement Plan (Source-Verified)
+
+**Deployment:** Multi-Squad Pattern (per `.planning/README.md`)
+
+#### Squad Echo 🟣 — Documentation Refinement (P0)
+
+| Task | Objective | Source Reference |
+|------|-----------|------------------|
+| `ECHO-001` | Fix "85+" claim → "81 levels from source" | `source/Disk C/**/*.MAP` |
+| `ECHO-002` | Add Worlds 4-8 to wiki.html | `source/Disk C/{LAVAMAPS,JUNGLEMA,ULTRAMPA,SPACEMAP}/` |
+| `ECHO-003` | Add clarification: JSON = working artifacts | QWEN.md note |
+| `ECHO-004` | Create `docs/SOURCE_REFERENCE.md` | Authoritative level count |
+
+#### Squad Alpha 🔵 — Enemy Verification (P0)
+
+| Task | Objective | Source Reference |
+|------|-----------|------------------|
+| `ALPHA-001` | Verify ID 38 name ("Backarm" vs "Arm Boss") | `source/Disk D & E/BOBSNE2/*.ASP` |
+| `ALPHA-002` | Catalog enemy ASP files | `source/Disk D & E/BOBSNE1/*BOSS.ASP` |
+
+#### Squad Beta 🟢 — Script Enhancements (P1)
+
+| Task | Objective | Notes |
+|------|-----------|-------|
+| `BETA-001` | Add source-based comments to scripts | Reference EQUATES.H |
+| `BETA-002` | Add CLI arguments to extraction scripts | `--worlds`, `--rom`, `--output` |
+
+#### Sub-Agent Delegation Pattern
+
+```
+Task → general-purpose agent → Analysis report → Integration
+```
+
+**Next Actions:**
+1. Deploy sub-agent for `ECHO-001` (wiki.html corrections)
+2. Deploy sub-agent for `ALPHA-001` (enemy name verification)
+3. Commit after each task complete
+4. Push to origin after each commit
+5. Reload QWEN.md before next task
 
 ---
 
