@@ -29,7 +29,7 @@
 
 | Task | Status | Notes |
 |------|--------|-------|
-| ALPHA-001 | 🔄 Ready | Encoder has tests — expand edge cases |
+| ALPHA-001 | ✅ COMPLETE | 32/32 tests passing |
 | ALPHA-002 | 🔄 Ready | No streaming API exists |
 | ALPHA-003 | 🔄 Ready | Single-pass confirmed |
 | ALPHA-004 | 🔄 Ready | Hardcoded thresholds need calibration |
@@ -39,7 +39,7 @@
 None
 
 ### Next Session
-Begin ALPHA-001: LZ77 Encoder Round-Trip Testing
+Begin ALPHA-002 or ALPHA-003
 
 ---
 
