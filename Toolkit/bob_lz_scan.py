@@ -197,9 +197,15 @@ def looks_like_compressed(data):
     return 2.0 < entropy < 8.0
 
 
-def scan_rom_for_compressed_blocks(rom_data, header_offset, outdir):
+def scan_rom_for_compressed_blocks(rom_data, header_offset, outdir, fast=True):
     """
-    Scan ROM for compressed blocks using heuristics.
+    Scan ROM for compressed blocks using fast heuristics.
+    
+    Args:
+        rom_data: full ROM data
+        header_offset: ROM header offset (0 or 512)
+        outdir: output directory for candidates
+        fast: if True, use larger stride and skip encoder verification
     
     Returns:
         list: candidates with metadata
@@ -207,71 +213,94 @@ def scan_rom_for_compressed_blocks(rom_data, header_offset, outdir):
     rom = rom_data[header_offset:]
     candidates = []
     
-    # Test various decompressed sizes (common sizes for SNES graphics)
+    # Core test sizes (most common for SNES graphics)
     test_sizes = [
-        0x1000,  # 4KB - common for tile data
+        0x800,   # 2KB - common for small blocks
+        0x1000,  # 4KB - very common
         0x2000,  # 8KB
         0x4000,  # 16KB
-        0x8000,  # 32KB
-        0x800,   # 2KB
-        0x400,   # 1KB
+        0x822,   # Known block size from documentation
     ]
     
-    print(f"Scanning ROM of size {len(rom)} bytes...")
+    # Import encoder for verification (optional)
+    try:
+        from bob_lz_encode import bob_lz_encode
+        has_encoder = True
+    except ImportError:
+        has_encoder = False
     
-    # Scan with stride (every 16 bytes to balance speed vs coverage)
-    stride = 4
+    # Stride: 64 bytes for fast mode (covers most blocks), 16 for thorough
+    stride = 64 if fast else 16
+    
+    print(f"Scanning ROM of size {len(rom)} bytes (stride={stride})...")
+    
     for offset in range(0, len(rom) - 16, stride):
-        if offset % 0x10000 == 0:
-            print(f"Progress: {offset / len(rom) * 100:.1f}%")
+        if offset % 0x20000 == 0:
+            progress = offset / len(rom) * 100
+            print(f"Progress: {progress:.1f}% (found {len(candidates)})")
         
-        # Quick filter: check if this looks like it could be compressed data
+        # Pre-filter: check if this region has compressed-like entropy
         sample = rom[offset:offset + 64]
         if not looks_like_compressed(sample):
             continue
         
         # Try decompressing with various sizes
         for dec_size in test_sizes:
+            if offset + 10 >= len(rom):
+                continue
+            
             try:
                 decompressed, consumed = bob_lz_decompress(rom[offset:], dec_size)
                 
-                # Check if decompression was successful and plausible
-                if consumed > 0 and consumed < dec_size * 2:  # Reasonable compression ratio
-                    dec_entropy = calculate_entropy(decompressed)
-                    comp_entropy = calculate_entropy(rom[offset:offset + consumed])
+                # Must consume some input and achieve compression
+                if consumed < 3 or consumed >= dec_size * 0.85:
+                    continue
+                
+                # Calculate entropies
+                comp_entropy = calculate_entropy(rom[offset:offset + consumed])
+                dec_entropy = calculate_entropy(decompressed)
+                
+                # Quick acceptance: compressed data should have higher entropy than result
+                if comp_entropy < 2.0:
+                    continue
+                
+                # Encoder verification if available and result looks promising
+                verified = False
+                if has_encoder and dec_entropy > 1.0:
+                    try:
+                        re_encoded = bob_lz_encode(decompressed)
+                        re_decoded, _ = bob_lz_decompress(re_encoded, dec_size)
+                        verified = (re_decoded == decompressed)
+                    except Exception:
+                        pass
+                
+                # Acceptance: verified OR entropy drop with reasonable output
+                if verified or (dec_entropy < comp_entropy and dec_entropy > 1.0):
+                    # Check for duplicates
+                    if any(c["offset_int"] == offset + header_offset for c in candidates):
+                        continue
                     
-                    # Decompressed should have lower entropy than compressed
-                    entropy_drop = comp_entropy - dec_entropy
+                    candidate = {
+                        "offset": hex(offset + header_offset),
+                        "offset_int": offset + header_offset,
+                        "compressed_size": consumed,
+                        "decompressed_size": dec_size,
+                        "success": True,
+                        "entropy_compressed": round(comp_entropy, 2),
+                        "entropy_decompressed": round(dec_entropy, 2),
+                        "looks_like_tiles": looks_like_tile_data(decompressed),
+                        "encoder_verified": verified,
+                    }
                     
-                    is_tile_data = looks_like_tile_data(decompressed)
+                    # Save decompressed data
+                    outfile = outdir / f"decompressed_{offset + header_offset:06X}.bin"
+                    outfile.write_bytes(decompressed[:dec_size])
+                    candidate["output_file"] = str(outfile.name)
                     
-                    # Accept if entropy dropped OR looks like reasonable data
-                    # Low entropy (<1.0) typically indicates empty/filler data, not real compressed blocks
-                    # For valid decompression with reasonable output, accept even without entropy drop
-                    if (entropy_drop > 0.1) or (is_tile_data and dec_entropy > 1.0) or (consumed > 50 and dec_entropy > 1.5):
-                        candidate = {
-                            "offset": hex(offset + header_offset),
-                            "offset_int": offset + header_offset,
-                            "compressed_size": consumed,
-                            "decompressed_size": dec_size,
-                            "success": True,
-                            "entropy_compressed": round(comp_entropy, 2),
-                            "entropy_decompressed": round(dec_entropy, 2),
-                            "looks_like_tiles": is_tile_data,
-                            "reason": "successful decompression with entropy drop" if entropy_drop > 0.5 else "matches tile data pattern"
-                        }
-                        
-                        # Save decompressed data
-                        outfile = outdir / f"decompressed_{offset + header_offset:06X}.bin"
-                        outfile.write_bytes(decompressed)
-                        candidate["output_file"] = str(outfile.name)
-                        
-                        candidates.append(candidate)
-                        
-                        # Don't test other sizes for this offset
-                        break
-            except ValueError:
-                # Decompression failed, try next size
+                    candidates.append(candidate)
+                    break  # Found valid, don't try other sizes
+                    
+            except (ValueError, IndexError):
                 continue
     
     print(f"\nFound {len(candidates)} candidate compressed blocks")
