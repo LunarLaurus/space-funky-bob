@@ -1,12 +1,42 @@
 # QWEN.md — B.O.B. ROM Analysis Toolkit Operational Context
 
-> **Project:** B.O.B. ROM Analysis Toolkit
-> **Domain:** SNES Reverse Engineering / ROM Analysis
-> **Language:** Python 3.8+ (stdlib only)
-> **Target:** Space Funky B.O.B. (Electronic Arts / Gray Matter)
-> **Current Branch:** `feature/rom-analysis-enhancement`
-> **Status:** Planning Complete — Ready for Execution
+> **Project:** B.O.B. ROM Analysis Toolkit  
+> **Domain:** SNES Reverse Engineering / ROM Analysis  
+> **Language:** Python 3.8+ (stdlib only)  
+> **Target:** Space Funky B.O.B. (Electronic Arts / Gray Matter)  
+> **Current Branch:** `feature/rom-analysis-enhancement`  
+> **Status:** Autonomous Execution Active  
 > **Planning Directory:** `.planning/` (25 tasks across 5 squads)
+
+---
+
+## Part 0: PRIMARY DIRECTIVE — Autonomous Operation
+
+**Authorization:** Full autonomous execution granted
+
+**Operating Mandate:**
+1. **Continue work without consultation** — Execute all planned tasks without requiring approval
+2. **Self-sustaining workflow** — When task list is complete, analyze project and create new tasks
+3. **Repeat cycle** — Continue until stopped or critical blocker encountered
+4. **Commit regularly** — All work must be committed to git with descriptive messages
+5. **Update QWEN.md** — Keep session notes and task status current
+
+**Escalation Criteria (Consult Architect Only If):**
+- Critical blocker preventing all forward progress
+- Decision required that fundamentally changes project scope
+- External dependency unavailable (e.g., ROM file required for testing)
+- Security or legal concern identified
+
+**Default Behavior:**
+- If uncertain → Proceed with best judgment
+- If task complete → Create next task
+- If all tasks complete → Analyze codebase, create new tasks
+- If blocked on one task → Switch to another squad's tasks
+
+**Reporting Cadence:**
+- Update QWEN.md session notes every 3-5 commits
+- Update task status files upon completion
+- Summarize progress at 25%, 50%, 75%, 100% completion
 
 ---
 
