@@ -30,17 +30,17 @@
 
 | Task | Status | Notes |
 |------|--------|-------|
-| GAMMA-001 | 🔄 Ready | Partial docs exist |
-| GAMMA-002 | 🔄 Ready | No validation tests |
-| GAMMA-003 | 🔄 Ready | Minimal safety |
-| GAMMA-004 | 🔄 Ready | No CLI editor |
-| GAMMA-005 | 🔄 Ready | No emulator integration |
+| GAMMA-001 | ✅ COMPLETE | Level format spec complete |
+| GAMMA-002 | 🔄 Ready | Can now begin (validation tests) |
+| GAMMA-003 | 🔄 Ready | Can now begin (safety checks) |
+| GAMMA-004 | 🔄 Ready | Can now begin (CLI editor) |
+| GAMMA-005 | 🔄 Ready | Can now begin (emulator testing) |
 
 ### Blockers
-None
+None — GAMMA-001 complete, squad unblocked
 
 ### Next Session
-Begin GAMMA-001: Level Format Documentation (source disk analysis)
+Begin GAMMA-002: Tilemap Extraction Validation
 
 ---
 
