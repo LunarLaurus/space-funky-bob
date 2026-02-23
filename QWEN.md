@@ -751,6 +751,10 @@ worldlevel    equ 10   ; World 7 - World Maps (1-3)
 - INTEG-004: Tileset validation
 - INTEG-005: API endpoint verification
 
+**Refinement Tasks Complete:**
+- ✅ ECHO-001: wiki.html level counts fixed (81 levels from source)
+- ✅ ALPHA-001: Enemy ID 38 verified — "Backarm Emerge" (source: BORG.A line 37)
+
 ---
 
 ### v0.3.0 Session — Refinement Plan (Source-Verified)
