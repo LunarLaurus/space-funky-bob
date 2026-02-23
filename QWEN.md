@@ -756,11 +756,22 @@ worldlevel    equ 10   ; World 7 - World Maps (1-3)
 - ✅ ECHO-004: docs/SOURCE_REFERENCE.md created (authoritative reference)
 - ✅ ALPHA-001: Enemy ID 38 verified — "Backarm Emerge" (source: BORG.A line 37)
 - ✅ BETA-001: Extraction scripts enhanced with EQUATES.H references
+- ✅ BETA-002: CLI arguments added to extraction scripts
 
 **Refinement Tasks Pending:**
 - ⏳ ECHO-002: Add Worlds 4-8 full tables to wiki.html (blocked by .gitignore)
 - ⏳ ECHO-003: Add JSON clarification note to wiki.html
-- ⏳ BETA-002: Add CLI arguments to extraction scripts
+
+**Commit Log (v0.3.0 Refinement):**
+| # | Commit | Message |
+|---|--------|---------|
+| 1 | `62d3e7a` | integrate: bob_data (pickle branch) content |
+| 2 | `05ecc01` | refine: Update QWEN.md with source-verified ground truth |
+| 3 | `c2cae59` | refine: Enemy ID 38 verified from source |
+| 4 | `09658e6` | docs: Create SOURCE_REFERENCE.md |
+| 5 | `c55cc2d` | refine: Add source references to extraction scripts |
+| 6 | `544526b` | qwen: Update refinement progress |
+| 7 | `2f7ec7c` | refine: Add CLI arguments to extraction scripts |
 
 ---
 
