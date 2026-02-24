@@ -122,9 +122,9 @@
             window.API.exportLevel(data)
                 .then(result => {
                     if (result.success) {
-                        Logger.log('Level saved successfully');
+                        Logger.info('Toolbar', 'Level saved successfully');
                     } else {
-                        Logger.error('Save failed:', result.error);
+                        Logger.error('Toolbar', 'Save failed: ' + result.error);
                     }
                 });
         }

@@ -107,7 +107,15 @@ const API = (function() {
         getAllTilesets: function() {
             return request('GET', '/tilesets');
         },
-        
+
+        /**
+         * Get all boss battles from ROM
+         * @returns {Promise<Object>} Boss data with metadata
+         */
+        getBosses: function() {
+            return request('GET', '/bosses');
+        },
+
         /**
          * Export level data back to ROM
          * @param {Object} levelData - Level data to export

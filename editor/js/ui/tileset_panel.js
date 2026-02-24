@@ -167,7 +167,40 @@
     function getAllTilesets() {
         return TILESETS;
     }
-    
+
+    /**
+     * Load all tilesets from ROM
+     */
+    async function loadAllTilesets() {
+        Logger.info('TilesetPanel', 'Scanning ROM for tilesets...');
+        
+        if (window.API) {
+            try {
+                const data = await window.API.getAllTilesets();
+                Logger.info('TilesetPanel', 'Found ' + (data.tilesets?.length || 0) + ' tilesets');
+                
+                // Update tileset list
+                TILESETS.length = 0;
+                if (data.tilesets) {
+                    data.tilesets.forEach(ts => {
+                        TILESETS.push({
+                            id: ts.id,
+                            name: ts.name,
+                            offset: ts.rom_offset
+                        });
+                    });
+                }
+                
+                // Re-render tile grid with first tileset
+                if (TILESETS.length > 0) {
+                    await loadTileset(TILESETS[0].id);
+                }
+            } catch (error) {
+                Logger.error('TilesetPanel', 'Failed to load tilesets: ' + error.message);
+            }
+        }
+    }
+
     // Export to window
     window.TilesetPanel = {
         initTilesetPanel,
@@ -176,7 +209,11 @@
         selectTile,
         getCurrentTileset,
         getSelectedTile,
-        getAllTilesets
+        getAllTilesets,
+        loadAllTilesets
     };
-    
+
+    // Export loadAllTilesets globally for onclick handler
+    window.loadAllTilesets = loadAllTilesets;
+
 })();
