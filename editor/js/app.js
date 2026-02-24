@@ -83,7 +83,7 @@
      */
     function initEventHandlers() {
         if (window.CanvasEvents) {
-            window.CanvasEvents.initCanvasEvents('editor-canvas');
+            window.CanvasEvents.initCanvasEvents('levelCanvas');
             Logger.info('App', 'Canvas events initialized');
         }
 
@@ -111,7 +111,7 @@
 
     function initFeatures() {
         if (window.PasswordGenerator) {
-            window.PasswordGenerator.initPasswordGenerator('password-feature');
+            window.PasswordGenerator.initPasswordGenerator('password-generator');
             Logger.info('App', 'Password generator initialized');
         }
 

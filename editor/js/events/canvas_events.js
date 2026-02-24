@@ -20,6 +20,10 @@
     function initCanvasEvents(canvasId) {
         canvas = document.getElementById(canvasId);
         if (!canvas) {
+            // Try fallback ID
+            canvas = document.getElementById('levelCanvas');
+        }
+        if (!canvas) {
             console.warn('Canvas not found:', canvasId);
             return;
         }
