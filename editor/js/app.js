@@ -20,17 +20,17 @@
      * Initialize editor application
      */
     async function initEditor() {
-        Logger.log('Initializing B.O.B. Level Editor...');
+        Logger.info('App', 'Initializing B.O.B. Level Editor...');
 
         // Initialize state management
         if (window.AppState) {
-            Logger.log('State management initialized');
+            Logger.info('App', 'State management initialized');
         }
 
         // Initialize level data
         if (window.LevelData) {
             window.LevelData.initLevel(80, 80);
-            Logger.log('Level data initialized');
+            Logger.info('App', 'Level data initialized');
         }
 
         // Initialize UI modules
@@ -50,7 +50,7 @@
         // Load default level
         await loadDefaultLevel();
 
-        Logger.log('Editor initialization complete');
+        Logger.info('App', 'Editor initialization complete');
     }
     
     /**
@@ -59,22 +59,22 @@
     async function initUIModules() {
         if (window.Toolbar) {
             window.Toolbar.initToolbar();
-            Logger.log('Toolbar initialized');
+            Logger.info('App', 'Toolbar initialized');
         }
-        
+
         if (window.Minimap) {
-            window.Minimap.initMinimap('minimap-canvas');
-            Logger.log('Minimap initialized');
+            window.Minimap.initMinimap('minimap');
+            Logger.info('App', 'Minimap initialized');
         }
-        
+
         if (window.TilesetPanel) {
-            await window.TilesetPanel.initTilesetPanel('tileset-panel');
-            Logger.log('Tileset panel initialized');
+            await window.TilesetPanel.initTilesetPanel('tileset');
+            Logger.info('App', 'Tileset panel initialized');
         }
-        
+
         if (window.BossViewer) {
             await window.BossViewer.initBossViewer('boss-viewer');
-            Logger.log('Boss viewer initialized');
+            Logger.info('App', 'Boss viewer initialized');
         }
     }
     
@@ -84,19 +84,19 @@
     function initEventHandlers() {
         if (window.CanvasEvents) {
             window.CanvasEvents.initCanvasEvents('editor-canvas');
-            Logger.log('Canvas events initialized');
+            Logger.info('App', 'Canvas events initialized');
         }
-        
+
         if (window.KeyboardEvents) {
             window.KeyboardEvents.initKeyboardEvents();
-            Logger.log('Keyboard events initialized');
+            Logger.info('App', 'Keyboard events initialized');
         }
-        
+
         // State change listener
         window.addEventListener('statechange', (e) => {
-            Logger.debug('State changed:', e.detail);
+            Logger.debug('App', 'State changed: ' + JSON.stringify(e.detail));
         });
-        
+
         // Level change listener
         window.addEventListener('levelchange', () => {
             if (window.Minimap) window.Minimap.renderMinimap();
@@ -108,37 +108,28 @@
             }
         });
     }
-    
-    /**
-     * Initialize features
-     */
+
     function initFeatures() {
         if (window.PasswordGenerator) {
             window.PasswordGenerator.initPasswordGenerator('password-feature');
-            Logger.log('Password generator initialized');
+            Logger.info('App', 'Password generator initialized');
         }
-        
+
         if (window.LevelSequenceViewer) {
             window.LevelSequenceViewer.initLevelSequenceViewer('sequence-viewer');
-            Logger.log('Level sequence viewer initialized');
+            Logger.info('App', 'Level sequence viewer initialized');
         }
     }
     
-    /**
-     * Initialize feature navigation tabs
-     */
     function initFeatureNavigation() {
         document.querySelectorAll('.nav-tab').forEach(tab => {
             tab.addEventListener('click', () => {
                 showFeature(tab.dataset.feature);
             });
         });
-        Logger.log('Feature navigation initialized');
+        Logger.info('App', 'Feature navigation initialized');
     }
 
-    /**
-     * Show/hide feature sections
-     */
     function showFeature(feature) {
         // Hide all features
         document.querySelectorAll('.feature-section').forEach(el => {
@@ -155,7 +146,7 @@
         if (section && tab) {
             section.style.display = 'block';
             tab.classList.add('active');
-            Logger.log('Feature switched:', feature);
+            Logger.info('App', 'Feature switched: ' + feature);
 
             // Initialize feature if needed
             if (feature === 'bosses' && window.BossViewer) {
@@ -202,7 +193,7 @@
         a.click();
         URL.revokeObjectURL(url);
 
-        Logger.log('Level exported:', data.map_number);
+        Logger.info('App', 'Level exported: ' + data.map_number);
     }
 
     // Export to window
