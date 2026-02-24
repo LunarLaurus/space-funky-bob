@@ -84,7 +84,7 @@ class LevelHandler:
             
             # Load level names from data files if available
             for map_num in sequence:
-                level_file = os.path.join(self.data_dir, 'maps', f'map_{map_num:03d}.json')
+                level_file = os.path.join(self.data_dir, 'levels', f'map_{map_num:03d}.json')
                 if os.path.exists(level_file):
                     with open(level_file, 'r') as f:
                         level_data = json.load(f)
@@ -119,9 +119,9 @@ class LevelHandler:
             return self._level_cache[level_name]
         
         # Try to load from file
-        level_file = os.path.join(self.data_dir, 'maps', f'{level_name}.json')
+        level_file = os.path.join(self.data_dir, 'levels', f'{level_name}.json')
         if not level_file.endswith('.json'):
-            level_file = os.path.join(self.data_dir, 'maps', f'{level_name}.json')
+            level_file = os.path.join(self.data_dir, 'levels', f'{level_name}.json')
         
         if os.path.exists(level_file):
             with open(level_file, 'r') as f:
@@ -144,7 +144,7 @@ class LevelHandler:
         # Find which world contains this map
         for world_id, sequence in WORLD_SEQUENCES.items():
             if map_num in sequence:
-                level_file = os.path.join(self.data_dir, 'maps', f'map_{map_num:03d}.json')
+                level_file = os.path.join(self.data_dir, 'levels', f'map_{map_num:03d}.json')
                 if os.path.exists(level_file):
                     with open(level_file, 'r') as f:
                         return json.load(f)

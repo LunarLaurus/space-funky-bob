@@ -34,15 +34,15 @@
         });
         
         // Action buttons
-        document.getElementById('btn-undo')?.addEventListener('click', undo);
-        document.getElementById('btn-redo')?.addEventListener('click', redo);
-        document.getElementById('btn-save')?.addEventListener('click', saveLevel);
-        document.getElementById('btn-export')?.addEventListener('click', exportLevel);
-        document.getElementById('btn-clear')?.addEventListener('click', clearLevel);
-        
+        document.getElementById('btnUndo')?.addEventListener('click', undo);
+        document.getElementById('btnRedo')?.addEventListener('click', redo);
+        document.getElementById('btnSave')?.addEventListener('click', saveLevel);
+        document.getElementById('btnExport')?.addEventListener('click', exportLevel);
+        document.getElementById('btnClear')?.addEventListener('click', clearLevel);
+
         // Toggle buttons
-        document.getElementById('btn-grid')?.addEventListener('click', toggleGrid);
-        document.getElementById('btn-snap')?.addEventListener('click', toggleSnap);
+        document.getElementById('btnGrid')?.addEventListener('click', toggleGrid);
+        document.getElementById('btnSnap')?.addEventListener('click', toggleSnap);
         
         updateToolbarUI();
     }

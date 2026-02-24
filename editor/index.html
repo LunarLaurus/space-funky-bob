@@ -144,7 +144,7 @@
                     <button id="btnAudio" title="Play Audio">Audio</button>
                 </div>
                 <div class="toolbar-group">
-                    <button id="btnDocs" title="Documentation" onclick="window.open('/wiki.html', '_blank')">Docs</button>
+                    <button id="btnDocs" title="Documentation">Docs</button>
                 </div>
             </div>
             
@@ -308,53 +308,10 @@
     </div>
     
     <script>
+    // Docs button - open wiki.html in new tab
     document.getElementById('btnDocs').onclick = function() {
-        document.getElementById('docsModal').style.display = 'block';
-        const content = document.getElementById('wikiContent');
-        if (content.innerHTML.includes('Loading')) {
-            fetch('/WIKI.md')
-                .then(r => r.text())
-                .then(md => {
-                    content.innerHTML = convertMarkdown(md);
-                })
-                .catch(e => {
-                    content.innerHTML = '<div style="color:red;">Failed to load wiki: ' + e.message + '</div>';
-                });
-        }
+        window.open('wiki.html', '_blank');
     };
-    
-    function convertMarkdown(md) {
-        let html = md
-            .replace(/^### (.+)$/gm, '<h3 style="color:var(--accent);margin-top:20px;">$1</h3>')
-            .replace(/^## (.+)$/gm, '<h2 style="color:var(--accent);margin-top:30px;border-bottom:1px solid var(--accent);">$1</h2>')
-            .replace(/^# (.+)$/gm, '<h1 style="color:var(--accent);">$1</h1>')
-            .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-            .replace(/\*(.+?)\*/g, '<em>$1</em>')
-            .replace(/`(.+?)`/g, '<code style="background:var(--bg-dark);padding:2px 4px;border-radius:3px;">$1</code>')
-            .replace(/^\| (.+) \|$/gm, '<tr><td>$1</td></tr>')
-            .replace(/^---$/gm, '<hr style="border-color:var(--accent);opacity:0.3;">');
-        
-        html = html.replace(/<table>/g, '<table style="width:100%;border-collapse:collapse;margin:10px 0;">');
-        html = html.replace(/<td>/g, '<td style="padding:6px 10px;border:1px solid var(--bg-dark);">');
-        
-        let lines = html.split('\n');
-        let out = [];
-        let inTable = false;
-        for (let line of lines) {
-            if (line.includes('|') && !line.startsWith('<')) {
-                if (!inTable) { out.push('<table style="width:100%;border-collapse:collapse;margin:10px 0;">'); inTable = true; }
-                let cells = line.split('|').filter(c => c.trim());
-                if (cells.every(c => /^[-:]+$/.test(c.trim()))) continue;
-                out.push('<tr>' + cells.map(c => '<td style="padding:6px 10px;border:1px solid var(--bg-dark);">' + c.trim() + '</td>').join('') + '</tr>');
-            } else {
-                if (inTable) { out.push('</table>'); inTable = false; }
-                if (line.trim()) out.push(line);
-            }
-        }
-        if (inTable) out.push('</table>');
-        
-        return out.join('\n');
-    }
     </script>
 
     <!-- JavaScript Modules (order matters!) -->
