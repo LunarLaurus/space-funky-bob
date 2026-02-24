@@ -54,9 +54,14 @@ analysis_test/
 analysis/
 output/
 out/
-*.json
-*.html
 *.bin
+
+# Editor files (required for web editor)
+!editor/*.html
+!editor/**/*.html
+!editor/**/*.js
+!editor/**/*.css
+!editor/**/*.svg
 
 # Test
 .pytest_cache/
