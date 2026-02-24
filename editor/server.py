@@ -47,8 +47,8 @@ class EditorHandler(http.server.SimpleHTTPRequestHandler):
     def do_GET(self):
         """Handle GET requests by routing to handlers."""
         self.init_handlers()
-        
-        # Route to appropriate handler
+
+        # API routes
         if self.path == '/levels':
             self._send_json(self.level_handler.get_level_list())
         elif self.path.startswith('/level/'):
@@ -77,11 +77,13 @@ class EditorHandler(http.server.SimpleHTTPRequestHandler):
             self._send_json(result if result else {'error': 'File not found'})
         elif self.path == '/midi':
             self._send_json(self.data_handler.get_midi_list())
+        # Static files - let SimpleHTTPRequestHandler serve them
         elif self.path == '/':
             self.path = '/index.html'
             return http.server.SimpleHTTPRequestHandler.do_GET(self)
         else:
-            self.send_error(404, 'Not Found')
+            # Serve static files (CSS, JS, images)
+            return http.server.SimpleHTTPRequestHandler.do_GET(self)
     
     def do_POST(self):
         """Handle POST requests by routing to handlers."""
@@ -106,6 +108,10 @@ class EditorHandler(http.server.SimpleHTTPRequestHandler):
 
 
 if __name__ == '__main__':
+    # Change to editor directory so static files are served correctly
+    os.chdir(os.path.dirname(__file__))
+    
     with socketserver.TCPServer(("", PORT), EditorHandler) as httpd:
         print(f"Server running at http://localhost:{PORT}")
+        print(f"Serving files from: {os.getcwd()}")
         httpd.serve_forever()

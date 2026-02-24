@@ -1,0 +1,202 @@
+/**
+ * Component Styles — WebUI v0.4.0
+ * Reusable UI components (boss cards, password UI, sequences)
+ * 
+ * Source: Part of WebUI overhaul for v0.4.0
+ * Purpose: Modular CSS for reusable components
+ */
+
+/* Boss Cards Grid */
+#boss-viewer {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+}
+
+.boss-card {
+    background: var(--bg-dark);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 12px;
+    transition: transform 0.2s, border-color 0.2s;
+}
+
+.boss-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--accent);
+}
+
+.boss-card h3 {
+    color: var(--accent);
+    margin: 0 0 8px 0;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.boss-stats {
+    font-size: 11px;
+    color: var(--text);
+}
+
+.boss-stats div {
+    margin: 4px 0;
+    display: flex;
+    justify-content: space-between;
+}
+
+.boss-stats label {
+    color: var(--text-dim);
+}
+
+.boss-sounds {
+    margin-top: 8px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.sound-tag {
+    background: var(--bg-panel);
+    color: var(--text-dim);
+    font-size: 9px;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-family: monospace;
+}
+
+/* Sequence Lists */
+#sequence-viewer {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 16px;
+}
+
+.sequence {
+    background: var(--bg-dark);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 12px;
+}
+
+.sequence h4 {
+    color: var(--accent);
+    margin: 0 0 8px 0;
+    font-size: 14px;
+}
+
+.sequence-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.sequence-item {
+    background: var(--bg-panel);
+    color: var(--text);
+    font-size: 10px;
+    padding: 4px 8px;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.sequence-item:hover {
+    background: var(--accent);
+    color: #000;
+}
+
+/* Password Generator */
+.password-digits {
+    font-size: 32px;
+    font-weight: bold;
+    color: var(--accent);
+    letter-spacing: 8px;
+    text-align: center;
+    margin: 16px 0;
+    font-family: 'Courier New', monospace;
+}
+
+.password-form,
+.password-validate {
+    display: grid;
+    gap: 12px;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.password-form label {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 11px;
+    color: var(--text);
+}
+
+.password-form select,
+.password-form input,
+.password-validate input {
+    background: var(--bg-dark);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 8px;
+    border-radius: 4px;
+    font-size: 12px;
+}
+
+.password-validate input {
+    font-size: 16px;
+    letter-spacing: 4px;
+    text-align: center;
+}
+
+.password-form button,
+.password-validate button {
+    background: var(--accent);
+    color: #000;
+    border: none;
+    padding: 10px 16px;
+    cursor: pointer;
+    border-radius: 4px;
+    font-weight: 600;
+    transition: opacity 0.2s;
+}
+
+.password-form button:hover,
+.password-validate button:hover {
+    opacity: 0.9;
+}
+
+/* Validation Results */
+.validation-success {
+    background: rgba(0, 255, 136, 0.1);
+    border: 1px solid #00ff88;
+    color: #00ff88;
+    padding: 8px;
+    border-radius: 4px;
+    text-align: center;
+}
+
+.validation-error {
+    background: rgba(255, 107, 53, 0.1);
+    border: 1px solid #ff6b35;
+    color: #ff6b35;
+    padding: 8px;
+    border-radius: 4px;
+    text-align: center;
+}
+
+/* Responsive components */
+@media (max-width: 768px) {
+    #boss-viewer {
+        grid-template-columns: 1fr;
+    }
+    
+    #sequence-viewer {
+        grid-template-columns: 1fr;
+    }
+    
+    .password-digits {
+        font-size: 24px;
+        letter-spacing: 4px;
+    }
+}

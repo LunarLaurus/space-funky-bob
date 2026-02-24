@@ -148,6 +148,9 @@ const Logger = (function() {
     };
 })();
 
+// Export to window for global access
+window.Logger = Logger;
+
 // Auto-init: Toggle log panel with Ctrl+L
 document.addEventListener('keydown', function(e) {
     if (e.ctrlKey && e.key === 'l') {

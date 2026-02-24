@@ -131,3 +131,6 @@ const API = (function() {
         }
     };
 })();
+
+// Export to window for global access
+window.API = API;

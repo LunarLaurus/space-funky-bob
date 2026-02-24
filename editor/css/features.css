@@ -1,0 +1,98 @@
+/**
+ * Feature Sections — WebUI v0.4.0
+ * Layout and styling for feature content areas
+ * 
+ * Source: Part of WebUI overhaul for v0.4.0
+ * Purpose: Modular CSS for feature sections (bosses, sequences, password, tilesets)
+ */
+
+/* Feature Section Container */
+.feature-section {
+    padding: 16px;
+    background: var(--bg-panel);
+    min-height: 500px;
+    overflow-y: auto;
+    border-left: 1px solid var(--border);
+    border-right: 1px solid var(--border);
+}
+
+/* Feature Header */
+.feature-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+}
+
+.feature-header h2 {
+    color: var(--accent);
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+/* Source Tag */
+.source-tag {
+    font-size: 10px;
+    color: var(--text-dim);
+    font-weight: normal;
+    background: var(--bg-dark);
+    padding: 2px 6px;
+    border-radius: 3px;
+    margin-left: 8px;
+    border: 1px solid var(--border);
+}
+
+/* Empty State */
+.feature-empty {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-dim);
+}
+
+.feature-empty h3 {
+    color: var(--text);
+    margin-bottom: 8px;
+}
+
+/* Loading State */
+.feature-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    color: var(--text-dim);
+}
+
+.feature-loading::before {
+    content: '';
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    margin-right: 12px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Responsive features */
+@media (max-width: 768px) {
+    .feature-section {
+        padding: 12px;
+        min-height: 400px;
+    }
+    
+    .feature-header h2 {
+        font-size: 16px;
+    }
+    
+    .source-tag {
+        display: none;
+    }
+}

@@ -21,30 +21,35 @@
      */
     async function initEditor() {
         Logger.log('Initializing B.O.B. Level Editor...');
-        
+
         // Initialize state management
         if (window.AppState) {
             Logger.log('State management initialized');
         }
-        
+
         // Initialize level data
         if (window.LevelData) {
             window.LevelData.initLevel(80, 80);
             Logger.log('Level data initialized');
         }
-        
+
         // Initialize UI modules
         await initUIModules();
-        
+
         // Initialize event handlers
         initEventHandlers();
-        
+
         // Initialize features
         initFeatures();
-        
+
+        // Initialize feature navigation
+        if (typeof initFeatureNavigation === 'function') {
+            initFeatureNavigation();
+        }
+
         // Load default level
         await loadDefaultLevel();
-        
+
         Logger.log('Editor initialization complete');
     }
     
@@ -120,6 +125,52 @@
     }
     
     /**
+     * Initialize feature navigation tabs
+     */
+    function initFeatureNavigation() {
+        document.querySelectorAll('.nav-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                showFeature(tab.dataset.feature);
+            });
+        });
+        Logger.log('Feature navigation initialized');
+    }
+
+    /**
+     * Show/hide feature sections
+     */
+    function showFeature(feature) {
+        // Hide all features
+        document.querySelectorAll('.feature-section').forEach(el => {
+            el.style.display = 'none';
+        });
+        document.querySelectorAll('.nav-tab').forEach(el => {
+            el.classList.remove('active');
+        });
+
+        // Show selected feature
+        const section = document.getElementById(`${feature}-feature`);
+        const tab = document.querySelector(`[data-feature="${feature}"]`);
+
+        if (section && tab) {
+            section.style.display = 'block';
+            tab.classList.add('active');
+            Logger.log('Feature switched:', feature);
+
+            // Initialize feature if needed
+            if (feature === 'bosses' && window.BossViewer) {
+                window.BossViewer.initBossViewer('boss-viewer');
+            } else if (feature === 'sequences' && window.LevelSequenceViewer) {
+                window.LevelSequenceViewer.initLevelSequenceViewer('sequence-viewer');
+            } else if (feature === 'password' && window.PasswordGenerator) {
+                window.PasswordGenerator.initPasswordGenerator('password-generator');
+            } else if (feature === 'tilesets' && window.TilesetPanel) {
+                window.TilesetPanel.initTilesetPanel('tileset-browser');
+            }
+        }
+    }
+
+    /**
      * Load default level
      */
     async function loadDefaultLevel() {
@@ -135,13 +186,13 @@
             }
         }
     }
-    
+
     /**
      * Export level data
      */
     function exportLevel() {
         if (!window.LevelData) return;
-        
+
         const data = window.LevelData.getExportData();
         const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
@@ -150,21 +201,25 @@
         a.download = `level_${data.map_number}.json`;
         a.click();
         URL.revokeObjectURL(url);
-        
+
         Logger.log('Level exported:', data.map_number);
     }
-    
+
     // Export to window
     window.App = {
         initEditor,
         exportLevel
     };
-    
+
+    // Export feature navigation globally
+    window.initFeatureNavigation = initFeatureNavigation;
+    window.showFeature = showFeature;
+
     // Auto-initialize on DOM ready
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', initEditor);
     } else {
         initEditor();
     }
-    
+
 })();
