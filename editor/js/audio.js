@@ -362,18 +362,24 @@ const Audio = (function() {
     /**
      * Initialize Tone.js synth (BEST QUALITY)
      * Uses polyphonic synthesis with effects
+     * DEFERRED: Only called on first play request (user gesture)
      */
     async function initTone() {
-        if (toneSynth) return true;
+        if (toneSynth) {
+            log('Tone.js already initialized');
+            return true;
+        }
 
         try {
-            log('Initializing Tone.js engine...');
+            log('Initializing Tone.js engine (first use)...');
 
             if (!window.Tone) {
                 throw new Error('Tone.js library not loaded');
             }
 
+            // This MUST be called from user gesture
             await Tone.start();
+            log('Tone.AudioContext started');
 
             // Create high-quality polyphonic synth
             toneSynth = new Tone.PolySynth(Tone.Synth, {
@@ -898,6 +904,9 @@ const Audio = (function() {
                 
                 // Start progress tracking
                 startProgressTracking();
+                
+                // Update UI to show playing state
+                updatePlayerUI();
             } else {
                 error('Playback failed');
             }
@@ -1236,6 +1245,9 @@ const Audio = (function() {
         // Initial UI update
         log('Calling initial updatePlayerUI');
         updatePlayerUI();
+        
+        // Log ready state
+        log('Audio player ready - waiting for user interaction');
     }
 
     return {

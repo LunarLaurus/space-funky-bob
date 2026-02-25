@@ -315,7 +315,12 @@
     </script>
 
     <!-- JavaScript Modules (order matters!) -->
-    <!-- External Libraries (must load first) -->
+    <!-- External Libraries -->
+    <!-- Tone.js - AudioContext deferred until first user interaction -->
+    <script>
+        // Prevent Tone.js from auto-starting AudioContext
+        window.TONE_START_ON_LOAD = false;
+    </script>
     <script src="js/Tone.js"></script>
 
     <!-- Core Libraries -->
