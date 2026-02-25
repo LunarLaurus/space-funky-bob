@@ -1,33 +1,28 @@
 /**
  * Audio Module - High-Quality MIDI Playback
  * 
- * Uses JZZ.js for professional MIDI playback with SoundFont synthesis.
- * This provides the best possible MIDI quality with realistic instrument sounds.
+ * Uses Tone.js for professional synthesis with fallback to native Web Audio.
  * 
- * Libraries:
- * - JZZ.js: Professional MIDI engine with SoundFont support
- * - Tone.js: High-quality Web Audio synthesis (fallback)
+ * Quality Tiers (auto-selected):
+ * 1. Tone.js PolySynth (BEST) - High-quality synthesis with effects
+ * 2. Native Web Audio (FALLBACK) - Basic dual-oscillator synthesis
  * 
- * Quality Tiers:
- * 1. JZZ + SoundFont (best - realistic instruments)
- * 2. Tone.js PolySynth (good - quality synthesis)
- * 3. Native Web Audio (fallback - basic synthesis)
+ * Note: JZZ.js removed - requires MIDI hardware which browsers don't provide.
  */
 
 const Audio = (function() {
     'use strict';
 
     // Audio engines
-    let jzzEngine = null;      // JZZ MIDI engine (best quality)
-    let toneSynth = null;      // Tone.js synth (good quality)
+    let toneSynth = null;      // Tone.js synth (best quality)
     let audioContext = null;   // Native Web Audio (fallback)
     
     // State
-    let currentEngine = null;  // 'jzz', 'tone', or 'native'
-    let isInitialized = false;
+    let currentEngine = null;  // 'tone' or 'native'
     let isPlaying = false;
     let testMode = false;
     let testResults = [];
+    let preferredEngine = 'tone'; // User preference: 'tone' or 'native'
 
     // Audio chain components (native fallback)
     let masterGain = null;
@@ -40,6 +35,29 @@ const Audio = (function() {
 
     function error(msg) {
         console.error('[Audio] ERROR: ' + msg);
+    }
+
+    /**
+     * Set preferred engine (user toggle)
+     * @param {string} engine - 'tone' or 'native'
+     */
+    function setPreferredEngine(engine) {
+        if (engine === 'tone' || engine === 'native') {
+            preferredEngine = engine;
+            log('Preferred engine set to: ' + engine);
+        }
+    }
+
+    /**
+     * Get current engine status
+     */
+    function getEngineStatus() {
+        return {
+            current: currentEngine,
+            preferred: preferredEngine,
+            toneAvailable: !!window.Tone,
+            nativeAvailable: true
+        };
     }
 
     /**
@@ -80,40 +98,8 @@ const Audio = (function() {
     }
 
     /**
-     * Initialize JZZ engine (BEST QUALITY)
-     * Uses SoundFont synthesis for realistic instruments
-     */
-    async function initJZZ() {
-        if (jzzEngine) return true;
-
-        try {
-            log('Initializing JZZ engine...');
-
-            // JZZ should be loaded via script tag
-            if (!window.JZZ) {
-                throw new Error('JZZ library not loaded');
-            }
-
-            // Initialize JZZ with SoundFont
-            jzzEngine = await JZZ().openMidiOut();
-            
-            if (!jzzEngine || !jzzEngine.isOpen()) {
-                throw new Error('JZZ failed to open MIDI output');
-            }
-
-            log('JZZ engine initialized with SoundFont synthesis');
-            currentEngine = 'jzz';
-            return true;
-        } catch (e) {
-            error('JZZ initialization failed: ' + e.message);
-            jzzEngine = null;
-            return false;
-        }
-    }
-
-    /**
-     * Initialize Tone.js synth (GOOD QUALITY)
-     * Uses polyphonic synthesis
+     * Initialize Tone.js synth (BEST QUALITY)
+     * Uses polyphonic synthesis with effects
      */
     async function initTone() {
         if (toneSynth) return true;
@@ -137,7 +123,7 @@ const Audio = (function() {
             // Add effects chain
             const reverb = new Tone.Reverb({ decay: 2, wet: 0.3 }).toDestination();
             const compressor = new Tone.Compressor({ threshold: -24, ratio: 12 }).toDestination();
-            
+
             toneSynth.connect(compressor);
             compressor.connect(reverb);
 
@@ -153,7 +139,7 @@ const Audio = (function() {
 
     /**
      * Initialize native Web Audio (FALLBACK)
-     * Basic synthesis when libraries unavailable
+     * Basic synthesis when Tone.js unavailable
      */
     function initNative() {
         if (audioContext) return true;
@@ -554,8 +540,8 @@ const Audio = (function() {
     };
     
     /**
-     * Play MIDI file using best available engine
-     * Priority: JZZ (SoundFont) > Tone.js > Native Web Audio
+     * Play MIDI file using preferred engine
+     * Priority: User preference > Tone.js > Native Web Audio
      */
     async function playMIDI(midiUrl, name) {
         log('========================================');
@@ -563,23 +549,21 @@ const Audio = (function() {
         log('========================================');
 
         try {
-            // Determine best available engine
-            let engine = 'native';
-            
-            if (window.JZZ) {
-                log('JZZ library available - using SoundFont synthesis (BEST)');
-                const jzzReady = await initJZZ();
-                if (jzzReady) engine = 'jzz';
+            // Determine engine based on user preference
+            let engine = preferredEngine;
+
+            // If preferred is 'tone' but Tone.js not available, fallback
+            if (engine === 'tone' && !window.Tone) {
+                log('Tone.js not available, falling back to native');
+                engine = 'native';
             }
-            
-            if (engine === 'native' && window.Tone) {
-                log('Tone.js library available - using PolySynth (GOOD)');
-                const toneReady = await initTone();
-                if (toneReady) engine = 'tone';
-            }
-            
-            if (engine === 'native') {
-                log('Using native Web Audio synthesis (FALLBACK)');
+
+            // Initialize selected engine
+            if (engine === 'tone') {
+                log('Using Tone.js engine (preferred: ' + preferredEngine + ')');
+                await initTone();
+            } else {
+                log('Using native Web Audio engine (preferred: ' + preferredEngine + ')');
                 initNative();
             }
 
@@ -609,11 +593,8 @@ const Audio = (function() {
 
             // Play based on engine
             let result = false;
-            
-            if (engine === 'jzz' && jzzEngine) {
-                log('Playing via JZZ SoundFont...');
-                result = await playViaJZZ(midiData);
-            } else if (engine === 'tone' && toneSynth) {
+
+            if (engine === 'tone' && toneSynth) {
                 log('Playing via Tone.js PolySynth...');
                 result = await playViaTone(midiData);
             } else {
@@ -633,25 +614,6 @@ const Audio = (function() {
         } catch (e) {
             error('playMIDI exception: ' + e.message);
             error('Stack: ' + e.stack);
-            return false;
-        }
-    }
-
-    /**
-     * Play MIDI via JZZ SoundFont engine (BEST QUALITY)
-     */
-    async function playViaJZZ(midiData) {
-        try {
-            if (!jzzEngine) return false;
-
-            // Send MIDI data to JZZ
-            // JZZ will handle all timing and synthesis
-            jzzEngine.send(new Uint8Array(midiData));
-            
-            log('JZZ: MIDI data sent to SoundFont synthesizer');
-            return true;
-        } catch (e) {
-            error('JZZ playback error: ' + e.message);
             return false;
         }
     }
@@ -704,7 +666,6 @@ const Audio = (function() {
 
     /**
      * Run audio validation tests
-     * @returns {Object} Test results
      */
     function runTests() {
         testMode = true;
@@ -745,22 +706,19 @@ const Audio = (function() {
         testResults.push({ name: 'Web Audio API support', pass: apiTest });
         log((apiTest ? '✓' : '✗') + ' Web Audio API support');
 
-        // Test 5: JZZ library availability (BEST)
-        const hasJZZ = typeof window.JZZ !== 'undefined';
-        testResults.push({ name: 'JZZ library (SoundFont)', pass: hasJZZ });
-        log((hasJZZ ? '✓' : '✗') + ' JZZ library (SoundFont) - BEST QUALITY');
-
-        // Test 6: Tone.js library availability (GOOD)
+        // Test 5: Tone.js library availability
         const hasTone = typeof window.Tone !== 'undefined';
         testResults.push({ name: 'Tone.js library', pass: hasTone });
-        log((hasTone ? '✓' : '✗') + ' Tone.js library - GOOD QUALITY');
+        log((hasTone ? '✓' : '✗') + ' Tone.js library - BEST QUALITY');
 
         // Engine summary
         log('========================================');
         log('Engine Availability:');
-        log('  JZZ (SoundFont):    ' + (hasJZZ ? 'YES ★' : 'NO'));
-        log('  Tone.js (Synth):    ' + (hasTone ? 'YES' : 'NO'));
+        log('  Tone.js (Synth):    ' + (hasTone ? 'YES ★' : 'NO'));
         log('  Native (Fallback):  YES');
+        log('========================================');
+        log('Preferred engine: ' + preferredEngine);
+        log('Click engine toggle to switch');
         log('========================================');
 
         // Summary
@@ -775,7 +733,7 @@ const Audio = (function() {
             total,
             results: testResults,
             allPassed: passed === total,
-            engines: { jzz: hasJZZ, tone: hasTone, native: true }
+            engines: { tone: hasTone, native: true }
         };
     }
 
@@ -785,11 +743,11 @@ const Audio = (function() {
     function getTestResults() {
         return {
             currentEngine,
+            preferredEngine,
             isPlaying,
             testMode,
             results: testResults,
             engines: {
-                jzz: !!jzzEngine,
                 tone: !!toneSynth,
                 native: !!audioContext
             }
@@ -803,17 +761,17 @@ const Audio = (function() {
         let html = '<div style="color:var(--accent);padding:10px;font-size:11px;">';
         html += 'Audio files from source (MIDI format):</div>';
 
-        // Test button
-        html += '<div style="padding:10px;margin:10px 0;">';
-        html += '<button type="button" id="btn-audio-test" style="background:#444;color:#fff;padding:8px 16px;cursor:pointer;border:none;border-radius:4px;margin-right:8px;">Run Audio Tests</button>';
-        html += '<span id="audio-test-result" style="font-size:11px;color:var(--text-dim);"></span>';
+        // Engine toggle and test buttons
+        html += '<div style="padding:10px;margin:10px 0;display:flex;gap:8px;align-items:center;">';
+        html += '<button type="button" id="btn-audio-test" style="background:#444;color:#fff;padding:8px 16px;cursor:pointer;border:none;border-radius:4px;">Run Tests</button>';
+        html += '<button type="button" id="btn-engine-toggle" style="background:var(--accent);color:#000;padding:8px 16px;cursor:pointer;border:none;border-radius:4px;font-weight:bold;">Engine: Tone.js</button>';
+        html += '<span id="audio-test-result" style="font-size:11px;color:var(--text-dim);margin-left:auto;"></span>';
         html += '</div>';
 
         if (!files || files.length === 0) {
             html += '<div style="padding:10px;color:var(--text-dim);">No MIDI files found</div>';
         } else {
             files.forEach((af) => {
-                // Handle both 'filename' (API) and 'name' (legacy) formats
                 const fileName = af.filename || af.name || 'unknown';
                 const fileUrl = af.path || af.url || '#';
                 const safeName = fileName.replace(/\./g, '_').replace(/[^a-zA-Z0-9_]/g, '');
@@ -826,10 +784,22 @@ const Audio = (function() {
             });
         }
 
-        html += '<div style=\"padding:15px;margin-top:10px;background:var(--bg-dark);border-radius:4px;font-size:10px;color:var(--text-dim);\">';
-        html += 'Note: Click Play to play MIDI via Web Audio. Download for full quality.</div>';
+        html += '<div style="padding:15px;margin-top:10px;background:var(--bg-dark);border-radius:4px;font-size:10px;color:var(--text-dim);">';
+        html += '<strong>Tone.js:</strong> High-quality synthesis with reverb/compression<br>';
+        html += '<strong>Native:</strong> Basic dual-oscillator synthesis (fallback)';
+        html += '</div>';
 
         list.innerHTML = html;
+
+        // Update engine toggle button text
+        function updateEngineToggle() {
+            const toggleBtn = document.getElementById('btn-engine-toggle');
+            if (toggleBtn) {
+                toggleBtn.textContent = 'Engine: ' + (preferredEngine === 'tone' ? 'Tone.js' : 'Native');
+                toggleBtn.style.background = preferredEngine === 'tone' ? 'var(--accent)' : '#444';
+                toggleBtn.style.color = preferredEngine === 'tone' ? '#000' : '#fff';
+            }
+        }
 
         // Test button handler
         const testBtn = document.getElementById('btn-audio-test');
@@ -837,14 +807,29 @@ const Audio = (function() {
         if (testBtn) {
             testBtn.onclick = function() {
                 const results = Audio.runTests();
-                testResult.textContent = results.allPassed ? 
-                    '✓ All tests passed!' : 
+                testResult.textContent = results.allPassed ?
+                    '✓ All tests passed!' :
                     '✗ ' + results.passed + '/' + results.total + ' passed';
                 testResult.style.color = results.allPassed ? 'var(--accent)' : '#ff5555';
+                updateEngineToggle();
             };
         }
 
-        // Attach click handlers
+        // Engine toggle handler
+        const toggleBtn = document.getElementById('btn-engine-toggle');
+        if (toggleBtn) {
+            toggleBtn.onclick = function() {
+                const newEngine = preferredEngine === 'tone' ? 'native' : 'tone';
+                setPreferredEngine(newEngine);
+                updateEngineToggle();
+                log('Engine switched to: ' + newEngine);
+            };
+        }
+
+        // Initialize toggle button
+        updateEngineToggle();
+
+        // Attach play handlers
         if (files) {
             files.forEach((af) => {
                 const fileName = af.filename || af.name || 'unknown';
@@ -865,8 +850,9 @@ const Audio = (function() {
         renderAudioList: renderAudioList,
         runTests: runTests,
         getTestResults: getTestResults,
+        setPreferredEngine: setPreferredEngine,
+        getEngineStatus: getEngineStatus,
         getCurrentEngine: function() { return currentEngine; },
-        isInitialized: function() { return isInitialized; },
         stop: function() {
             if (toneSynth && window.Tone) {
                 toneSynth.releaseAll();
