@@ -49,20 +49,34 @@ const Audio = (function() {
      * Stop all playback
      */
     function stop() {
+        log('Stopping playback...');
+        
+        // Cancel and stop Tone.js Transport
+        if (window.Tone && Tone.Transport) {
+            Tone.Transport.stop();
+            Tone.Transport.cancel();
+        }
+        
         // Stop Tone.js playback
         if (toneSynth && window.Tone) {
             toneSynth.releaseAll();
         }
         
-        // Stop native oscillators
+        // Stop native oscillators immediately
         activeSources.forEach(src => {
             try {
-                if (src.osc1 && src.osc1.state === 'started') src.osc1.stop();
-                if (src.osc2 && src.osc2.state === 'started') src.osc2.stop();
+                if (src.osc1) {
+                    if (src.osc1.state === 'started') src.osc1.stop();
+                    src.osc1.disconnect();
+                }
+                if (src.osc2) {
+                    if (src.osc2.state === 'started') src.osc2.stop();
+                    src.osc2.disconnect();
+                }
             } catch (e) {}
         });
         activeSources = [];
-        
+
         isPlaying = false;
         isPaused = false;
         pausedAt = 0;
@@ -76,6 +90,13 @@ const Audio = (function() {
     function pause() {
         if (!isPlaying) return;
         
+        log('Pausing playback...');
+        
+        // Pause Tone.js Transport
+        if (window.Tone && Tone.Transport) {
+            Tone.Transport.pause();
+        }
+        
         // Stop Tone.js playback
         if (toneSynth && window.Tone) {
             toneSynth.releaseAll();
@@ -84,8 +105,14 @@ const Audio = (function() {
         // Stop native oscillators
         activeSources.forEach(src => {
             try {
-                if (src.osc1 && src.osc1.state === 'started') src.osc1.stop();
-                if (src.osc2 && src.osc2.state === 'started') src.osc2.stop();
+                if (src.osc1) {
+                    if (src.osc1.state === 'started') src.osc1.stop();
+                    src.osc1.disconnect();
+                }
+                if (src.osc2) {
+                    if (src.osc2.state === 'started') src.osc2.stop();
+                    src.osc2.disconnect();
+                }
             } catch (e) {}
         });
         activeSources = [];
@@ -105,6 +132,13 @@ const Audio = (function() {
      */
     function resume() {
         if (!isPaused || currentTrackIndex < 0) return;
+        
+        log('Resuming from ' + Math.round(pausedAt) + 'ms...');
+        
+        // Resume Tone.js Transport
+        if (window.Tone && Tone.Transport) {
+            Tone.Transport.start();
+        }
         
         const track = playlist[currentTrackIndex];
         playMIDI(track.url, track.name, pausedAt);
@@ -696,6 +730,12 @@ const Audio = (function() {
 
         // Stop any current playback first
         stop();
+        
+        // Reset Tone.js Transport
+        if (window.Tone && Tone.Transport) {
+            Tone.Transport.stop();
+            Tone.Transport.cancel();
+        }
 
         try {
             // Determine engine based on user preference
@@ -779,40 +819,35 @@ const Audio = (function() {
         try {
             if (!toneSynth || !window.Tone) return false;
 
+            // Cancel any scheduled events first
+            Tone.Transport.cancel();
+            
             const events = MIDI.parseMIDI(midiData);
             if (!events || events.length === 0) return false;
 
             // Sort by time
             events.sort((a, b) => a.time - b.time);
 
-            const now = Tone.now();
-            const startTime = now + 0.1;
-
             // Limit to 60 seconds
-            const filtered = events.filter(e => e.time < 60000);
+            const filtered = events.filter(e => e.time >= startPosition && e.time < 60000);
 
-            log('Tone.js: Scheduling ' + filtered.length + ' notes');
+            log('Tone.js: Scheduling ' + filtered.length + ' notes (from ' + startPosition + 'ms)');
 
-            // Schedule notes (skip those before start position)
+            // Schedule notes using Tone.Transport (can be cancelled)
             filtered.forEach(event => {
-                const eventTime = startTime + (event.time / 1000);
-                const eventPos = event.time; // Position in ms
-                
-                // Skip if before start position or in the past
-                if (eventPos < startPosition || eventTime < now) return;
-
+                const eventTime = (event.time - startPosition) / 1000; // Convert to seconds
                 const freq = MIDI.midiToFreq(event.note);
                 const velocity = event.velocity / 127;
 
-                // Trigger note via Tone.js
-                toneSynth.triggerAttackRelease(
-                    freq,
-                    "8n",
-                    eventTime,
-                    velocity
-                );
+                // Schedule via Transport (cancellable)
+                Tone.Transport.schedule((time) => {
+                    toneSynth.triggerAttackRelease(freq, "8n", time, velocity);
+                }, eventTime);
             });
 
+            // Start transport
+            Tone.Transport.start();
+            
             log('Tone.js: Playback scheduled');
             return true;
         } catch (e) {
