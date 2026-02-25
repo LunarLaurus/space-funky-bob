@@ -17,11 +17,10 @@ class DataHandler:
 
         Args:
             data_dir: Directory containing data files (ENEMIES.json, etc.)
-            midi_dir: Directory containing MIDI files (or parent directory to search)
+            midi_dir: Directory containing MIDI files (defaults to editor/midi/)
         """
         self.data_dir = data_dir
-        self.midi_dir = midi_dir or os.path.join(data_dir, 'midi')
-        self.midi_parent_dir = midi_dir  # Store parent dir for searching
+        self.midi_dir = midi_dir or os.path.join(os.path.dirname(__file__), '..', 'midi')
     
     def get_data_file(self, filename):
         """
@@ -74,32 +73,18 @@ class DataHandler:
             dict: MIDI file list
         """
         midi_files = []
-        
-        # Search in the midi_dir and all subdirectories
-        dirs_to_search = [self.midi_dir] if self.midi_dir else []
-        
-        # Also search parent directory recursively if set
-        if self.midi_parent_dir and os.path.exists(self.midi_parent_dir):
-            for root, dirs, files in os.walk(self.midi_parent_dir):
-                for f in files:
-                    if f.upper().endswith('.MID') and not f.startswith('._'):
-                        midi_files.append({
-                            'filename': f,
-                            'path': f'/midi/{f}'
-                        })
-        
-        # Remove duplicates by filename
-        seen = set()
-        unique_files = []
-        for f in midi_files:
-            if f['filename'] not in seen:
-                seen.add(f['filename'])
-                unique_files.append(f)
+        if os.path.exists(self.midi_dir):
+            for f in os.listdir(self.midi_dir):
+                if f.upper().endswith('.MID') and not f.startswith('._'):
+                    midi_files.append({
+                        'filename': f,
+                        'path': f'/midi/{f}'
+                    })
 
         return {
-            'directory': self.midi_parent_dir or self.midi_dir,
-            'count': len(unique_files),
-            'files': unique_files
+            'directory': self.midi_dir,
+            'count': len(midi_files),
+            'files': midi_files
         }
     
     def get_midi_file(self, filename):
@@ -116,16 +101,8 @@ class DataHandler:
         if '..' in filename or filename.startswith('/'):
             return None
 
-        # Search in parent directory recursively
-        if self.midi_parent_dir and os.path.exists(self.midi_parent_dir):
-            for root, dirs, files in os.walk(self.midi_parent_dir):
-                if filename in files:
-                    return os.path.join(root, filename)
-        
-        # Fallback to original midi_dir
-        if self.midi_dir:
-            file_path = os.path.join(self.midi_dir, filename)
-            if os.path.exists(file_path):
-                return file_path
+        file_path = os.path.join(self.midi_dir, filename)
+        if os.path.exists(file_path):
+            return file_path
 
         return None
