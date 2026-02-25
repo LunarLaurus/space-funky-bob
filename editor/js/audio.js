@@ -20,9 +20,17 @@ const Audio = (function() {
     // State
     let currentEngine = null;  // 'tone' or 'native'
     let isPlaying = false;
+    let isPaused = false;
     let testMode = false;
     let testResults = [];
     let preferredEngine = 'tone'; // User preference: 'tone' or 'native'
+    
+    // Playlist & Playback
+    let playlist = [];         // Array of MIDI files
+    let currentTrackIndex = -1;
+    let activeSources = [];    // Currently playing Tone.js sources
+    let playbackStartTime = 0;
+    let pausedAt = 0;          // Position where paused (ms)
 
     // Audio chain components (native fallback)
     let masterGain = null;
@@ -35,6 +43,126 @@ const Audio = (function() {
 
     function error(msg) {
         console.error('[Audio] ERROR: ' + msg);
+    }
+
+    /**
+     * Stop all playback
+     */
+    function stop() {
+        if (toneSynth && window.Tone) {
+            toneSynth.releaseAll();
+        }
+        
+        // Stop native oscillators
+        activeSources.forEach(src => {
+            try {
+                if (src.osc1) src.osc1.stop();
+                if (src.osc2) src.osc2.stop();
+            } catch (e) {}
+        });
+        activeSources = [];
+        
+        isPlaying = false;
+        isPaused = false;
+        pausedAt = 0;
+        log('Playback stopped');
+    }
+
+    /**
+     * Pause current playback
+     */
+    function pause() {
+        if (!isPlaying) return;
+        
+        isPaused = true;
+        isPlaying = false;
+        
+        // Calculate current position
+        if (toneSynth && window.Tone) {
+            pausedAt = (Tone.now() - playbackStartTime) * 1000;
+        }
+        
+        stop();
+        log('Playback paused at ' + Math.round(pausedAt) + 'ms');
+    }
+
+    /**
+     * Resume from pause
+     */
+    function resume() {
+        if (!isPaused || currentTrackIndex < 0) return;
+        
+        const track = playlist[currentTrackIndex];
+        playMIDI(track.url, track.name, pausedAt);
+        isPaused = false;
+    }
+
+    /**
+     * Play specific track from playlist
+     */
+    function playTrack(index) {
+        if (index < 0 || index >= playlist.length) return;
+        
+        currentTrackIndex = index;
+        const track = playlist[index];
+        playMIDI(track.url, track.name, 0);
+    }
+
+    /**
+     * Play next track in playlist
+     */
+    function playNext() {
+        if (playlist.length === 0) return;
+        const nextIndex = (currentTrackIndex + 1) % playlist.length;
+        playTrack(nextIndex);
+    }
+
+    /**
+     * Play previous track in playlist
+     */
+    function playPrevious() {
+        if (playlist.length === 0) return;
+        const prevIndex = currentTrackIndex <= 0 ? playlist.length - 1 : currentTrackIndex - 1;
+        playTrack(prevIndex);
+    }
+
+    /**
+     * Set playlist
+     */
+    function setPlaylist(files) {
+        playlist = files.map((f, i) => ({
+            index: i,
+            name: f.filename || f.name || 'Unknown',
+            url: f.path || f.url || '#',
+            duration: 0 // Could be calculated from MIDI
+        }));
+        currentTrackIndex = -1;
+        log('Playlist set with ' + playlist.length + ' tracks');
+    }
+
+    /**
+     * Get current track info
+     */
+    function getCurrentTrack() {
+        if (currentTrackIndex < 0 || currentTrackIndex >= playlist.length) {
+            return null;
+        }
+        return {
+            ...playlist[currentTrackIndex],
+            isPlaying,
+            isPaused,
+            position: isPaused ? pausedAt : (Tone.now() - playbackStartTime) * 1000
+        };
+    }
+
+    /**
+     * Get playlist
+     */
+    function getPlaylist() {
+        return playlist.map((track, i) => ({
+            ...track,
+            isCurrent: i === currentTrackIndex
+        }));
     }
 
     /**
@@ -485,7 +613,7 @@ const Audio = (function() {
             return 440 * Math.pow(2, (note - 69) / 12);
         },
         
-        playEvents: function(events, name) {
+        playEvents: function(events, name, startPosition = 0) {
             // This is the native fallback - Tone.js is preferred
             if (!events || events.length === 0) {
                 log('No events to play');
@@ -500,12 +628,12 @@ const Audio = (function() {
 
             const now = audioContext.currentTime;
             events.sort((a, b) => a.time - b.time);
-            const filtered = events.filter(e => e.time < 60000);
+            const filtered = events.filter(e => e.time >= startPosition && e.time < 60000);
 
-            log('Native: Scheduling ' + filtered.length + ' notes');
+            log('Native: Scheduling ' + filtered.length + ' notes (from ' + startPosition + 'ms)');
 
             filtered.forEach(event => {
-                const eventTime = now + 0.1 + (event.time / 1000);
+                const eventTime = now + 0.1 + ((event.time - startPosition) / 1000);
                 if (eventTime < now) return;
 
                 const freq = this.midiToFreq(event.note);
@@ -532,6 +660,9 @@ const Audio = (function() {
                 osc2.start(eventTime);
                 osc1.stop(eventTime + 0.35);
                 osc2.stop(eventTime + 0.35);
+
+                // Track for stop()
+                activeSources.push({ osc1, osc2 });
             });
 
             log('Native: Playback scheduled');
@@ -541,12 +672,17 @@ const Audio = (function() {
     
     /**
      * Play MIDI file using preferred engine
-     * Priority: User preference > Tone.js > Native Web Audio
+     * @param {string} midiUrl - URL to MIDI file
+     * @param {string} name - Track name
+     * @param {number} startPosition - Start position in ms (for resume)
      */
-    async function playMIDI(midiUrl, name) {
+    async function playMIDI(midiUrl, name, startPosition = 0) {
         log('========================================');
-        log('Playing: ' + name);
+        log('Playing: ' + name + (startPosition > 0 ? ' (from ' + startPosition + 'ms)' : ''));
         log('========================================');
+
+        // Stop any current playback first
+        stop();
 
         try {
             // Determine engine based on user preference
@@ -596,14 +732,17 @@ const Audio = (function() {
 
             if (engine === 'tone' && toneSynth) {
                 log('Playing via Tone.js PolySynth...');
-                result = await playViaTone(midiData);
+                result = await playViaTone(midiData, startPosition);
             } else {
                 log('Playing via native Web Audio...');
                 const events = MIDI.parseMIDI(midiData);
-                result = events && events.length > 0 ? MIDI.playEvents(events, name) : false;
+                result = events && events.length > 0 ? MIDI.playEvents(events, name, startPosition) : false;
             }
 
             if (result) {
+                isPlaying = true;
+                isPaused = false;
+                playbackStartTime = Tone.now() - (startPosition / 1000);
                 log('Playback started successfully (' + engine + ')');
             } else {
                 error('Playback failed');
@@ -620,8 +759,10 @@ const Audio = (function() {
 
     /**
      * Play MIDI via Tone.js PolySynth (GOOD QUALITY)
+     * @param {Uint8Array} midiData - MIDI file data
+     * @param {number} startPosition - Start position in ms
      */
-    async function playViaTone(midiData) {
+    async function playViaTone(midiData, startPosition = 0) {
         try {
             if (!toneSynth || !window.Tone) return false;
 
@@ -639,10 +780,13 @@ const Audio = (function() {
 
             log('Tone.js: Scheduling ' + filtered.length + ' notes');
 
-            // Schedule notes
+            // Schedule notes (skip those before start position)
             filtered.forEach(event => {
                 const eventTime = startTime + (event.time / 1000);
-                if (eventTime < now) return;
+                const eventPos = event.time; // Position in ms
+                
+                // Skip if before start position or in the past
+                if (eventPos < startPosition || eventTime < now) return;
 
                 const freq = MIDI.midiToFreq(event.note);
                 const velocity = event.velocity / 127;
@@ -758,91 +902,173 @@ const Audio = (function() {
         const list = document.getElementById('audioList');
         if (!list) return;
 
-        let html = '<div style="color:var(--accent);padding:10px;font-size:11px;">';
-        html += 'Audio files from source (MIDI format):</div>';
+        // Set playlist
+        setPlaylist(files);
 
-        // Engine toggle and test buttons
-        html += '<div style="padding:10px;margin:10px 0;display:flex;gap:8px;align-items:center;">';
-        html += '<button type="button" id="btn-audio-test" style="background:#444;color:#fff;padding:8px 16px;cursor:pointer;border:none;border-radius:4px;">Run Tests</button>';
-        html += '<button type="button" id="btn-engine-toggle" style="background:var(--accent);color:#000;padding:8px 16px;cursor:pointer;border:none;border-radius:4px;font-weight:bold;">Engine: Tone.js</button>';
-        html += '<span id="audio-test-result" style="font-size:11px;color:var(--text-dim);margin-left:auto;"></span>';
+        let html = '<div style="color:var(--accent);padding:10px;font-size:11px;">';
+        html += 'B.O.B. Soundtrack Jukebox</div>';
+
+        // Player controls
+        html += '<div style="padding:15px;margin:10px 0;background:var(--bg-toolbar);border-radius:8px;">';
+        html += '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">';
+        
+        // Playback controls
+        html += '<button type="button" id="btn-prev" title="Previous" style="background:#444;color:#fff;padding:10px 14px;cursor:pointer;border:none;border-radius:4px;font-size:16px;">⏮</button>';
+        html += '<button type="button" id="btn-play-pause" title="Play/Pause" style="background:var(--accent);color:#000;padding:10px 16px;cursor:pointer;border:none;border-radius:4px;font-size:16px;font-weight:bold;">▶</button>';
+        html += '<button type="button" id="btn-stop" title="Stop" style="background:#444;color:#fff;padding:10px 14px;cursor:pointer;border:none;border-radius:4px;font-size:16px;">⏹</button>';
+        html += '<button type="button" id="btn-next" title="Next" style="background:#444;color:#fff;padding:10px 14px;cursor:pointer;border:none;border-radius:4px;font-size:16px;">⏭</button>';
+        
+        // Now Playing
+        html += '<div style="flex:1;min-width:200px;margin-left:10px;">';
+        html += '<div style="font-size:10px;color:var(--text-dim);">Now Playing:</div>';
+        html += '<div id="now-playing" style="font-size:12px;color:var(--accent);font-weight:bold;">None</div>';
+        html += '</div>';
+        
+        // Engine toggle
+        html += '<button type="button" id="btn-engine-toggle" style="background:#444;color:#fff;padding:6px 12px;cursor:pointer;border:none;border-radius:4px;font-size:10px;">Engine: Tone.js</button>';
+        html += '</div>';
+        
+        // Progress (visual only for now)
+        html += '<div style="margin-top:10px;height:4px;background:#333;border-radius:2px;overflow:hidden;">';
+        html += '<div id="progress-bar" style="width:0%;height:100%;background:var(--accent);transition:width 0.1s;"></div>';
+        html += '</div>';
         html += '</div>';
 
+        // Test button
+        html += '<div style="padding:10px;margin:10px 0;">';
+        html += '<button type="button" id="btn-audio-test" style="background:#444;color:#fff;padding:8px 16px;cursor:pointer;border:none;border-radius:4px;">Run Tests</button>';
+        html += '<span id="audio-test-result" style="font-size:11px;color:var(--text-dim);margin-left:10px;"></span>';
+        html += '</div>';
+
+        // Playlist
+        html += '<div style="max-height:400px;overflow-y:auto;">';
         if (!files || files.length === 0) {
-            html += '<div style="padding:10px;color:var(--text-dim);">No MIDI files found</div>';
+            html += '<div style="padding:20px;color:var(--text-dim);text-align:center;">No MIDI files found</div>';
         } else {
-            files.forEach((af) => {
-                const fileName = af.filename || af.name || 'unknown';
-                const fileUrl = af.path || af.url || '#';
-                const safeName = fileName.replace(/\./g, '_').replace(/[^a-zA-Z0-9_]/g, '');
-                html += '<div style="padding:12px;margin:5px 0;background:var(--bg-dark);border-radius:4px;">';
-                html += '<div style="color:var(--accent);font-weight:bold;font-size:12px;margin-bottom:8px;">' + fileName + '</div>';
-                html += '<div style="display:flex;gap:8px;">';
-                html += '<button type="button" id="btn_play_' + safeName + '" style="background:var(--accent);color:#000;padding:8px 16px;cursor:pointer;border:none;border-radius:4px;">Play</button>';
-                html += '<a href="' + fileUrl + '" download="' + fileName + '" style="background:#444;color:#fff;padding:8px 16px;text-decoration:none;border-radius:4px;">Download</a>';
-                html += '</div></div>';
+            files.forEach((af, index) => {
+                const fileName = af.filename || af.name || 'Unknown';
+                const safeId = 'track-' + index;
+                html += '<div id="' + safeId + '" style="padding:12px;margin:4px 0;background:var(--bg-dark);border-radius:4px;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;gap:10px;" onclick="Audio.playTrack(' + index + ')">';
+                html += '<div style="width:24px;height:24px;background:#333;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--accent);">' + (index + 1) + '</div>';
+                html += '<div style="flex:1;">';
+                html += '<div style="color:var(--text);font-size:12px;font-weight:500;">' + fileName + '</div>';
+                html += '<div style="color:var(--text-dim);font-size:10px;">Track ' + (index + 1) + '</div>';
+                html += '</div>';
+                html += '<div style="color:var(--accent);font-size:11px;opacity:0;" class="play-indicator">▶ Play</div>';
+                html += '</div>';
             });
         }
+        html += '</div>';
 
+        // Info
         html += '<div style="padding:15px;margin-top:10px;background:var(--bg-dark);border-radius:4px;font-size:10px;color:var(--text-dim);">';
-        html += '<strong>Tone.js:</strong> High-quality synthesis with reverb/compression<br>';
-        html += '<strong>Native:</strong> Basic dual-oscillator synthesis (fallback)';
+        html += '<strong>Tone.js:</strong> High-quality synthesis with reverb/compression | ';
+        html += '<strong>Native:</strong> Basic dual-oscillator synthesis';
         html += '</div>';
 
         list.innerHTML = html;
 
-        // Update engine toggle button text
-        function updateEngineToggle() {
-            const toggleBtn = document.getElementById('btn-engine-toggle');
-            if (toggleBtn) {
-                toggleBtn.textContent = 'Engine: ' + (preferredEngine === 'tone' ? 'Tone.js' : 'Native');
-                toggleBtn.style.background = preferredEngine === 'tone' ? 'var(--accent)' : '#444';
-                toggleBtn.style.color = preferredEngine === 'tone' ? '#000' : '#fff';
+        // Update UI functions
+        function updatePlayerUI() {
+            const playBtn = document.getElementById('btn-play-pause');
+            const nowPlaying = document.getElementById('now-playing');
+            const progressBar = document.getElementById('progress-bar');
+            
+            if (playBtn) {
+                if (isPaused) {
+                    playBtn.textContent = '▶';
+                    playBtn.title = 'Resume';
+                } else if (isPlaying) {
+                    playBtn.textContent = '⏸';
+                    playBtn.title = 'Pause';
+                } else {
+                    playBtn.textContent = '▶';
+                    playBtn.title = 'Play';
+                }
             }
+            
+            if (nowPlaying) {
+                const track = getCurrentTrack();
+                nowPlaying.textContent = track ? track.name : 'None';
+            }
+
+            // Update playlist highlighting
+            playlist.forEach((_, i) => {
+                const el = document.getElementById('track-' + i);
+                if (el) {
+                    if (i === currentTrackIndex) {
+                        el.style.background = 'var(--bg-toolbar)';
+                        el.style.border = '1px solid var(--accent)';
+                        const indicator = el.querySelector('.play-indicator');
+                        if (indicator) {
+                            indicator.style.opacity = '1';
+                            indicator.textContent = isPlaying ? '♫ Playing' : '⏸ Paused';
+                        }
+                    } else {
+                        el.style.background = 'var(--bg-dark)';
+                        el.style.border = 'none';
+                        const indicator = el.querySelector('.play-indicator');
+                        if (indicator) indicator.style.opacity = '0';
+                    }
+                }
+            });
         }
 
-        // Test button handler
-        const testBtn = document.getElementById('btn-audio-test');
-        const testResult = document.getElementById('audio-test-result');
-        if (testBtn) {
-            testBtn.onclick = function() {
-                const results = Audio.runTests();
-                testResult.textContent = results.allPassed ?
-                    '✓ All tests passed!' :
-                    '✗ ' + results.passed + '/' + results.total + ' passed';
-                testResult.style.color = results.allPassed ? 'var(--accent)' : '#ff5555';
-                updateEngineToggle();
-            };
-        }
+        // Button handlers
+        document.getElementById('btn-play-pause')?.addEventListener('click', () => {
+            if (isPlaying) {
+                pause();
+            } else if (isPaused) {
+                resume();
+            } else if (currentTrackIndex >= 0) {
+                playTrack(currentTrackIndex);
+            } else if (playlist.length > 0) {
+                playTrack(0);
+            }
+            updatePlayerUI();
+        });
 
-        // Engine toggle handler
+        document.getElementById('btn-stop')?.addEventListener('click', () => {
+            stop();
+            updatePlayerUI();
+        });
+
+        document.getElementById('btn-prev')?.addEventListener('click', () => {
+            playPrevious();
+            updatePlayerUI();
+        });
+
+        document.getElementById('btn-next')?.addEventListener('click', () => {
+            playNext();
+            updatePlayerUI();
+        });
+
+        // Engine toggle
         const toggleBtn = document.getElementById('btn-engine-toggle');
         if (toggleBtn) {
-            toggleBtn.onclick = function() {
+            toggleBtn.onclick = function(e) {
+                e.stopPropagation();
                 const newEngine = preferredEngine === 'tone' ? 'native' : 'tone';
                 setPreferredEngine(newEngine);
-                updateEngineToggle();
+                toggleBtn.textContent = 'Engine: ' + (newEngine === 'tone' ? 'Tone.js' : 'Native');
+                toggleBtn.style.background = newEngine === 'tone' ? 'var(--accent)' : '#444';
+                toggleBtn.style.color = newEngine === 'tone' ? '#000' : '#fff';
                 log('Engine switched to: ' + newEngine);
             };
         }
 
-        // Initialize toggle button
-        updateEngineToggle();
+        // Test button
+        document.getElementById('btn-audio-test')?.addEventListener('click', () => {
+            const results = Audio.runTests();
+            const testResult = document.getElementById('audio-test-result');
+            testResult.textContent = results.allPassed ?
+                '✓ All tests passed!' :
+                '✗ ' + results.passed + '/' + results.total + ' passed';
+            testResult.style.color = results.allPassed ? 'var(--accent)' : '#ff5555';
+        });
 
-        // Attach play handlers
-        if (files) {
-            files.forEach((af) => {
-                const fileName = af.filename || af.name || 'unknown';
-                const fileUrl = af.path || af.url || '#';
-                const safeName = fileName.replace(/\./g, '_').replace(/[^a-zA-Z0-9_]/g, '');
-                const btn = document.getElementById('btn_play_' + safeName);
-                if (btn) {
-                    btn.onclick = function() {
-                        playMIDI(fileUrl, fileName);
-                    };
-                }
-            });
-        }
+        // Initial UI update
+        updatePlayerUI();
     }
 
     return {
@@ -852,13 +1078,15 @@ const Audio = (function() {
         getTestResults: getTestResults,
         setPreferredEngine: setPreferredEngine,
         getEngineStatus: getEngineStatus,
-        getCurrentEngine: function() { return currentEngine; },
-        stop: function() {
-            if (toneSynth && window.Tone) {
-                toneSynth.releaseAll();
-            }
-            isPlaying = false;
-        }
+        getCurrentTrack: getCurrentTrack,
+        getPlaylist: getPlaylist,
+        playTrack: playTrack,
+        playNext: playNext,
+        playPrevious: playPrevious,
+        pause: pause,
+        resume: resume,
+        stop: stop,
+        setPlaylist: setPlaylist
     };
 })();
 
