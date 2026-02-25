@@ -142,42 +142,68 @@
     }
     
     function initFeatureNavigation() {
-        document.querySelectorAll('.nav-tab').forEach(tab => {
+        Logger.info('App', 'initFeatureNavigation called');
+        const tabs = document.querySelectorAll('.nav-tab');
+        Logger.info('App', 'Found ' + tabs.length + ' navigation tabs');
+        tabs.forEach(tab => {
             tab.addEventListener('click', () => {
-                showFeature(tab.dataset.feature);
+                const feature = tab.dataset.feature;
+                Logger.info('App', 'Navigation tab clicked: ' + feature);
+                showFeature(feature);
             });
         });
         Logger.info('App', 'Feature navigation initialized');
     }
 
     function showFeature(feature) {
+        Logger.info('App', 'showFeature called with feature: ' + feature);
+        
         // Hide all features
+        Logger.info('App', 'Hiding all feature sections...');
         document.querySelectorAll('.feature-section').forEach(el => {
             el.style.display = 'none';
         });
+        
+        // Deactivate all tabs
+        Logger.info('App', 'Deactivating all tabs...');
         document.querySelectorAll('.nav-tab').forEach(el => {
             el.classList.remove('active');
         });
 
         // Show selected feature
-        const section = document.getElementById(`${feature}-feature`);
-        const tab = document.querySelector(`[data-feature="${feature}"]`);
+        const sectionId = feature + '-feature';
+        Logger.info('App', 'Looking for section: ' + sectionId);
+        const section = document.getElementById(sectionId);
+        const tab = document.querySelector('[data-feature="' + feature + '"]');
+        
+        Logger.info('App', 'Section element: ' + (section ? 'found' : 'NOT FOUND'));
+        Logger.info('App', 'Tab element: ' + (tab ? 'found' : 'NOT FOUND'));
 
         if (section && tab) {
+            Logger.info('App', 'Showing feature: ' + feature);
             section.style.display = 'block';
             tab.classList.add('active');
             Logger.info('App', 'Feature switched: ' + feature);
 
             // Initialize feature if needed
+            Logger.info('App', 'Checking feature initialization...');
             if (feature === 'bosses' && window.BossViewer) {
+                Logger.info('App', 'Initializing Boss Viewer...');
                 window.BossViewer.initBossViewer('boss-viewer');
             } else if (feature === 'sequences' && window.LevelSequenceViewer) {
+                Logger.info('App', 'Initializing Level Sequence Viewer...');
                 window.LevelSequenceViewer.initLevelSequenceViewer('sequence-viewer');
             } else if (feature === 'password' && window.PasswordGenerator) {
+                Logger.info('App', 'Initializing Password Generator...');
                 window.PasswordGenerator.initPasswordGenerator('password-generator');
             } else if (feature === 'tilesets' && window.TilesetPanel) {
+                Logger.info('App', 'Initializing Tileset Panel...');
                 window.TilesetPanel.initTilesetPanel('tileset-browser');
+            } else {
+                Logger.warn('App', 'Feature not initialized: ' + feature + ' (missing module or wrong container ID)');
             }
+        } else {
+            Logger.error('App', 'Failed to show feature: ' + feature + ' (section or tab not found)');
         }
     }
 

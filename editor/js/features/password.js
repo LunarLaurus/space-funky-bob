@@ -13,12 +13,15 @@
      * @param {string} containerId - Container element ID
      */
     function initPasswordGenerator(containerId) {
+        Logger.info('PasswordGenerator', 'initPasswordGenerator called with containerId: ' + containerId);
         const container = document.getElementById(containerId);
+        Logger.info('PasswordGenerator', 'Container element: ' + (container ? 'found' : 'NOT FOUND'));
         if (!container) {
-            console.warn('Password generator container not found:', containerId);
+            Logger.warn('PasswordGenerator', 'Container not found: ' + containerId);
             return;
         }
-        
+
+        Logger.info('PasswordGenerator', 'Building password generator UI...');
         container.innerHTML = `
             <div class="password-generator">
                 <h3>Password Generator</h3>
@@ -46,28 +49,52 @@
                 </div>
             </div>
         `;
-        
+
+        Logger.info('PasswordGenerator', 'Wiring up buttons...');
         // Wire up buttons
-        document.getElementById('btn-generate')?.addEventListener('click', generatePassword);
-        document.getElementById('btn-validate')?.addEventListener('click', validatePassword);
+        const genBtn = document.getElementById('btn-generate');
+        const valBtn = document.getElementById('btn-validate');
+        Logger.info('PasswordGenerator', 'Generate button: ' + (genBtn ? 'found' : 'NOT FOUND'));
+        Logger.info('PasswordGenerator', 'Validate button: ' + (valBtn ? 'found' : 'NOT FOUND'));
+        
+        genBtn?.addEventListener('click', () => {
+            Logger.info('PasswordGenerator', 'Generate button clicked');
+            generatePassword();
+        });
+        valBtn?.addEventListener('click', () => {
+            Logger.info('PasswordGenerator', 'Validate button clicked');
+            validatePassword();
+        });
+        
+        Logger.info('PasswordGenerator', 'Password generator initialization complete');
     }
-    
+
     /**
      * Generate password for level
      */
     function generatePassword() {
-        const world = parseInt(document.getElementById('password-world')?.value || 0);
-        const level = parseInt(document.getElementById('password-level')?.value || 0);
+        Logger.info('PasswordGenerator', 'generatePassword called');
+        const worldEl = document.getElementById('password-world');
+        const levelEl = document.getElementById('password-level');
+        Logger.info('PasswordGenerator', 'World element: ' + (worldEl ? 'found' : 'NOT FOUND'));
+        Logger.info('PasswordGenerator', 'Level element: ' + (levelEl ? 'found' : 'NOT FOUND'));
         
+        const world = parseInt(worldEl?.value || 0);
+        const level = parseInt(levelEl?.value || 0);
+        Logger.info('PasswordGenerator', 'World: ' + world + ', Level: ' + level);
+
         if (window.API) {
+            Logger.info('PasswordGenerator', 'Calling API.generatePassword...');
             window.API.generatePassword(world, level)
                 .then(result => {
+                    Logger.info('PasswordGenerator', 'Password generated: ' + JSON.stringify(result));
                     displayPassword(result);
                 })
                 .catch(error => {
-                    console.error('Password generation failed:', error);
+                    Logger.error('PasswordGenerator', 'Password generation failed: ' + error.message);
                 });
         } else {
+            Logger.warn('PasswordGenerator', 'API not available, using fallback');
             // Fallback: generate simple password
             const digits = [];
             const seed = (world * 100) + level;
