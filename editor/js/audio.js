@@ -383,3 +383,6 @@ const Audio = (function() {
         renderAudioList: renderAudioList
     };
 })();
+
+// Export to window
+window.Audio = Audio;

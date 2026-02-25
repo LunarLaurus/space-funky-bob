@@ -117,6 +117,25 @@ const API = (function() {
         },
 
         /**
+         * Generate password for level
+         * @param {number} world - World number (0-2)
+         * @param {number} level - Level index
+         * @returns {Promise<Object>} Password data
+         */
+        generatePassword: function(world, level) {
+            return request('GET', '/password/generate/' + world + '/' + level);
+        },
+
+        /**
+         * Validate password
+         * @param {Array} digits - Password digits
+         * @returns {Promise<Object>} Validation result
+         */
+        validatePassword: function(digits) {
+            return request('POST', '/password/validate', { digits: digits });
+        },
+
+        /**
          * Export level data back to ROM
          * @param {Object} levelData - Level data to export
          * @returns {Promise<Object>} Export result

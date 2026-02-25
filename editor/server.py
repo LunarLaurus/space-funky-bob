@@ -88,12 +88,20 @@ class EditorHandler(http.server.SimpleHTTPRequestHandler):
     def do_POST(self):
         """Handle POST requests by routing to handlers."""
         self.init_handlers()
-        
+
         if self.path == '/export-level':
             content_length = int(self.headers['Content-Length'])
             body = self.rfile.read(content_length)
-            level_data = eval(body)  # TODO: Use proper JSON parsing
+            import json
+            level_data = json.loads(body)
             result = self.export_handler.export_level(level_data)
+            self._send_json(result)
+        elif self.path == '/password/validate':
+            content_length = int(self.headers['Content-Length'])
+            body = self.rfile.read(content_length)
+            import json
+            data = json.loads(body)
+            result = self.password_handler.validate_password(data.get('digits', []))
             self._send_json(result)
         else:
             self.send_error(404, 'Not Found')
