@@ -341,37 +341,42 @@ const Audio = (function() {
     function renderAudioList(files) {
         const list = document.getElementById('audioList');
         if (!list) return;
-        
+
         let html = '<div style="color:var(--accent);padding:10px;font-size:11px;">';
         html += 'Audio files from source (MIDI format):</div>';
-        
+
         if (!files || files.length === 0) {
             html += '<div style="padding:10px;color:var(--text-dim);">No MIDI files found</div>';
         } else {
             files.forEach((af) => {
-                const safeName = af.name.replace(/\./g, '_');
+                // Handle both 'filename' (API) and 'name' (legacy) formats
+                const fileName = af.filename || af.name || 'unknown';
+                const fileUrl = af.path || af.url || '#';
+                const safeName = fileName.replace(/\./g, '_').replace(/[^a-zA-Z0-9_]/g, '');
                 html += '<div style="padding:12px;margin:5px 0;background:var(--bg-dark);border-radius:4px;">';
-                html += '<div style="color:var(--accent);font-weight:bold;font-size:12px;margin-bottom:8px;">' + af.name + '</div>';
+                html += '<div style="color:var(--accent);font-weight:bold;font-size:12px;margin-bottom:8px;">' + fileName + '</div>';
                 html += '<div style="display:flex;gap:8px;">';
                 html += '<button type="button" id="btn_play_' + safeName + '" style="background:var(--accent);color:#000;padding:8px 16px;cursor:pointer;border:none;border-radius:4px;">Play</button>';
-                html += '<a href="' + af.url + '" download="' + af.name + '" style="background:#444;color:#fff;padding:8px 16px;text-decoration:none;border-radius:4px;">Download</a>';
+                html += '<a href="' + fileUrl + '" download="' + fileName + '" style="background:#444;color:#fff;padding:8px 16px;text-decoration:none;border-radius:4px;">Download</a>';
                 html += '</div></div>';
             });
         }
-        
+
         html += '<div style=\"padding:15px;margin-top:10px;background:var(--bg-dark);border-radius:4px;font-size:10px;color:var(--text-dim);\">';
         html += 'Note: Click Play to play MIDI via Web Audio. Download for full quality.</div>';
-        
+
         list.innerHTML = html;
-        
+
         // Attach click handlers
         if (files) {
             files.forEach((af) => {
-                const safeName = af.name.replace(/\./g, '_');
+                const fileName = af.filename || af.name || 'unknown';
+                const fileUrl = af.path || af.url || '#';
+                const safeName = fileName.replace(/\./g, '_').replace(/[^a-zA-Z0-9_]/g, '');
                 const btn = document.getElementById('btn_play_' + safeName);
                 if (btn) {
                     btn.onclick = function() {
-                        playMIDI(af.url, af.name);
+                        playMIDI(fileUrl, fileName);
                     };
                 }
             });
