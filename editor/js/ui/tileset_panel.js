@@ -94,30 +94,82 @@
     function renderTileGrid(data) {
         const grid = document.getElementById('tile-grid');
         if (!grid) return;
-        
+
         grid.innerHTML = '';
-        
+
         if (!data || !data.tiles) {
             grid.textContent = 'No tile data available';
             return;
         }
-        
-        // Render 256 tiles (16x16 grid)
-        for (let i = 0; i < 256; i++) {
-            const tile = document.createElement('div');
-            tile.className = 'tile';
-            tile.dataset.tileId = i;
-            
-            // Simple placeholder rendering
-            tile.style.width = '32px';
-            tile.style.height = '32px';
-            tile.style.display = 'inline-block';
-            tile.style.border = '1px solid #333';
-            tile.style.background = `hsl(${i * 1.4}, 50%, 50%)`;
-            
-            tile.addEventListener('click', () => selectTile(i));
-            
-            grid.appendChild(tile);
+
+        // Color palette for SNES tiles (simplified)
+        const colors = [
+            'rgba(0,0,0,0)',    // 0 = transparent
+            '#8B4513',          // 1 = brown
+            '#D2691E',          // 2 = chocolate
+            '#F4A460',          // 3 = sandy brown
+            '#808080',          // 4 = gray
+            '#A9A9A9',          // 5 = dark gray
+            '#C0C0C0',          // 6 = silver
+            '#E0E0E0',          // 7 = light gray
+            '#8B0000',          // 8 = dark red
+            '#FF0000',          // 9 = red
+            '#FF6347',          // 10 = tomato
+            '#FFA07A',          // 11 = light salmon
+            '#006400',          // 12 = dark green
+            '#008000',          // 13 = green
+            '#90EE90',          // 14 = light green
+            '#00008B'           // 15 = dark blue
+        ];
+
+        const tiles = data.tiles;
+        const numTiles = Math.min(tiles.length, 256);
+
+        // Render tiles (up to 256 in 16x16 grid)
+        for (let i = 0; i < numTiles; i++) {
+            const tileContainer = document.createElement('div');
+            tileContainer.className = 'tile';
+            tileContainer.dataset.tileId = i;
+            tileContainer.style.width = '32px';
+            tileContainer.style.height = '32px';
+            tileContainer.style.display = 'inline-block';
+            tileContainer.style.border = '1px solid #333';
+            tileContainer.style.cursor = 'pointer';
+
+            // Create canvas for tile rendering
+            const canvas = document.createElement('canvas');
+            canvas.width = 32;
+            canvas.height = 32;
+            const ctx = canvas.getContext('2d');
+
+            // Clear canvas
+            ctx.fillStyle = 'rgba(0,0,0,0.5)';
+            ctx.fillRect(0, 0, 32, 32);
+
+            // Render tile pixels if available
+            const tileData = tiles[i];
+            if (tileData && tileData.pixels) {
+                const pixels = tileData.pixels;
+                const pixelSize = 4; // 32px / 8 pixels = 4px per pixel
+
+                for (let y = 0; y < 8; y++) {
+                    for (let x = 0; x < 8; x++) {
+                        const colorIndex = pixels[y][x] || 0;
+                        ctx.fillStyle = colors[colorIndex] || '#FF00FF';
+                        ctx.fillRect(x * pixelSize, y * pixelSize, pixelSize, pixelSize);
+                    }
+                }
+            } else {
+                // Fallback: show tile number
+                ctx.fillStyle = '#666';
+                ctx.font = '10px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText(i.toString(), 16, 20);
+            }
+
+            tileContainer.appendChild(canvas);
+            tileContainer.addEventListener('click', () => selectTile(i));
+            grid.appendChild(tileContainer);
         }
     }
     

@@ -116,23 +116,41 @@ class TilesetHandler:
     def get_tileset(self, tileset_name):
         """
         Get specific tileset data by name.
-        
+
         Args:
             tileset_name: Tileset identifier (e.g., 'borg', 'bug', 'ancient')
-        
+
         Returns:
             dict: Tileset data or None if not found
         """
         # Check cache first
         if tileset_name in self._tileset_cache:
             return self._tileset_cache[tileset_name]
-        
+
         # Validate tileset name
         if tileset_name not in TILESET_OFFSETS:
             return None
+
+        # Map tileset names to their hex offset filenames
+        name_to_hex = {
+            'borg': '008000',
+            'bug': '008800',
+            'ancient': '009000',
+            'lava': '009800',
+            'ultra': '00A000',
+            'bubble': '00A800',
+            'borg2': '00B000',
+            'borg3': '00B800',
+            'world': '00C000',
+            'borg4': '00C800',
+            'main_graphics_1': 'main_graphics_1',
+            'main_graphics_2': 'main_graphics_2'
+        }
         
-        # Try to load from file
-        tileset_file = os.path.join(self.data_dir, 'tilesets', f'tileset_{tileset_name}.json')
+        hex_name = name_to_hex.get(tileset_name, tileset_name)
+
+        # Try to load from file (using hex offset filename)
+        tileset_file = os.path.join(self.data_dir, 'tilesets', f'tileset_{hex_name}.json')
         if os.path.exists(tileset_file):
             with open(tileset_file, 'r') as f:
                 tileset_data = json.load(f)
@@ -140,7 +158,7 @@ class TilesetHandler:
                 tileset_data['music_theme'] = MUSIC_THEMES.get(tileset_name, 'unknown')
                 self._tileset_cache[tileset_name] = tileset_data
                 return tileset_data
-        
+
         # Return metadata if no file exists
         return {
             'name': tileset_name,
