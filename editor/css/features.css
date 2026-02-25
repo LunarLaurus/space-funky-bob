@@ -8,12 +8,20 @@
 
 /* Feature Section Container */
 .feature-section {
+    display: none;  /* Hidden by default */
     padding: 16px;
     background: var(--bg-panel);
     min-height: 500px;
     overflow-y: auto;
-    border-left: 1px solid var(--border);
-    border-right: 1px solid var(--border);
+}
+
+.feature-section.active {
+    display: block;  /* Show when active */
+}
+
+/* Hide main editor container when feature is active */
+body.feature-active .container {
+    display: none;
 }
 
 /* Feature Header */

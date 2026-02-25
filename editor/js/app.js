@@ -181,9 +181,27 @@
     function showFeature(feature) {
         Logger.info('App', 'showFeature called with feature: ' + feature);
         
+        // Check if clicking the Editor tab (no feature name)
+        if (feature === 'editor') {
+            Logger.info('App', 'Switching to Editor view');
+            document.body.classList.remove('feature-active');
+            document.querySelectorAll('.feature-section').forEach(el => {
+                el.classList.remove('active');
+                el.style.display = 'none';
+            });
+            document.querySelectorAll('.nav-tab').forEach(el => {
+                el.classList.remove('active');
+            });
+            // Activate editor tab
+            const editorTab = document.querySelector('[data-feature="editor"]');
+            if (editorTab) editorTab.classList.add('active');
+            return;
+        }
+        
         // Hide all features
         Logger.info('App', 'Hiding all feature sections...');
         document.querySelectorAll('.feature-section').forEach(el => {
+            el.classList.remove('active');
             el.style.display = 'none';
         });
         
@@ -204,8 +222,13 @@
 
         if (section && tab) {
             Logger.info('App', 'Showing feature: ' + feature);
+            section.classList.add('active');
             section.style.display = 'block';
             tab.classList.add('active');
+            
+            // Add body class to hide main editor
+            document.body.classList.add('feature-active');
+            
             Logger.info('App', 'Feature switched: ' + feature);
 
             // Initialize feature if needed (only once per session)
