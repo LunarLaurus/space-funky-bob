@@ -208,15 +208,19 @@ const Audio = (function() {
      * Get current track info
      */
     function getCurrentTrack() {
+        log('getCurrentTrack: currentTrackIndex=' + currentTrackIndex + ', playlist.length=' + playlist.length);
         if (currentTrackIndex < 0 || currentTrackIndex >= playlist.length) {
+            log('getCurrentTrack: invalid index');
             return null;
         }
-        return {
+        const track = {
             ...playlist[currentTrackIndex],
             isPlaying,
             isPaused,
             position: isPaused ? pausedAt : (Tone.now() - playbackStartTime) * 1000
         };
+        log('getCurrentTrack: returning ' + track.name);
+        return track;
     }
 
     /**
@@ -1054,6 +1058,8 @@ const Audio = (function() {
             const playBtn = document.getElementById('btn-play-pause');
             const nowPlaying = document.getElementById('now-playing');
             const speedDisplay = document.getElementById('speed-display');
+            
+            log('updatePlayerUI called - isPlaying:' + isPlaying + ', currentTrack:' + currentTrackIndex);
 
             if (playBtn) {
                 if (isPaused) {
@@ -1069,16 +1075,23 @@ const Audio = (function() {
                     playBtn.title = 'Play (Space)';
                     playBtn.style.background = 'var(--accent)';
                 }
+            } else {
+                log('playBtn not found');
             }
 
             if (nowPlaying) {
                 const track = getCurrentTrack();
+                log('getCurrentTrack returned: ' + JSON.stringify(track));
                 nowPlaying.textContent = track ? track.name : 'None';
+            } else {
+                log('nowPlaying element not found');
             }
-            
+
             // Update speed display
             if (speedDisplay) {
                 speedDisplay.textContent = playbackSpeed.toFixed(2) + 'x';
+            } else {
+                log('speedDisplay element not found');
             }
 
             // Update playlist highlighting
@@ -1191,21 +1204,37 @@ const Audio = (function() {
         }
         
         // Speed control
-        document.getElementById('btn-speed-down')?.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const newSpeed = Math.max(0.25, playbackSpeed - 0.25);
-            setPlaybackSpeed(newSpeed);
-            updatePlayerUI();
-        });
+        const speedDownBtn = document.getElementById('btn-speed-down');
+        const speedUpBtn = document.getElementById('btn-speed-up');
         
-        document.getElementById('btn-speed-up')?.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const newSpeed = Math.min(4.0, playbackSpeed + 0.25);
-            setPlaybackSpeed(newSpeed);
-            updatePlayerUI();
-        });
+        log('Speed buttons found: down=' + !!speedDownBtn + ', up=' + !!speedUpBtn);
+        
+        if (speedDownBtn) {
+            speedDownBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                log('Speed down clicked, current: ' + playbackSpeed);
+                const newSpeed = Math.max(0.25, playbackSpeed - 0.25);
+                setPlaybackSpeed(newSpeed);
+                updatePlayerUI();
+            });
+        } else {
+            log('btn-speed-down not found');
+        }
+        
+        if (speedUpBtn) {
+            speedUpBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                log('Speed up clicked, current: ' + playbackSpeed);
+                const newSpeed = Math.min(4.0, playbackSpeed + 0.25);
+                setPlaybackSpeed(newSpeed);
+                updatePlayerUI();
+            });
+        } else {
+            log('btn-speed-up not found');
+        }
 
         // Initial UI update
+        log('Calling initial updatePlayerUI');
         updatePlayerUI();
     }
 
