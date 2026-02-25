@@ -5,14 +5,76 @@
 
 const Audio = (function() {
     'use strict';
-    
+
     let jzzLoaded = false;
     let toneLoaded = false;
     let toneSynth = null;
     let audioContext = null;
-    
+    let reverbNode = null;
+    let masterGain = null;
+    let compressorNode = null;
+
     function log(msg) {
         console.log('[Audio] ' + msg);
+    }
+
+    /**
+     * Initialize high-quality audio chain with effects
+     */
+    function initAudioChain() {
+        if (!audioContext) {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        }
+
+        if (!masterGain) {
+            // Create master gain for volume control
+            masterGain = audioContext.createGain();
+            masterGain.gain.value = 0.5;
+
+            // Create compressor for dynamic range control
+            compressorNode = audioContext.createDynamicsCompressor();
+            compressorNode.threshold.value = -24;
+            compressorNode.knee.value = 30;
+            compressorNode.ratio.value = 12;
+            compressorNode.attack.value = 0.003;
+            compressorNode.release.value = 0.25;
+
+            // Create reverb (simple convolution with impulse response)
+            reverbNode = audioContext.createConvolver();
+            createReverbImpulse();
+
+            // Chain: sources -> reverb -> compressor -> master -> destination
+            reverbNode.connect(compressorNode);
+            compressorNode.connect(masterGain);
+            masterGain.connect(audioContext.destination);
+
+            // Also add dry signal
+            const dryGain = audioContext.createGain();
+            dryGain.gain.value = 0.7;
+            dryGain.connect(compressorNode);
+        }
+    }
+
+    /**
+     * Create artificial reverb impulse response
+     */
+    function createReverbImpulse() {
+        if (!audioContext) return;
+
+        const duration = 1.5;
+        const decay = 2.0;
+        const rate = audioContext.sampleRate;
+        const length = rate * duration;
+        const impulse = audioContext.createBuffer(2, length, rate);
+
+        for (let channel = 0; channel < 2; channel++) {
+            const channelData = impulse.getChannelData(channel);
+            for (let i = 0; i < length; i++) {
+                channelData[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / length, decay);
+            }
+        }
+
+        reverbNode.buffer = impulse;
     }
     
     async function loadJZZ() {
@@ -257,57 +319,122 @@ const Audio = (function() {
                 log('No events to play');
                 return false;
             }
-            
-            if (!audioContext) {
-                audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            }
-            
+
+            // Initialize high-quality audio chain
+            initAudioChain();
+
             if (audioContext.state === 'suspended') {
                 audioContext.resume();
             }
-            
+
             const now = audioContext.currentTime;
-            const startTime = now + 0.05;
-            
+            const startTime = now + 0.1;
+
             // Sort events by time
             events.sort((a, b) => a.time - b.time);
-            
-            // Limit to first 30 seconds
-            const maxTime = 30000;
+
+            // Limit to first 60 seconds for performance
+            const maxTime = 60000;
             const filtered = events.filter(e => e.time < maxTime);
-            
+
             log('Playing ' + filtered.length + ' events from ' + startTime);
-            
-            // Create a simple synth for each note
-            filtered.forEach((event) => {
+
+            // Group simultaneous notes for better voice management
+            const voices = new Map();
+            const activeNotes = new Set();
+
+            // Create improved synth voice
+            const createVoice = (freq, velocity, time) => {
+                // Use multiple oscillators for richer sound
+                const osc1 = audioContext.createOscillator();
+                const osc2 = audioContext.createOscillator();
+                const filter = audioContext.createBiquadFilter();
+                const gain = audioContext.createGain();
+                const vibrato = audioContext.createOscillator();
+                const vibratoGain = audioContext.createGain();
+
+                // Oscillator 1 - main tone (sawtooth for brightness)
+                osc1.type = 'sawtooth';
+                osc1.frequency.value = freq;
+
+                // Oscillator 2 - detuned for thickness
+                osc2.type = 'triangle';
+                osc2.frequency.value = freq * 0.999; // Slight detune
+
+                // Filter - lowpass with envelope
+                filter.type = 'lowpass';
+                filter.Q.value = 5;
+                filter.frequency.setValueAtTime(200, time);
+                filter.frequency.linearRampToValueAtTime(2000 + velocity * 20, time + 0.02);
+                filter.frequency.exponentialRampToValueAtTime(800, time + 0.1);
+
+                // Vibrato
+                vibrato.frequency.value = 5; // 5 Hz vibrato
+                vibratoGain.gain.value = 3; // Vibrato depth
+                vibrato.connect(vibratoGain);
+                vibratoGain.connect(osc1.frequency);
+
+                // Velocity-based amplitude
+                const vel = velocity / 127;
+
+                // ADSR envelope with improved shape
+                gain.gain.setValueAtTime(0, time);
+                gain.gain.linearRampToValueAtTime(vel * 0.3, time + 0.01); // Attack
+                gain.gain.linearRampToValueAtTime(vel * 0.2, time + 0.05); // Decay to sustain
+                gain.gain.linearRampToValueAtTime(vel * 0.15, time + 0.15); // Sustain
+                gain.gain.linearRampToValueAtTime(0, time + 0.3); // Release
+
+                // Connect chain
+                osc1.connect(filter);
+                osc2.connect(filter);
+                filter.connect(gain);
+                gain.connect(reverbNode);
+                gain.connect(masterGain); // Also connect to dry signal
+
+                // Start/stop
+                osc1.start(time);
+                osc2.start(time);
+                vibrato.start(time);
+                osc1.stop(time + 0.35);
+                osc2.stop(time + 0.35);
+                vibrato.stop(time + 0.35);
+
+                return { osc1, osc2, filter, gain, vibrato };
+            };
+
+            // Schedule all notes
+            filtered.forEach((event, index) => {
                 const eventTime = startTime + (event.time / 1000);
-                
+
                 // Skip if time is in the past
                 if (eventTime < now) return;
-                
-                const osc = audioContext.createOscillator();
-                const gain = audioContext.createGain();
-                
-                osc.type = 'triangle';
-                osc.frequency.value = this.midiToFreq(event.note);
-                
-                const vel = (event.velocity || 100) / 127;
-                
-                // ADSR envelope
-                gain.gain.setValueAtTime(0, eventTime);
-                gain.gain.linearRampToValueAtTime(vel * 0.2, eventTime + 0.01);
-                gain.gain.linearRampToValueAtTime(vel * 0.15, eventTime + 0.1);
-                gain.gain.linearRampToValueAtTime(vel * 0.1, eventTime + 0.2);
-                gain.gain.linearRampToValueAtTime(0, eventTime + 0.3);
-                
-                osc.connect(gain);
-                gain.connect(audioContext.destination);
-                
-                osc.start(eventTime);
-                osc.stop(eventTime + 0.35);
+
+                const freq = this.midiToFreq(event.note);
+                const noteKey = event.note;
+
+                // Stop previous note on same key (monophonic per voice)
+                if (voices.has(noteKey)) {
+                    const oldVoice = voices.get(noteKey);
+                    const oldTime = audioContext.currentTime;
+                    oldVoice.gain.gain.cancelScheduledValues(oldTime);
+                    oldVoice.gain.gain.setValueAtTime(oldVoice.gain.gain.value, oldTime);
+                    oldVoice.gain.gain.exponentialRampToValueAtTime(0.001, oldTime + 0.05);
+                    oldVoice.osc1.stop(oldTime + 0.05);
+                    oldVoice.osc2.stop(oldTime + 0.05);
+                    oldVoice.vibrato.stop(oldTime + 0.05);
+                }
+
+                // Create new voice
+                const voice = createVoice(freq, event.velocity, eventTime);
+                voices.set(noteKey, voice);
+
+                // Auto-cleanup
+                setTimeout(() => {
+                    voices.delete(noteKey);
+                }, (event.time / 1000 + 0.4) * 1000);
             });
-            
-            log('Scheduled ' + filtered.length + ' notes');
+
+            log('Scheduled ' + filtered.length + ' notes with enhanced synthesis');
             return true;
         }
     };
