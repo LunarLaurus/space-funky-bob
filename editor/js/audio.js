@@ -359,212 +359,196 @@ const Audio = (function() {
     // MIDI parser and player using Web Audio API
     const MIDI = {
         noteNames: ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'],
-        
+
         parseMIDI: function(data) {
             const events = [];
             const bytes = new Uint8Array(data);
-            
+
             // Check MIDI header "MThd"
-            if (bytes[0] !== 0x4D || bytes[3] !== 0x64) {
+            if (bytes[0] !== 0x4D || bytes[1] !== 0x54 || bytes[2] !== 0x68 || bytes[3] !== 0x64) {
+                log('Invalid MIDI header');
                 return [];
             }
-            
+
+            const headerLen = (bytes[4] << 24) | (bytes[5] << 16) | (bytes[6] << 8) | bytes[7];
+            const format = (bytes[8] << 8) | bytes[9];
+            const numTracks = (bytes[10] << 8) | bytes[11];
             const division = (bytes[12] << 8) | bytes[13];
-            
-            // Find track data - skip header (14 bytes)
-            let offset = 14;
-            
-            // Skip MTrk header and length
-            if (bytes[offset] === 0x4D && bytes[offset+1] === 0x54) {
-                offset += 8;
-            }
-            
-            let currentTime = 0;
-            let runningStatus = 0;
-            let bytesProcessed = 0;
-            const maxBytes = 5000;
-            
-            while (offset < bytes.length - 2 && bytesProcessed < maxBytes) {
-                bytesProcessed++;
-                
-                // Read delta time
-                let delta = 0;
-                for (let i = 0; i < 4; i++) {
-                    delta = (delta << 7) | (bytes[offset] & 0x7F);
-                    if ((bytes[offset] & 0x80) === 0) {
+
+            log('MIDI Format: ' + format + ', Tracks: ' + numTracks + ', Division: ' + division);
+
+            let offset = 14; // Skip MThd header
+
+            // Parse each track
+            for (let track = 0; track < numTracks; track++) {
+                // Check for MTrk header
+                if (bytes[offset] !== 0x4D || bytes[offset+1] !== 0x54 || 
+                    bytes[offset+2] !== 0x72 || bytes[offset+3] !== 0x6B) {
+                    log('Invalid track header at track ' + track);
+                    break;
+                }
+
+                const trackLen = (bytes[offset+4] << 24) | (bytes[offset+5] << 16) | 
+                                (bytes[offset+6] << 8) | bytes[offset+7];
+                const trackEnd = offset + 8 + trackLen;
+
+                log('Parsing track ' + track + ' (' + trackLen + ' bytes)');
+
+                offset += 8; // Skip MTrk header
+
+                let currentTime = 0;
+                let runningStatus = 0;
+                let notesInTrack = 0;
+
+                while (offset < trackEnd - 2 && offset < bytes.length) {
+                    // Read delta time (variable-length)
+                    let delta = 0;
+                    for (let i = 0; i < 4; i++) {
+                        delta = (delta << 7) | (bytes[offset] & 0x7F);
+                        if ((bytes[offset] & 0x80) === 0) {
+                            offset++;
+                            break;
+                        }
                         offset++;
-                        break;
                     }
-                    offset++;
-                }
-                currentTime += delta;
-                
-                if (offset >= bytes.length) break;
-                
-                let status = bytes[offset];
-                if ((status & 0x80) === 0) {
-                    status = runningStatus;
-                } else {
-                    runningStatus = status;
-                    offset++;
-                }
-                
-                const type = status & 0xF0;
-                
-                if (type === 0x90 && offset + 1 < bytes.length) {
-                    const note = bytes[offset];
-                    const vel = bytes[offset + 1];
-                    if (vel > 0) {
-                        events.push({
-                            time: (currentTime / division) * 1000,
-                            note: note,
-                            velocity: vel
-                        });
+                    currentTime += delta;
+
+                    if (offset >= trackEnd) break;
+
+                    // Read status byte
+                    let status = bytes[offset];
+                    if ((status & 0x80) === 0) {
+                        // Running status - use previous status
+                        status = runningStatus;
+                    } else {
+                        runningStatus = status;
+                        offset++;
                     }
-                    offset += 2;
-                } else if (type === 0x80 && offset + 1 < bytes.length) {
-                    offset += 2;
-                } else if (type === 0xB0) { offset += 2; }
-                else if (type === 0xC0) { offset += 1; }
-                else if (type === 0xE0) { offset += 2; }
-                else if (status === 0xFF) {
-                    offset++;
-                    let len = bytes[offset++];
-                    offset += len;
-                } else {
-                    offset++;
+
+                    const type = status & 0xF0;
+
+                    // Note On (0x90)
+                    if (type === 0x90 && offset + 1 < trackEnd) {
+                        const note = bytes[offset];
+                        const vel = bytes[offset + 1];
+                        if (vel > 0) {
+                            events.push({
+                                time: (currentTime / division) * 1000,
+                                note: note,
+                                velocity: vel,
+                                track: track
+                            });
+                            notesInTrack++;
+                        }
+                        offset += 2;
+                    }
+                    // Note Off (0x80)
+                    else if (type === 0x80 && offset + 1 < trackEnd) {
+                        offset += 2;
+                    }
+                    // Control Change (0xB0)
+                    else if (type === 0xB0 && offset + 1 < trackEnd) {
+                        offset += 2;
+                    }
+                    // Program Change (0xC0)
+                    else if (type === 0xC0 && offset < trackEnd) {
+                        offset += 1;
+                    }
+                    // Pitch Bend (0xE0)
+                    else if (type === 0xE0 && offset + 1 < trackEnd) {
+                        offset += 2;
+                    }
+                    // Meta event (0xFF)
+                    else if (status === 0xFF) {
+                        offset++;
+                        if (offset < trackEnd) {
+                            let len = bytes[offset++];
+                            offset += len;
+                        }
+                    }
+                    // SysEx (0xF0, 0xF7)
+                    else if (status === 0xF0 || status === 0xF7) {
+                        offset++;
+                        // Read variable-length length
+                        let sysexLen = 0;
+                        while (offset < trackEnd) {
+                            sysexLen = (sysexLen << 7) | (bytes[offset] & 0x7F);
+                            if ((bytes[offset] & 0x80) === 0) {
+                                offset++;
+                                break;
+                            }
+                            offset++;
+                        }
+                        offset += sysexLen;
+                    }
+                    else {
+                        offset++;
+                    }
                 }
+
+                log('Track ' + track + ': ' + notesInTrack + ' notes');
+                offset = trackEnd; // Ensure we're at end of track
             }
-            
+
+            log('Total events parsed: ' + events.length);
             return events;
         },
-        
+
         midiToFreq: function(note) {
             // MIDI note 69 = A4 = 440Hz
             return 440 * Math.pow(2, (note - 69) / 12);
         },
         
         playEvents: function(events, name) {
+            // This is the native fallback - Tone.js is preferred
             if (!events || events.length === 0) {
                 log('No events to play');
                 return false;
             }
 
-            // Initialize high-quality audio chain
-            initAudioChain();
+            initNative();
 
             if (audioContext.state === 'suspended') {
                 audioContext.resume();
             }
 
             const now = audioContext.currentTime;
-            const startTime = now + 0.1;
-
-            // Sort events by time
             events.sort((a, b) => a.time - b.time);
+            const filtered = events.filter(e => e.time < 60000);
 
-            // Limit to first 60 seconds for performance
-            const maxTime = 60000;
-            const filtered = events.filter(e => e.time < maxTime);
+            log('Native: Scheduling ' + filtered.length + ' notes');
 
-            log('Playing ' + filtered.length + ' events from ' + startTime);
-
-            // Group simultaneous notes for better voice management
-            const voices = new Map();
-            const activeNotes = new Set();
-
-            // Create improved synth voice
-            const createVoice = (freq, velocity, time) => {
-                // Use multiple oscillators for richer sound
-                const osc1 = audioContext.createOscillator();
-                const osc2 = audioContext.createOscillator();
-                const filter = audioContext.createBiquadFilter();
-                const gain = audioContext.createGain();
-                const vibrato = audioContext.createOscillator();
-                const vibratoGain = audioContext.createGain();
-
-                // Oscillator 1 - main tone (sawtooth for brightness)
-                osc1.type = 'sawtooth';
-                osc1.frequency.value = freq;
-
-                // Oscillator 2 - detuned for thickness
-                osc2.type = 'triangle';
-                osc2.frequency.value = freq * 0.999; // Slight detune
-
-                // Filter - lowpass with envelope
-                filter.type = 'lowpass';
-                filter.Q.value = 5;
-                filter.frequency.setValueAtTime(200, time);
-                filter.frequency.linearRampToValueAtTime(2000 + velocity * 20, time + 0.02);
-                filter.frequency.exponentialRampToValueAtTime(800, time + 0.1);
-
-                // Vibrato
-                vibrato.frequency.value = 5; // 5 Hz vibrato
-                vibratoGain.gain.value = 3; // Vibrato depth
-                vibrato.connect(vibratoGain);
-                vibratoGain.connect(osc1.frequency);
-
-                // Velocity-based amplitude
-                const vel = velocity / 127;
-
-                // ADSR envelope with improved shape
-                gain.gain.setValueAtTime(0, time);
-                gain.gain.linearRampToValueAtTime(vel * 0.3, time + 0.01); // Attack
-                gain.gain.linearRampToValueAtTime(vel * 0.2, time + 0.05); // Decay to sustain
-                gain.gain.linearRampToValueAtTime(vel * 0.15, time + 0.15); // Sustain
-                gain.gain.linearRampToValueAtTime(0, time + 0.3); // Release
-
-                // Connect chain
-                osc1.connect(filter);
-                osc2.connect(filter);
-                filter.connect(gain);
-                gain.connect(reverbNode);
-                gain.connect(masterGain); // Also connect to dry signal
-
-                // Start/stop
-                osc1.start(time);
-                osc2.start(time);
-                vibrato.start(time);
-                osc1.stop(time + 0.35);
-                osc2.stop(time + 0.35);
-                vibrato.stop(time + 0.35);
-
-                return { osc1, osc2, filter, gain, vibrato };
-            };
-
-            // Schedule all notes
-            filtered.forEach((event, index) => {
-                const eventTime = startTime + (event.time / 1000);
-
-                // Skip if time is in the past
+            filtered.forEach(event => {
+                const eventTime = now + 0.1 + (event.time / 1000);
                 if (eventTime < now) return;
 
                 const freq = this.midiToFreq(event.note);
-                const noteKey = event.note;
+                const vel = event.velocity / 127;
 
-                // Stop previous note on same key (monophonic per voice)
-                if (voices.has(noteKey)) {
-                    const oldVoice = voices.get(noteKey);
-                    const oldTime = audioContext.currentTime;
-                    oldVoice.gain.gain.cancelScheduledValues(oldTime);
-                    oldVoice.gain.gain.setValueAtTime(oldVoice.gain.gain.value, oldTime);
-                    oldVoice.gain.gain.exponentialRampToValueAtTime(0.001, oldTime + 0.05);
-                    oldVoice.osc1.stop(oldTime + 0.05);
-                    oldVoice.osc2.stop(oldTime + 0.05);
-                    oldVoice.vibrato.stop(oldTime + 0.05);
-                }
+                const osc1 = audioContext.createOscillator();
+                const osc2 = audioContext.createOscillator();
+                const gain = audioContext.createGain();
 
-                // Create new voice
-                const voice = createVoice(freq, event.velocity, eventTime);
-                voices.set(noteKey, voice);
+                osc1.type = 'sawtooth';
+                osc1.frequency.value = freq;
+                osc2.type = 'triangle';
+                osc2.frequency.value = freq * 0.999;
 
-                // Auto-cleanup
-                setTimeout(() => {
-                    voices.delete(noteKey);
-                }, (event.time / 1000 + 0.4) * 1000);
+                gain.gain.setValueAtTime(0, eventTime);
+                gain.gain.linearRampToValueAtTime(vel * 0.3, eventTime + 0.01);
+                gain.gain.linearRampToValueAtTime(0, eventTime + 0.3);
+
+                osc1.connect(gain);
+                osc2.connect(gain);
+                gain.connect(masterGain);
+
+                osc1.start(eventTime);
+                osc2.start(eventTime);
+                osc1.stop(eventTime + 0.35);
+                osc2.stop(eventTime + 0.35);
             });
 
-            log('Scheduled ' + filtered.length + ' notes with enhanced synthesis');
+            log('Native: Playback scheduled');
             return true;
         }
     };
