@@ -133,27 +133,45 @@
      */
     function validatePassword() {
         const input = document.getElementById('password-input')?.value || '';
-        
+
         if (input.length !== 6) {
-            document.getElementById('validation-result').textContent = 'Password must be 6 digits';
+            displayValidation({
+                valid: false,
+                error: 'Password must be 6 digits'
+            });
             return;
         }
-        
-        const digits = input.split('').map(d => parseInt(d) * 2);  // Simplified decoding
-        
+
+        // Validate all characters are digits
+        if (!/^\d{6}$/.test(input)) {
+            displayValidation({
+                valid: false,
+                error: 'Password must contain only digits 0-9'
+            });
+            return;
+        }
+
+        Logger.info('PasswordGenerator', 'Validating password: ' + input);
+
         if (window.API) {
-            window.API.validatePassword(digits)
+            Logger.info('PasswordGenerator', 'Calling API.validatePassword...');
+            window.API.validatePassword(input)
                 .then(result => {
+                    Logger.info('PasswordGenerator', 'Validation result: ' + JSON.stringify(result));
                     displayValidation(result);
+                })
+                .catch(error => {
+                    Logger.error('PasswordGenerator', 'Validation failed: ' + error.message);
+                    displayValidation({
+                        valid: false,
+                        error: error.message
+                    });
                 });
         } else {
-            // Fallback validation
+            Logger.warn('PasswordGenerator', 'API not available');
             displayValidation({
-                valid: true,
-                progression: {
-                    world: 0,
-                    level_index: 0
-                }
+                valid: false,
+                error: 'API not available'
             });
         }
     }
@@ -165,19 +183,20 @@
     function displayValidation(result) {
         const resultDiv = document.getElementById('validation-result');
         if (!resultDiv) return;
-        
+
         if (result.valid) {
             resultDiv.innerHTML = `
                 <div class="validation-success">
-                    Valid password!<br>
-                    World: ${result.progression.world}<br>
-                    Level: ${result.progression.level_index}
+                    ✓ Valid password!<br>
+                    World: ${result.world}<br>
+                    Level: ${result.level_index}<br>
+                    <small>${result.message || ''}</small>
                 </div>
             `;
         } else {
             resultDiv.innerHTML = `
                 <div class="validation-error">
-                    Invalid password: ${result.error}
+                    ✗ ${result.error || 'Invalid password'}
                 </div>
             `;
         }

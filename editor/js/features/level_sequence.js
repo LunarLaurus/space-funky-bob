@@ -25,28 +25,56 @@
             console.warn('Level sequence viewer container not found:', containerId);
             return;
         }
-        
+
         container.innerHTML = `
             <div class="level-sequence-viewer">
-                <h3>Level Progression Sequences</h3>
-                <p class="source-note">Source: INITLEVE.A - themapsequence1/2/3 tables</p>
-                <div class="sequences">
-                    <div class="sequence" data-world="0">
-                        <h4>World 0 (14 levels)</h4>
+                <div class="viewer-header">
+                    <h2>Level Progression</h2>
+                    <span class="source-tag">Source: INITLEVE.A - themapsequence1/2/3</span>
+                </div>
+                <div class="world-stats">
+                    <div class="stat">
+                        <span class="stat-value">50</span>
+                        <span class="stat-label">Total Levels</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-value">3</span>
+                        <span class="stat-label">Worlds</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-value">14/19/17</span>
+                        <span class="stat-label">Levels per World</span>
+                    </div>
+                </div>
+                <div class="sequences-grid">
+                    <div class="sequence-card world-0" data-world="0">
+                        <div class="sequence-header">
+                            <h3>World 0</h3>
+                            <span class="level-count">14 levels</span>
+                        </div>
+                        <div class="sequence-subtitle">Borg Factory / Bug Planet</div>
                         <div class="sequence-list"></div>
                     </div>
-                    <div class="sequence" data-world="1">
-                        <h4>World 1 (19 levels)</h4>
+                    <div class="sequence-card world-1" data-world="1">
+                        <div class="sequence-header">
+                            <h3>World 1</h3>
+                            <span class="level-count">19 levels</span>
+                        </div>
+                        <div class="sequence-subtitle">Ancient Ruins / Lava</div>
                         <div class="sequence-list"></div>
                     </div>
-                    <div class="sequence" data-world="2">
-                        <h4>World 2 (17 levels)</h4>
+                    <div class="sequence-card world-2" data-world="2">
+                        <div class="sequence-header">
+                            <h3>World 2</h3>
+                            <span class="level-count">17 levels</span>
+                        </div>
+                        <div class="sequence-subtitle">Ultra Force / Bubble Forest</div>
                         <div class="sequence-list"></div>
                     </div>
                 </div>
             </div>
         `;
-        
+
         // Populate sequences
         renderSequences();
     }
@@ -56,20 +84,21 @@
      */
     function renderSequences() {
         Object.keys(WORLD_SEQUENCES).forEach(worldId => {
-            const sequenceEl = document.querySelector(`.sequence[data-world="${worldId}"]`);
+            const sequenceEl = document.querySelector(`.sequence-card[data-world="${worldId}"]`);
             if (!sequenceEl) return;
-            
+
             const listEl = sequenceEl.querySelector('.sequence-list');
             const sequence = WORLD_SEQUENCES[worldId];
-            
+
             listEl.innerHTML = sequence.map((mapNum, index) => `
-                <span class="sequence-item" data-map="${mapNum}" data-index="${index}">
-                    ${index + 1}: Map ${mapNum}
-                </span>
+                <button class="sequence-btn" data-map="${mapNum}" data-index="${index}" title="Map ${mapNum}">
+                    <span class="seq-num">${index + 1}</span>
+                    <span class="seq-map">${mapNum}</span>
+                </button>
             `).join('');
-            
+
             // Add click handlers
-            listEl.querySelectorAll('.sequence-item').forEach(item => {
+            listEl.querySelectorAll('.sequence-btn').forEach(item => {
                 item.addEventListener('click', () => {
                     const mapNum = parseInt(item.dataset.map);
                     loadLevel(mapNum);

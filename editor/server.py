@@ -22,6 +22,9 @@ PORT = 8000
 EDITOR_DIR = os.path.dirname(__file__)
 DATA_DIR = os.path.join(EDITOR_DIR, '..', 'data')
 
+# MIDI files are in source/Disk A/bob music files  copy/
+MIDI_DIR = os.path.join(EDITOR_DIR, '..', '..', 'source', 'Disk A', 'bob music files  copy')
+
 
 class EditorHandler(http.server.SimpleHTTPRequestHandler):
     """HTTP request handler routing to handler modules."""
@@ -39,7 +42,7 @@ class EditorHandler(http.server.SimpleHTTPRequestHandler):
         if not self.level_handler:
             self.level_handler = LevelHandler(DATA_DIR)
             self.tileset_handler = TilesetHandler(os.path.join(DATA_DIR, 'tilesets'))
-            self.data_handler = DataHandler(os.path.join(DATA_DIR, 'extracted'))
+            self.data_handler = DataHandler(os.path.join(DATA_DIR, 'extracted'), MIDI_DIR)
             self.export_handler = ExportHandler()
             self.boss_handler = BossHandler()
             self.password_handler = PasswordHandler()
@@ -77,6 +80,18 @@ class EditorHandler(http.server.SimpleHTTPRequestHandler):
             self._send_json(result if result else {'error': 'File not found'})
         elif self.path == '/midi':
             self._send_json(self.data_handler.get_midi_list())
+        elif self.path.startswith('/midi/'):
+            filename = self.path[6:]
+            midi_path = self.data_handler.get_midi_file(filename)
+            if midi_path:
+                self.send_response(200)
+                self.send_header('Content-type', 'audio/midi')
+                self.send_header('Content-Length', os.path.getsize(midi_path))
+                self.end_headers()
+                with open(midi_path, 'rb') as f:
+                    self.wfile.write(f.read())
+            else:
+                self.send_error(404, 'MIDI file not found')
         # Static files - let SimpleHTTPRequestHandler serve them
         elif self.path == '/':
             self.path = '/index.html'
