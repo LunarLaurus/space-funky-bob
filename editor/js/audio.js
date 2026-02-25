@@ -983,7 +983,11 @@ const Audio = (function() {
      */
     function renderAudioList(files) {
         const list = document.getElementById('audioList');
-        if (!list) return;
+        if (!list) {
+            error('audioList element not found!');
+            return;
+        }
+        log('renderAudioList called with ' + (files ? files.length : 0) + ' files');
 
         // Set playlist
         setPlaylist(files);
@@ -1061,6 +1065,7 @@ const Audio = (function() {
         html += '</div>';
 
         list.innerHTML = html;
+        log('HTML set to audioList, length: ' + html.length);
 
         // Update UI functions
         function updatePlayerUI() {
