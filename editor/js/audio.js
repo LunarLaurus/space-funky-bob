@@ -809,95 +809,20 @@ const Audio = (function() {
     }
 
     /**
-     * Run audio validation tests
+     * Get engine status
      */
-    function runTests() {
-        testMode = true;
-        testResults = [];
-
-        log('========================================');
-        log('Running audio validation tests...');
-        log('========================================');
-
-        // Test 1: AudioContext creation
-        try {
-            const ctx = new (window.AudioContext || window.webkitAudioContext)();
-            testResults.push({ name: 'AudioContext creation', pass: true });
-            log('✓ AudioContext creation');
-        } catch (e) {
-            testResults.push({ name: 'AudioContext creation', pass: false, error: e.message });
-            log('✗ AudioContext creation: ' + e.message);
-        }
-
-        // Test 2: MIDI validation with valid data
-        const validHeader = new Uint8Array([0x4D, 0x54, 0x68, 0x64, 0, 0, 0, 6, 0, 0, 0, 1, 0x03, 0xE8]);
-        const validResult = validateMIDI(validHeader);
-        testResults.push({ name: 'MIDI validation (valid)', pass: validResult.valid });
-        log((validResult.valid ? '✓' : '✗') + ' MIDI validation (valid)');
-
-        // Test 3: MIDI validation with invalid header
-        const invalidHeader = new Uint8Array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
-        const invalidResult = validateMIDI(invalidHeader);
-        testResults.push({ name: 'MIDI validation (invalid)', pass: !invalidResult.valid });
-        log((!invalidResult.valid ? '✓' : '✗') + ' MIDI validation (invalid rejected)');
-
-        // Test 4: Web Audio API support
-        const hasOscillator = typeof window.OscillatorNode !== 'undefined';
-        const hasGain = typeof window.GainNode !== 'undefined';
-        const hasConvolver = typeof window.ConvolverNode !== 'undefined';
-        const hasCompressor = typeof window.DynamicsCompressorNode !== 'undefined';
-        const apiTest = hasOscillator && hasGain && hasConvolver && hasCompressor;
-        testResults.push({ name: 'Web Audio API support', pass: apiTest });
-        log((apiTest ? '✓' : '✗') + ' Web Audio API support');
-
-        // Test 5: Tone.js library availability
-        const hasTone = typeof window.Tone !== 'undefined';
-        testResults.push({ name: 'Tone.js library', pass: hasTone });
-        log((hasTone ? '✓' : '✗') + ' Tone.js library - BEST QUALITY');
-
-        // Engine summary
-        log('========================================');
-        log('Engine Availability:');
-        log('  Tone.js (Synth):    ' + (hasTone ? 'YES ★' : 'NO'));
-        log('  Native (Fallback):  YES');
-        log('========================================');
-        log('Preferred engine: ' + preferredEngine);
-        log('Click engine toggle to switch');
-        log('========================================');
-
-        // Summary
-        const passed = testResults.filter(r => r.pass).length;
-        const total = testResults.length;
-        log('Test Results: ' + passed + '/' + total + ' passed');
-        log('========================================');
-
-        testMode = false;
+    function getEngineStatus() {
         return {
-            passed,
-            total,
-            results: testResults,
-            allPassed: passed === total,
-            engines: { tone: hasTone, native: true }
+            current: currentEngine,
+            preferred: preferredEngine,
+            toneAvailable: !!window.Tone,
+            nativeAvailable: true
         };
     }
 
     /**
-     * Get test results
+     * Render audio playlist UI
      */
-    function getTestResults() {
-        return {
-            currentEngine,
-            preferredEngine,
-            isPlaying,
-            testMode,
-            results: testResults,
-            engines: {
-                tone: !!toneSynth,
-                native: !!audioContext
-            }
-        };
-    }
-    
     function renderAudioList(files) {
         const list = document.getElementById('audioList');
         if (!list) return;
@@ -925,19 +850,13 @@ const Audio = (function() {
         html += '</div>';
         
         // Engine toggle
-        html += '<button type="button" id="btn-engine-toggle" style="background:#444;color:#fff;padding:6px 12px;cursor:pointer;border:none;border-radius:4px;font-size:10px;">Engine: Tone.js</button>';
+        html += '<button type="button" id="btn-engine-toggle" title="Switch audio engine" style="background:#444;color:#fff;padding:6px 12px;cursor:pointer;border:none;border-radius:4px;font-size:10px;">Engine: Tone.js</button>';
         html += '</div>';
         
         // Progress (visual only for now)
         html += '<div style="margin-top:10px;height:4px;background:#333;border-radius:2px;overflow:hidden;">';
         html += '<div id="progress-bar" style="width:0%;height:100%;background:var(--accent);transition:width 0.1s;"></div>';
         html += '</div>';
-        html += '</div>';
-
-        // Test button
-        html += '<div style="padding:10px;margin:10px 0;">';
-        html += '<button type="button" id="btn-audio-test" style="background:#444;color:#fff;padding:8px 16px;cursor:pointer;border:none;border-radius:4px;">Run Tests</button>';
-        html += '<span id="audio-test-result" style="font-size:11px;color:var(--text-dim);margin-left:10px;"></span>';
         html += '</div>';
 
         // Playlist
@@ -1057,36 +976,31 @@ const Audio = (function() {
             };
         }
 
-        // Test button
-        document.getElementById('btn-audio-test')?.addEventListener('click', () => {
-            const results = Audio.runTests();
-            const testResult = document.getElementById('audio-test-result');
-            testResult.textContent = results.allPassed ?
-                '✓ All tests passed!' :
-                '✗ ' + results.passed + '/' + results.total + ' passed';
-            testResult.style.color = results.allPassed ? 'var(--accent)' : '#ff5555';
-        });
-
         // Initial UI update
         updatePlayerUI();
     }
 
     return {
+        // Playback control
         playMIDI: playMIDI,
-        renderAudioList: renderAudioList,
-        runTests: runTests,
-        getTestResults: getTestResults,
-        setPreferredEngine: setPreferredEngine,
-        getEngineStatus: getEngineStatus,
-        getCurrentTrack: getCurrentTrack,
-        getPlaylist: getPlaylist,
         playTrack: playTrack,
         playNext: playNext,
         playPrevious: playPrevious,
         pause: pause,
         resume: resume,
         stop: stop,
-        setPlaylist: setPlaylist
+        
+        // Playlist management
+        setPlaylist: setPlaylist,
+        getPlaylist: getPlaylist,
+        getCurrentTrack: getCurrentTrack,
+        
+        // Settings
+        setPreferredEngine: setPreferredEngine,
+        getEngineStatus: getEngineStatus,
+        
+        // UI
+        renderAudioList: renderAudioList
     };
 })();
 
