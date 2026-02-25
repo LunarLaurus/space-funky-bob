@@ -173,12 +173,12 @@
      */
     async function loadAllTilesets() {
         Logger.info('TilesetPanel', 'Scanning ROM for tilesets...');
-        
+
         if (window.API) {
             try {
                 const data = await window.API.getAllTilesets();
                 Logger.info('TilesetPanel', 'Found ' + (data.tilesets?.length || 0) + ' tilesets');
-                
+
                 // Update tileset list
                 TILESETS.length = 0;
                 if (data.tilesets) {
@@ -190,10 +190,24 @@
                         });
                     });
                 }
-                
+
+                // Update selector dropdown
+                const selector = document.getElementById('tileset-selector');
+                if (selector) {
+                    selector.innerHTML = '';
+                    TILESETS.forEach(ts => {
+                        const opt = document.createElement('option');
+                        opt.value = ts.id;
+                        opt.textContent = ts.name;
+                        selector.appendChild(opt);
+                    });
+                }
+
                 // Re-render tile grid with first tileset
                 if (TILESETS.length > 0) {
-                    await loadTileset(TILESETS[0].id);
+                    const firstId = TILESETS[0].id;
+                    if (selector) selector.value = firstId;
+                    await loadTileset(firstId);
                 }
             } catch (error) {
                 Logger.error('TilesetPanel', 'Failed to load tilesets: ' + error.message);

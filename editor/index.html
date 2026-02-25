@@ -270,7 +270,7 @@
                 <select id="tileViewerTileset" style="background:var(--bg-dark);color:var(--text);border:1px solid var(--accent);padding:8px;">
                     <option value="">Select tileset...</option>
                 </select>
-                <button onclick="renderTileViewer()" style="background:var(--accent);border:none;padding:8px 16px;cursor:pointer;margin-left:10px;">Load</button>
+                <button onclick="window.TilesetPanel?.loadTileset(document.getElementById('tileViewerTileset').value)" style="background:var(--accent);border:none;padding:8px 16px;cursor:pointer;margin-left:10px;">Load</button>
             </div>
             <div id="tileViewerGrid" style="display:grid;grid-template-columns:repeat(16,1fr);gap:2px;max-height:500px;overflow:auto;background:#000;padding:10px;">
                 <div style="color:var(--text-dim);grid-column:1/-1;text-align:center;padding:40px;">Select a tileset and click Load</div>
