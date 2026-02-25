@@ -31,6 +31,11 @@ const Audio = (function() {
     let activeSources = [];    // Currently playing Tone.js sources
     let playbackStartTime = 0;
     let pausedAt = 0;          // Position where paused (ms)
+    let totalDuration = 0;     // Total track duration (ms)
+    let playbackSpeed = 1.0;   // Playback speed multiplier
+    
+    // Progress tracking
+    let progressInterval = null;
 
     // Audio chain components (native fallback)
     let masterGain = null;
@@ -50,6 +55,12 @@ const Audio = (function() {
      */
     function stop() {
         log('Stopping playback...');
+        
+        // Stop progress tracking
+        if (progressInterval) {
+            clearInterval(progressInterval);
+            progressInterval = null;
+        }
         
         // Cancel and stop Tone.js Transport
         if (window.Tone && Tone.Transport) {
@@ -91,6 +102,12 @@ const Audio = (function() {
         if (!isPlaying) return;
         
         log('Pausing playback...');
+        
+        // Stop progress tracking
+        if (progressInterval) {
+            clearInterval(progressInterval);
+            progressInterval = null;
+        }
         
         // Pause Tone.js Transport
         if (window.Tone && Tone.Transport) {
@@ -211,6 +228,72 @@ const Audio = (function() {
             isCurrent: i === currentTrackIndex
         }));
     }
+
+    /**
+     * Set playback speed
+     * @param {number} speed - Playback speed (0.5 = 50%, 1.0 = 100%, 2.0 = 200%)
+     */
+    function setPlaybackSpeed(speed) {
+        if (speed < 0.25 || speed > 4.0) {
+            log('Invalid speed: ' + speed + ' (must be 0.25-4.0)');
+            return false;
+        }
+        playbackSpeed = speed;
+        if (window.Tone && Tone.Transport) {
+            Tone.Transport.playbackRate = speed;
+        }
+        log('Playback speed set to ' + (speed * 100) + '%');
+        return true;
+    }
+
+    /**
+     * Get current playback speed
+     */
+    function getPlaybackSpeed() {
+        return playbackSpeed;
+    }
+
+    /**
+     * Get current playback position
+     */
+    function getCurrentPosition() {
+        if (isPaused) return pausedAt;
+        if (!isPlaying) return 0;
+        return (Tone.now() - playbackStartTime) * 1000;
+    }
+
+    /**
+     * Get total duration of current track
+     */
+    function getTotalDuration() {
+        return totalDuration;
+    }
+
+    /**
+     * Start progress tracking
+     */
+    function startProgressTracking() {
+        // Stop any existing interval
+        if (progressInterval) {
+            clearInterval(progressInterval);
+        }
+        
+        // Update progress every 100ms
+        progressInterval = setInterval(() => {
+            if (isPlaying && currentTrackIndex >= 0) {
+                const position = getCurrentPosition();
+                const progress = totalDuration > 0 ? (position / totalDuration) * 100 : 0;
+                updateProgressUI(position, totalDuration, progress);
+            }
+        }, 100);
+    }
+
+    /**
+     * Update progress UI (callback, implemented in renderAudioList)
+     */
+    let updateProgressUI = function(position, total, progress) {
+        // Default implementation - can be overridden
+    };
 
     /**
      * Set preferred engine (user toggle)
@@ -796,7 +879,21 @@ const Audio = (function() {
                 isPlaying = true;
                 isPaused = false;
                 playbackStartTime = Tone.now() - (startPosition / 1000);
+                
+                // Calculate total duration from events
+                const events = MIDI.parseMIDI(midiData);
+                if (events && events.length > 0) {
+                    const maxTime = Math.max(...events.map(e => e.time));
+                    totalDuration = maxTime;
+                } else {
+                    totalDuration = 60000; // Default 60 seconds
+                }
+                
+                log('Track duration: ' + Math.round(totalDuration / 1000) + 's');
                 log('Playback started successfully (' + engine + ')');
+                
+                // Start progress tracking
+                startProgressTracking();
             } else {
                 error('Playback failed');
             }
@@ -893,14 +990,26 @@ const Audio = (function() {
         html += '<button type="button" id="btn-next" title="Next (→)" style="background:#3a3a4e;color:#fff;padding:10px 14px;cursor:pointer;border:none;border-radius:4px;font-size:14px;transition:all 0.2s;" onmouseover="this.style.background=\'#4a4a5e\'" onmouseout="this.style.background=\'#3a3a4e\'">⏭</button>';
         html += '</div>';
         
-        // Now Playing
-        html += '<div style="flex:1;min-width:180px;margin-left:10px;padding:8px 12px;background:var(--bg-dark);border-radius:4px;border:1px solid var(--border);">';
+        // Now Playing + Time Display
+        html += '<div style="flex:1;min-width:220px;margin-left:10px;">';
+        html += '<div style="display:flex;align-items:center;gap:10px;">';
+        html += '<div style="flex:1;min-width:0;">';
         html += '<div style="font-size:9px;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;">Now Playing</div>';
         html += '<div id="now-playing" style="font-size:12px;color:var(--accent);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">None</div>';
         html += '</div>';
+        html += '<div style="text-align:right;min-width:80px;">';
+        html += '<div id="time-display" style="font-size:11px;color:var(--text);font-family:monospace;">0:00 / 0:00</div>';
+        html += '<div style="font-size:9px;color:var(--text-dim);margin-top:2px;" id="speed-display">1.0x</div>';
+        html += '</div>';
+        html += '</div>';
+        html += '</div>';
         
-        // Engine toggle
+        // Engine toggle + Speed control
+        html += '<div style="display:flex;gap:4px;align-items:center;">';
+        html += '<button type="button" id="btn-speed-down" title="Slower (-)" style="background:#3a3a4e;color:#fff;width:24px;height:24px;cursor:pointer;border:none;border-radius:4px;font-size:12px;font-weight:bold;" onmouseover="this.style.background=\'#4a4a5e\'" onmouseout="this.style.background=\'#3a3a4e\'">-</button>';
         html += '<button type="button" id="btn-engine-toggle" title="Switch audio engine" style="background:#3a3a4e;color:#fff;padding:6px 10px;cursor:pointer;border:none;border-radius:4px;font-size:9px;text-transform:uppercase;letter-spacing:0.5px;transition:all 0.2s;" onmouseover="this.style.background=\'#4a4a5e\'" onmouseout="this.style.background=\'#3a3a4e\'">Engine: Tone.js</button>';
+        html += '<button type="button" id="btn-speed-up" title="Faster (+)" style="background:#3a3a4e;color:#fff;width:24px;height:24px;cursor:pointer;border:none;border-radius:4px;font-size:12px;font-weight:bold;" onmouseover="this.style.background=\'#4a4a5e\'" onmouseout="this.style.background=\'#3a3a4e\'">+</button>';
+        html += '</div>';
         html += '</div>';
         
         // Progress bar
@@ -944,7 +1053,8 @@ const Audio = (function() {
         function updatePlayerUI() {
             const playBtn = document.getElementById('btn-play-pause');
             const nowPlaying = document.getElementById('now-playing');
-            
+            const speedDisplay = document.getElementById('speed-display');
+
             if (playBtn) {
                 if (isPaused) {
                     playBtn.textContent = '▶';
@@ -960,10 +1070,15 @@ const Audio = (function() {
                     playBtn.style.background = 'var(--accent)';
                 }
             }
-            
+
             if (nowPlaying) {
                 const track = getCurrentTrack();
                 nowPlaying.textContent = track ? track.name : 'None';
+            }
+            
+            // Update speed display
+            if (speedDisplay) {
+                speedDisplay.textContent = playbackSpeed.toFixed(2) + 'x';
             }
 
             // Update playlist highlighting
@@ -998,6 +1113,29 @@ const Audio = (function() {
                 }
             });
         }
+
+        // Implement progress UI update
+        updateProgressUI = function(position, total, progress) {
+            const timeDisplay = document.getElementById('time-display');
+            const progressBar = document.getElementById('progress-bar');
+            
+            if (timeDisplay) {
+                const posSec = Math.floor(position / 1000);
+                const totalSec = Math.floor(total / 1000);
+                const posMin = Math.floor(posSec / 60);
+                const posRem = posSec % 60;
+                const totalMin = Math.floor(totalSec / 60);
+                const totalRem = totalSec % 60;
+                
+                timeDisplay.textContent = 
+                    posMin + ':' + posRem.toString().padStart(2, '0') + ' / ' +
+                    totalMin + ':' + totalRem.toString().padStart(2, '0');
+            }
+            
+            if (progressBar) {
+                progressBar.style.width = Math.min(progress, 100) + '%';
+            }
+        };
 
         // Button handlers
         let isPlayingToggle = false;  // Prevent multiple clicks
@@ -1051,6 +1189,21 @@ const Audio = (function() {
                 log('Engine switched to: ' + newEngine);
             };
         }
+        
+        // Speed control
+        document.getElementById('btn-speed-down')?.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const newSpeed = Math.max(0.25, playbackSpeed - 0.25);
+            setPlaybackSpeed(newSpeed);
+            updatePlayerUI();
+        });
+        
+        document.getElementById('btn-speed-up')?.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const newSpeed = Math.min(4.0, playbackSpeed + 0.25);
+            setPlaybackSpeed(newSpeed);
+            updatePlayerUI();
+        });
 
         // Initial UI update
         updatePlayerUI();
@@ -1070,6 +1223,10 @@ const Audio = (function() {
         setPlaylist: setPlaylist,
         getPlaylist: getPlaylist,
         getCurrentTrack: getCurrentTrack,
+        
+        // Playback speed
+        setPlaybackSpeed: setPlaybackSpeed,
+        getPlaybackSpeed: getPlaybackSpeed,
         
         // Settings
         setPreferredEngine: setPreferredEngine,
