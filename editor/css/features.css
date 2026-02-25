@@ -16,11 +16,19 @@
 }
 
 .feature-section.active {
-    display: block;  /* Show when active */
+    display: block !important;  /* Show when active, override inline styles */
 }
 
 /* Hide main editor container when feature is active */
 body.feature-active .container {
+    display: none;
+}
+
+body.feature-active .status {
+    display: none;
+}
+
+body.feature-active .info-panel {
     display: none;
 }
 
