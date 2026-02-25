@@ -1,35 +1,104 @@
 /**
  * Audio Module - MIDI Playback
  * Handles loading and playing MIDI files from the game
+ * 
+ * Quality Features:
+ * - Dual-oscillator synthesis (sawtooth + triangle)
+ * - Velocity-sensitive lowpass filter
+ * - 5Hz vibrato modulation
+ * - Reverb (convolution-based)
+ * - Dynamics compression
+ * - Monophonic voice management
+ * 
+ * Note: Uses pure Web Audio API - no external libraries required.
+ * Tone.js and JZZ are not needed for this implementation.
  */
 
 const Audio = (function() {
     'use strict';
 
-    let jzzLoaded = false;
-    let toneLoaded = false;
-    let toneSynth = null;
     let audioContext = null;
-    let reverbNode = null;
     let masterGain = null;
     let compressorNode = null;
+    let reverbNode = null;
+    let isInitialized = false;
+    let testMode = false;
+    let testResults = [];
 
     function log(msg) {
         console.log('[Audio] ' + msg);
     }
 
+    function error(msg) {
+        console.error('[Audio] ERROR: ' + msg);
+    }
+
     /**
-     * Initialize high-quality audio chain with effects
+     * Validate MIDI data structure
+     * @param {Uint8Array} data - MIDI file data
+     * @returns {Object} Validation result
      */
-    function initAudioChain() {
-        if (!audioContext) {
-            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    function validateMIDI(data) {
+        const result = { valid: false, errors: [], warnings: [] };
+
+        if (!data || data.length < 14) {
+            result.errors.push('File too small for MIDI format');
+            return result;
         }
 
-        if (!masterGain) {
+        // Check header "MThd"
+        if (data[0] !== 0x4D || data[1] !== 0x54 || data[2] !== 0x68 || data[3] !== 0x64) {
+            result.errors.push('Invalid MIDI header (expected MThd)');
+            return result;
+        }
+
+        // Check header length (should be 6)
+        const headerLen = (data[4] << 24) | (data[5] << 16) | (data[6] << 8) | data[7];
+        if (headerLen !== 6) {
+            result.warnings.push('Unusual header length: ' + headerLen);
+        }
+
+        // Check format (0, 1, or 2)
+        const format = (data[8] << 8) | data[9];
+        if (format > 2) {
+            result.warnings.push('Unusual MIDI format: ' + format);
+        }
+
+        // Check division (ticks per quarter note)
+        const division = (data[12] << 8) | data[13];
+        if (division < 1 || division > 960) {
+            result.warnings.push('Unusual division: ' + division);
+        }
+
+        result.valid = true;
+        result.info = { format, division, headerLen };
+        return result;
+    }
+
+    /**
+     * Initialize high-quality audio chain with effects
+     * MUST be called from user gesture (click/touch)
+     */
+    function initAudioChain() {
+        if (isInitialized) return true;
+
+        try {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+
+            // Resume context (required after user gesture)
+            if (audioContext.state === 'suspended') {
+                audioContext.resume().then(() => {
+                    log('AudioContext resumed successfully');
+                }).catch(err => {
+                    error('Failed to resume AudioContext: ' + err.message);
+                });
+            }
+
             // Create master gain for volume control
             masterGain = audioContext.createGain();
-            masterGain.gain.value = 0.5;
+            masterGain.gain.value = 0.4;
 
             // Create compressor for dynamic range control
             compressorNode = audioContext.createDynamicsCompressor();
@@ -39,7 +108,7 @@ const Audio = (function() {
             compressorNode.attack.value = 0.003;
             compressorNode.release.value = 0.25;
 
-            // Create reverb (simple convolution with impulse response)
+            // Create reverb (convolution with artificial impulse)
             reverbNode = audioContext.createConvolver();
             createReverbImpulse();
 
@@ -48,10 +117,17 @@ const Audio = (function() {
             compressorNode.connect(masterGain);
             masterGain.connect(audioContext.destination);
 
-            // Also add dry signal
+            // Also add dry signal (70% dry, 30% wet)
             const dryGain = audioContext.createGain();
             dryGain.gain.value = 0.7;
             dryGain.connect(compressorNode);
+
+            isInitialized = true;
+            log('Audio chain initialized: reverb + compressor + master gain');
+            return true;
+        } catch (e) {
+            error('Failed to initialize audio chain: ' + e.message);
+            return false;
         }
     }
 
@@ -440,29 +516,146 @@ const Audio = (function() {
     };
     
     async function playMIDI(midiUrl, name) {
-        log('playMIDI: ' + name);
-        
+        log('========================================');
+        log('Playing: ' + name);
+        log('========================================');
+
         try {
+            // Initialize audio on user gesture (REQUIRED)
+            if (!isInitialized) {
+                log('Initializing audio chain...');
+                const initResult = initAudioChain();
+                if (!initResult) {
+                    error('Audio initialization failed');
+                    return false;
+                }
+                // Wait for context to be ready
+                if (audioContext.state === 'suspended') {
+                    await audioContext.resume();
+                    log('AudioContext resumed');
+                }
+            }
+
+            // Fetch MIDI file
+            log('Fetching: ' + midiUrl);
             const response = await fetch(midiUrl);
-            if (!response.ok) throw new Error('Fetch failed');
+            if (!response.ok) {
+                throw new Error('HTTP ' + response.status + ': ' + response.statusText);
+            }
             const arrayBuffer = await response.arrayBuffer();
             const midiData = new Uint8Array(arrayBuffer);
-            
-            log('Parsing MIDI...');
-            const events = MIDI.parseMIDI(midiData);
-            
-            if (!events || events.length === 0) {
-                log('No events parsed');
+            log('Loaded ' + midiData.length + ' bytes');
+
+            // Validate MIDI structure
+            log('Validating MIDI...');
+            const validation = validateMIDI(midiData);
+            if (!validation.valid) {
+                error('Invalid MIDI: ' + validation.errors.join(', '));
                 return false;
             }
-            
-            log('Playing ' + events.length + ' events');
-            return MIDI.playEvents(events, name);
-            
+            if (validation.warnings.length > 0) {
+                log('Warnings: ' + validation.warnings.join(', '));
+            }
+            log('MIDI valid - Format: ' + validation.info.format + ', Division: ' + validation.info.division);
+
+            // Parse MIDI events
+            log('Parsing MIDI events...');
+            const events = MIDI.parseMIDI(midiData);
+
+            if (!events || events.length === 0) {
+                error('No note events found in MIDI file');
+                return false;
+            }
+
+            log('Found ' + events.length + ' note events');
+
+            // Play events
+            log('Starting playback...');
+            const result = MIDI.playEvents(events, name);
+
+            if (result) {
+                log('Playback started successfully');
+            } else {
+                error('Playback failed');
+            }
+
+            return result;
+
         } catch (e) {
-            log('Error: ' + e.message);
+            error('playMIDI exception: ' + e.message);
+            error('Stack: ' + e.stack);
             return false;
         }
+    }
+
+    /**
+     * Run audio validation tests
+     * @returns {Object} Test results
+     */
+    function runTests() {
+        testMode = true;
+        testResults = [];
+
+        log('Running audio validation tests...');
+
+        // Test 1: AudioContext creation
+        try {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            testResults.push({ name: 'AudioContext creation', pass: true });
+            log('✓ AudioContext creation');
+        } catch (e) {
+            testResults.push({ name: 'AudioContext creation', pass: false, error: e.message });
+            log('✗ AudioContext creation: ' + e.message);
+        }
+
+        // Test 2: MIDI validation with valid data
+        const validHeader = new Uint8Array([0x4D, 0x54, 0x68, 0x64, 0, 0, 0, 6, 0, 0, 0, 1, 0x03, 0xE8]);
+        const validResult = validateMIDI(validHeader);
+        testResults.push({ name: 'MIDI validation (valid)', pass: validResult.valid });
+        log((validResult.valid ? '✓' : '✗') + ' MIDI validation (valid)');
+
+        // Test 3: MIDI validation with invalid header
+        const invalidHeader = new Uint8Array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+        const invalidResult = validateMIDI(invalidHeader);
+        testResults.push({ name: 'MIDI validation (invalid)', pass: !invalidResult.valid });
+        log((!invalidResult.valid ? '✓' : '✗') + ' MIDI validation (invalid rejected)');
+
+        // Test 4: Check for required Web Audio APIs
+        const hasOscillator = typeof window.OscillatorNode !== 'undefined';
+        const hasGain = typeof window.GainNode !== 'undefined';
+        const hasConvolver = typeof window.ConvolverNode !== 'undefined';
+        const hasCompressor = typeof window.DynamicsCompressorNode !== 'undefined';
+        const apiTest = hasOscillator && hasGain && hasConvolver && hasCompressor;
+        testResults.push({ name: 'Web Audio API support', pass: apiTest });
+        log((apiTest ? '✓' : '✗') + ' Web Audio API support');
+
+        // Summary
+        const passed = testResults.filter(r => r.pass).length;
+        const total = testResults.length;
+        log('========================================');
+        log('Test Results: ' + passed + '/' + total + ' passed');
+        log('========================================');
+
+        testMode = false;
+        return {
+            passed,
+            total,
+            results: testResults,
+            allPassed: passed === total
+        };
+    }
+
+    /**
+     * Get test results
+     * @returns {Object} Test results
+     */
+    function getTestResults() {
+        return {
+            isInitialized,
+            audioContextState: audioContext ? audioContext.state : 'not created',
+            testMode,
+            results: testResults
+        };
     }
     
     function renderAudioList(files) {
@@ -471,6 +664,12 @@ const Audio = (function() {
 
         let html = '<div style="color:var(--accent);padding:10px;font-size:11px;">';
         html += 'Audio files from source (MIDI format):</div>';
+
+        // Test button
+        html += '<div style="padding:10px;margin:10px 0;">';
+        html += '<button type="button" id="btn-audio-test" style="background:#444;color:#fff;padding:8px 16px;cursor:pointer;border:none;border-radius:4px;margin-right:8px;">Run Audio Tests</button>';
+        html += '<span id="audio-test-result" style="font-size:11px;color:var(--text-dim);"></span>';
+        html += '</div>';
 
         if (!files || files.length === 0) {
             html += '<div style="padding:10px;color:var(--text-dim);">No MIDI files found</div>';
@@ -494,6 +693,19 @@ const Audio = (function() {
 
         list.innerHTML = html;
 
+        // Test button handler
+        const testBtn = document.getElementById('btn-audio-test');
+        const testResult = document.getElementById('audio-test-result');
+        if (testBtn) {
+            testBtn.onclick = function() {
+                const results = Audio.runTests();
+                testResult.textContent = results.allPassed ? 
+                    '✓ All tests passed!' : 
+                    '✗ ' + results.passed + '/' + results.total + ' passed';
+                testResult.style.color = results.allPassed ? 'var(--accent)' : '#ff5555';
+            };
+        }
+
         // Attach click handlers
         if (files) {
             files.forEach((af) => {
@@ -509,10 +721,13 @@ const Audio = (function() {
             });
         }
     }
-    
+
     return {
         playMIDI: playMIDI,
-        renderAudioList: renderAudioList
+        renderAudioList: renderAudioList,
+        runTests: runTests,
+        getTestResults: getTestResults,
+        isInitialized: function() { return isInitialized; }
     };
 })();
 
