@@ -130,15 +130,38 @@
     }
 
     function initFeatures() {
+        Logger.info('App', 'initFeatures called');
+        
+        // Initialize all feature modules during startup
+        if (window.BossViewer) {
+            Logger.info('App', 'Initializing Boss Viewer...');
+            window.BossViewer.initBossViewer('boss-viewer');
+            window.bosses_initialized = true;
+            Logger.info('App', 'Boss viewer initialized');
+        }
+
         if (window.PasswordGenerator) {
+            Logger.info('App', 'Initializing Password Generator...');
             window.PasswordGenerator.initPasswordGenerator('password-generator');
+            window.password_initialized = true;
             Logger.info('App', 'Password generator initialized');
         }
 
         if (window.LevelSequenceViewer) {
+            Logger.info('App', 'Initializing Level Sequence Viewer...');
             window.LevelSequenceViewer.initLevelSequenceViewer('sequence-viewer');
+            window.sequences_initialized = true;
             Logger.info('App', 'Level sequence viewer initialized');
         }
+
+        if (window.TilesetPanel) {
+            Logger.info('App', 'Initializing Tileset Panel...');
+            window.TilesetPanel.initTilesetPanel('tileset-browser');
+            window.tilesets_initialized = true;
+            Logger.info('App', 'Tileset panel initialized');
+        }
+        
+        Logger.info('App', 'initFeatures complete');
     }
     
     function initFeatureNavigation() {
@@ -185,22 +208,34 @@
             tab.classList.add('active');
             Logger.info('App', 'Feature switched: ' + feature);
 
-            // Initialize feature if needed
+            // Initialize feature if needed (only once per session)
             Logger.info('App', 'Checking feature initialization...');
-            if (feature === 'bosses' && window.BossViewer) {
+            if (feature === 'bosses' && window.bosses_initialized) {
+                Logger.info('App', 'Bosses already initialized');
+            } else if (feature === 'password' && window.password_initialized) {
+                Logger.info('App', 'Password already initialized');
+            } else if (feature === 'sequences' && window.sequences_initialized) {
+                Logger.info('App', 'Sequences already initialized');
+            } else if (feature === 'tilesets' && window.tilesets_initialized) {
+                Logger.info('App', 'Tilesets already initialized');
+            } else if (feature === 'bosses' && window.BossViewer) {
                 Logger.info('App', 'Initializing Boss Viewer...');
                 window.BossViewer.initBossViewer('boss-viewer');
-            } else if (feature === 'sequences' && window.LevelSequenceViewer) {
-                Logger.info('App', 'Initializing Level Sequence Viewer...');
-                window.LevelSequenceViewer.initLevelSequenceViewer('sequence-viewer');
+                window.bosses_initialized = true;
             } else if (feature === 'password' && window.PasswordGenerator) {
                 Logger.info('App', 'Initializing Password Generator...');
                 window.PasswordGenerator.initPasswordGenerator('password-generator');
+                window.password_initialized = true;
+            } else if (feature === 'sequences' && window.LevelSequenceViewer) {
+                Logger.info('App', 'Initializing Level Sequence Viewer...');
+                window.LevelSequenceViewer.initLevelSequenceViewer('sequence-viewer');
+                window.sequences_initialized = true;
             } else if (feature === 'tilesets' && window.TilesetPanel) {
                 Logger.info('App', 'Initializing Tileset Panel...');
                 window.TilesetPanel.initTilesetPanel('tileset-browser');
+                window.tilesets_initialized = true;
             } else {
-                Logger.warn('App', 'Feature not initialized: ' + feature + ' (missing module or wrong container ID)');
+                Logger.warn('App', 'Feature not available: ' + feature);
             }
         } else {
             Logger.error('App', 'Failed to show feature: ' + feature + ' (section or tab not found)');
