@@ -97,6 +97,7 @@ const AudioPlayback = (function() {
             let currentTime = 0;
             let runningStatus = 0;
             let notesInTrack = 0;
+            let eventsChecked = 0;
 
             while (offset < trackEnd - 2 && offset < bytes.length) {
                 let delta = 0;
@@ -121,7 +122,14 @@ const AudioPlayback = (function() {
                 }
 
                 const type = status & 0xF0;
+                eventsChecked++;
+                
+                // Log first few events for debugging
+                if (eventsChecked <= 10) {
+                    log('parseMIDI() - event[' + eventsChecked + '] status=0x' + status.toString(16).toUpperCase() + ' type=0x' + type.toString(16).toUpperCase());
+                }
 
+                // Note On (0x90-0x9F)
                 if (type === 0x90 && offset + 1 < trackEnd) {
                     const note = bytes[offset];
                     const vel = bytes[offset + 1];
@@ -137,15 +145,25 @@ const AudioPlayback = (function() {
                         notesInTrack++;
                     }
                     offset += 2;
-                } else if (type === 0x80 && offset + 1 < trackEnd) {
+                }
+                // Note Off (0x80-0x8F)
+                else if (type === 0x80 && offset + 1 < trackEnd) {
                     offset += 2;
-                } else if (type === 0xB0 && offset + 1 < trackEnd) {
+                }
+                // Control Change (0xB0-0xBF)
+                else if (type === 0xB0 && offset + 1 < trackEnd) {
                     offset += 2;
-                } else if (type === 0xC0 && offset < trackEnd) {
+                }
+                // Program Change (0xC0-0xCF)
+                else if (type === 0xC0 && offset < trackEnd) {
                     offset += 1;
-                } else if (type === 0xE0 && offset + 1 < trackEnd) {
+                }
+                // Pitch Bend (0xE0-0xEF)
+                else if (type === 0xE0 && offset + 1 < trackEnd) {
                     offset += 2;
-                } else if (status === 0xFF) {
+                }
+                // Meta event (0xFF)
+                else if (status === 0xFF) {
                     // Meta event
                     offset++;
                     if (offset < trackEnd) {
@@ -189,7 +207,7 @@ const AudioPlayback = (function() {
                 }
             }
 
-            log('Track ' + track + ': ' + notesInTrack + ' notes');
+            log('Track ' + track + ': ' + notesInTrack + ' notes (checked ' + eventsChecked + ' events)');
             offset = trackEnd;
         }
 
