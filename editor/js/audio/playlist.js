@@ -112,20 +112,26 @@ const AudioPlaylist = (function() {
         const currentTrackIndex = state.getCurrentTrackIndex();
         const playlist = state.getPlaylist();
 
+        log('>>> setPlaybackSpeed() - ' + speed + 'x (wasPlaying=' + wasPlaying + ', wasPaused=' + wasPaused + ')');
+        log('setPlaybackSpeed() - currentTrack=' + currentTrackIndex + ', position=' + Math.round(currentPosition) + 'ms');
+
         state.setPlaybackSpeed(speed);
 
-        log('Playback speed set to ' + (speed * 100) + '%');
+        log('setPlaybackSpeed() - speed set to ' + (speed * 100) + '%');
 
         // If currently playing or paused, restart at new speed from current position
         if ((wasPlaying || wasPaused) && currentTrackIndex >= 0 && playlist.length > 0) {
             const track = playlist[currentTrackIndex];
-            log('Restarting playback at ' + speed + 'x speed from ' + Math.round(currentPosition) + 'ms');
+            log('setPlaybackSpeed() - restarting playback at ' + speed + 'x from ' + Math.round(currentPosition) + 'ms');
             
             // Stop current playback (without resetting track index)
             if (window.Tone && Tone.Transport) {
+                log('setPlaybackSpeed() - cancelling Tone.Transport');
                 Tone.Transport.cancel();
             }
-            state.getActiveSources().forEach(src => {
+            const sources = state.getActiveSources();
+            log('setPlaybackSpeed() - stopping ' + sources.length + ' oscillators');
+            sources.forEach(src => {
                 try {
                     if (src.osc1) src.osc1.stop();
                     if (src.osc2) src.osc2.stop();
@@ -136,13 +142,17 @@ const AudioPlaylist = (function() {
             
             // Small delay to ensure stop completes
             setTimeout(() => {
+                log('setPlaybackSpeed() - calling playMIDI at new speed');
                 // Restart at new speed
                 if (window.AudioPlayer && window.AudioPlayer.playMIDI) {
                     window.AudioPlayer.playMIDI(track.url, track.name, currentPosition);
                 }
             }, 50);
+        } else {
+            log('setPlaybackSpeed() - not playing/paused or no track, just updating speed');
         }
 
+        log('<<< setPlaybackSpeed() complete');
         return true;
     }
 
