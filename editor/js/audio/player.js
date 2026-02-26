@@ -132,6 +132,9 @@ const AudioPlayer = (function() {
 
         const state = window.AudioState;
 
+        // Save track index before stop() clears it
+        const savedTrackIndex = state.getCurrentTrackIndex();
+
         stop();
 
         if (window.Tone && Tone.Transport) {
@@ -188,6 +191,9 @@ const AudioPlayer = (function() {
             }
 
             if (result) {
+                // Restore track index
+                state.setCurrentTrackIndex(savedTrackIndex);
+
                 window.AudioState.setPlaying(true);
                 window.AudioState.setPaused(false);
                 window.AudioState.setPlaybackStartTime(Tone.now() - (startPosition / 1000));
@@ -251,3 +257,4 @@ const AudioPlayer = (function() {
 
 // Export to window
 window.AudioPlayer = AudioPlayer;
+
