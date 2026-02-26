@@ -69,16 +69,24 @@ const AudioPlayback = (function() {
 
         log('MIDI Format: ' + format + ', Tracks: ' + numTracks + ', Division: ' + division);
 
+        // Default tempo: 120 BPM = 500000 microseconds per quarter note
+        let tempo = 500000;
+        let ticksPerBeat = division;
+        let msPerTick = tempo / (ticksPerBeat * 1000);
+        
+        log('parseMIDI() - default tempo: 120 BPM (' + tempo + ' µs/beat)');
+        log('parseMIDI() - msPerTick: ' + msPerTick.toFixed(4));
+
         let offset = 14;
 
         for (let track = 0; track < numTracks; track++) {
-            if (bytes[offset] !== 0x4D || bytes[offset+1] !== 0x54 || 
+            if (bytes[offset] !== 0x4D || bytes[offset+1] !== 0x54 ||
                 bytes[offset+2] !== 0x72 || bytes[offset+3] !== 0x6B) {
                 log('Invalid track header at track ' + track);
                 break;
             }
 
-            const trackLen = (bytes[offset+4] << 24) | (bytes[offset+5] << 16) | 
+            const trackLen = (bytes[offset+4] << 24) | (bytes[offset+5] << 16) |
                             (bytes[offset+6] << 8) | bytes[offset+7];
             const trackEnd = offset + 8 + trackLen;
 
@@ -117,8 +125,10 @@ const AudioPlayback = (function() {
                     const note = bytes[offset];
                     const vel = bytes[offset + 1];
                     if (vel > 0) {
+                        // Convert ticks to milliseconds using tempo
+                        const timeMs = currentTime * msPerTick;
                         events.push({
-                            time: (currentTime / division) * 1000,
+                            time: timeMs,
                             note: note,
                             velocity: vel,
                             track: track
@@ -135,9 +145,30 @@ const AudioPlayback = (function() {
                 } else if (type === 0xE0 && offset + 1 < trackEnd) {
                     offset += 2;
                 } else if (status === 0xFF) {
+                    // Meta event
                     offset++;
                     if (offset < trackEnd) {
-                        let len = bytes[offset++];
+                        const metaType = bytes[offset++];
+                        let len = 0;
+                        // Read variable-length length
+                        for (let i = 0; i < 4; i++) {
+                            len = (len << 7) | (bytes[offset] & 0x7F);
+                            if ((bytes[offset] & 0x80) === 0) {
+                                offset++;
+                                break;
+                            }
+                            offset++;
+                        }
+                        
+                        // Tempo meta event (0x51): 3 bytes, microseconds per quarter note
+                        if (metaType === 0x51 && len === 3 && offset + 3 <= trackEnd) {
+                            tempo = (bytes[offset] << 16) | (bytes[offset+1] << 8) | bytes[offset+2];
+                            msPerTick = tempo / (ticksPerBeat * 1000);
+                            const bpm = 60000000 / tempo;
+                            log('parseMIDI() - tempo change: ' + bpm.toFixed(1) + ' BPM (' + tempo + ' µs/beat)');
+                            log('parseMIDI() - msPerTick updated: ' + msPerTick.toFixed(4));
+                        }
+                        
                         offset += len;
                     }
                 } else if (status === 0xF0 || status === 0xF7) {
