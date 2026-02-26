@@ -24,9 +24,9 @@ const AudioPlayer = (function() {
         const state = window.AudioState;
 
         // Stop progress tracking
-        if (state.getProgressInterval()) {
-            clearInterval(state.getProgressInterval());
-            state.setProgressInterval(null);
+        if (window.AudioState.getProgressInterval()) {
+            clearInterval(window.AudioState.getProgressInterval());
+            window.AudioState.setProgressInterval(null);
         }
 
         // Cancel Tone.js Transport
@@ -36,24 +36,24 @@ const AudioPlayer = (function() {
         }
 
         // Stop Tone.js playback
-        const toneSynth = state.getToneSynth();
+        const toneSynth = window.AudioState.getToneSynth();
         if (toneSynth && window.Tone) {
             toneSynth.releaseAll();
         }
 
         // Stop native oscillators
-        state.getActiveSources().forEach(src => {
+        window.AudioState.getActiveSources().forEach(src => {
             try {
                 if (src.osc1 && src.osc1.state === 'started') src.osc1.stop();
                 if (src.osc2 && src.osc2.state === 'started') src.osc2.stop();
             } catch (e) {}
         });
-        state.setActiveSources([]);
+        window.AudioState.setActiveSources([]);
 
-        state.setPlaying(false);
-        state.setPaused(false);
-        state.setPausedAt(0);
-        state.setCurrentTrackIndex(-1);
+        window.AudioState.setPlaying(false);
+        window.AudioState.setPaused(false);
+        window.AudioState.setPausedAt(0);
+        window.AudioState.setCurrentTrackIndex(-1);
         log('Playback stopped');
     }
 
@@ -61,16 +61,16 @@ const AudioPlayer = (function() {
      * Pause playback
      */
     function pause() {
-        if (!state.isPlayingState()) return;
+        if (!window.AudioState.isPlayingState()) return;
 
         log('Pausing playback...');
 
         const state = window.AudioState;
 
         // Stop progress tracking
-        if (state.getProgressInterval()) {
-            clearInterval(state.getProgressInterval());
-            state.setProgressInterval(null);
+        if (window.AudioState.getProgressInterval()) {
+            clearInterval(window.AudioState.getProgressInterval());
+            window.AudioState.setProgressInterval(null);
         }
 
         // Pause Tone.js Transport
@@ -79,27 +79,27 @@ const AudioPlayer = (function() {
         }
 
         // Stop oscillators
-        const toneSynth = state.getToneSynth();
+        const toneSynth = window.AudioState.getToneSynth();
         if (toneSynth && window.Tone) {
             toneSynth.releaseAll();
         }
 
-        state.getActiveSources().forEach(src => {
+        window.AudioState.getActiveSources().forEach(src => {
             try {
                 if (src.osc1 && src.osc1.state === 'started') src.osc1.stop();
                 if (src.osc2 && src.osc2.state === 'started') src.osc2.stop();
             } catch (e) {}
         });
-        state.setActiveSources([]);
+        window.AudioState.setActiveSources([]);
 
         // Calculate position
         if (toneSynth && window.Tone) {
-            state.setPausedAt((Tone.now() - state.getPlaybackStartTime()) * 1000);
+            window.AudioState.setPausedAt((Tone.now() - window.AudioState.getPlaybackStartTime()) * 1000);
         }
 
-        state.setPaused(true);
-        state.setPlaying(false);
-        log('Playback paused at ' + Math.round(state.getPausedAt()) + 'ms');
+        window.AudioState.setPaused(true);
+        window.AudioState.setPlaying(false);
+        log('Playback paused at ' + Math.round(window.AudioState.getPausedAt()) + 'ms');
     }
 
     /**
@@ -108,18 +108,18 @@ const AudioPlayer = (function() {
     function resume() {
         const state = window.AudioState;
         
-        if (!state.isPausedState() || state.getCurrentTrackIndex() < 0) return;
+        if (!window.AudioState.isPausedState() || window.AudioState.getCurrentTrackIndex() < 0) return;
 
-        log('Resuming from ' + Math.round(state.getPausedAt()) + 'ms...');
+        log('Resuming from ' + Math.round(window.AudioState.getPausedAt()) + 'ms...');
 
         // Resume Tone.js Transport
         if (window.Tone && Tone.Transport) {
             Tone.Transport.start();
         }
 
-        const playlist = state.getPlaylist();
-        const track = playlist[state.getCurrentTrackIndex()];
-        playMIDI(track.url, track.name, state.getPausedAt());
+        const playlist = window.AudioState.getPlaylist();
+        const track = playlist[window.AudioState.getCurrentTrackIndex()];
+        playMIDI(track.url, track.name, window.AudioState.getPausedAt());
     }
 
     /**
@@ -140,7 +140,7 @@ const AudioPlayer = (function() {
         }
 
         try {
-            let engine = state.getPreferredEngine();
+            let engine = window.AudioState.getPreferredEngine();
 
             if (engine === 'tone' && !window.Tone) {
                 log('Tone.js not available, falling back to native');
@@ -155,7 +155,7 @@ const AudioPlayer = (function() {
                 window.AudioEngine.initNative();
             }
 
-            log('Active engine: ' + state.getCurrentEngine());
+            log('Active engine: ' + window.AudioState.getCurrentEngine());
 
             log('Fetching: ' + midiUrl);
             const response = await fetch(midiUrl);
@@ -179,7 +179,7 @@ const AudioPlayer = (function() {
 
             let result = false;
 
-            if (engine === 'tone' && state.getToneSynth()) {
+            if (engine === 'tone' && window.AudioState.getToneSynth()) {
                 log('Playing via Tone.js PolySynth...');
                 result = await window.AudioPlayback.playViaTone(midiData, startPosition);
             } else {
@@ -188,21 +188,21 @@ const AudioPlayer = (function() {
             }
 
             if (result) {
-                state.setPlaying(true);
-                state.setPaused(false);
-                state.setPlaybackStartTime(Tone.now() - (startPosition / 1000));
+                window.AudioState.setPlaying(true);
+                window.AudioState.setPaused(false);
+                window.AudioState.setPlaybackStartTime(Tone.now() - (startPosition / 1000));
 
                 // Calculate duration
                 const events = window.AudioPlayback.parseMIDI(midiData);
                 if (events && events.length > 0) {
                     const maxTime = Math.max(...events.map(e => e.time));
-                    state.setTotalDuration(maxTime);
+                    window.AudioState.setTotalDuration(maxTime);
                 } else {
-                    state.setTotalDuration(60000);
+                    window.AudioState.setTotalDuration(60000);
                 }
 
-                log('Track duration: ' + Math.round(state.getTotalDuration() / 1000) + 's');
-                log('Playback started successfully (' + state.getCurrentEngine() + ')');
+                log('Track duration: ' + Math.round(window.AudioState.getTotalDuration() / 1000) + 's');
+                log('Playback started successfully (' + window.AudioState.getCurrentEngine() + ')');
 
                 startProgressTracking();
                 window.AudioUI.updatePlayerUI();
@@ -224,20 +224,20 @@ const AudioPlayer = (function() {
     function startProgressTracking() {
         const state = window.AudioState;
 
-        if (state.getProgressInterval()) {
-            clearInterval(state.getProgressInterval());
+        if (window.AudioState.getProgressInterval()) {
+            clearInterval(window.AudioState.getProgressInterval());
         }
 
         const interval = setInterval(() => {
-            if (state.isPlayingState() && state.getCurrentTrackIndex() >= 0) {
+            if (window.AudioState.isPlayingState() && window.AudioState.getCurrentTrackIndex() >= 0) {
                 const position = window.AudioPlaylist.getCurrentPosition();
-                const total = state.getTotalDuration();
+                const total = window.AudioState.getTotalDuration();
                 const progress = total > 0 ? (position / total) * 100 : 0;
                 window.AudioUpdateProgress(position, total, progress);
             }
         }, 100);
 
-        state.setProgressInterval(interval);
+        window.AudioState.setProgressInterval(interval);
     }
 
     return {

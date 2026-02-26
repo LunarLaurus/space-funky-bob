@@ -25,14 +25,14 @@ const AudioUI = (function() {
         const nowPlaying = document.getElementById('now-playing');
         const speedDisplay = document.getElementById('speed-display');
 
-        log('updatePlayerUI called - isPlaying:' + state.isPlayingState() + ', currentTrack:' + state.getCurrentTrackIndex());
+        log('updatePlayerUI called - isPlaying:' + window.AudioState.isPlayingState() + ', currentTrack:' + window.AudioState.getCurrentTrackIndex());
 
         if (playBtn) {
-            if (state.isPausedState()) {
+            if (window.AudioState.isPausedState()) {
                 playBtn.textContent = '▶';
                 playBtn.title = 'Resume (Space)';
                 playBtn.style.background = 'var(--accent)';
-            } else if (state.isPlayingState()) {
+            } else if (window.AudioState.isPlayingState()) {
                 playBtn.textContent = '⏸';
                 playBtn.title = 'Pause (Space)';
                 playBtn.style.background = '#ff9900';
@@ -54,28 +54,28 @@ const AudioUI = (function() {
         }
 
         if (speedDisplay) {
-            speedDisplay.textContent = state.getPlaybackSpeed().toFixed(2) + 'x';
+            speedDisplay.textContent = window.AudioState.getPlaybackSpeed().toFixed(2) + 'x';
         } else {
             log('speedDisplay element not found');
         }
 
         // Update playlist highlighting
-        const playlist = state.getPlaylist();
+        const playlist = window.AudioState.getPlaylist();
         if (playlist) {
             playlist.forEach((_, i) => {
                 const el = document.getElementById('track-' + i);
                 if (el) {
-                    if (i === state.getCurrentTrackIndex()) {
+                    if (i === window.AudioState.getCurrentTrackIndex()) {
                         el.style.background = 'var(--bg-toolbar)';
                         el.style.border = '1px solid var(--accent)';
                         el.classList.add('active');
                         const indicator = el.querySelector('.play-indicator');
                         if (indicator) {
                             indicator.style.opacity = '1';
-                            if (state.isPausedState()) {
+                            if (window.AudioState.isPausedState()) {
                                 indicator.textContent = '⏸ Paused';
                                 indicator.style.color = '#ff9900';
-                            } else if (state.isPlayingState()) {
+                            } else if (window.AudioState.isPlayingState()) {
                                 indicator.textContent = '♫ Playing';
                                 indicator.style.color = 'var(--accent)';
                             } else {
@@ -134,14 +134,14 @@ const AudioUI = (function() {
 
             const state = window.AudioState;
 
-            if (state.isPlayingState()) {
+            if (window.AudioState.isPlayingState()) {
                 window.AudioPlayer.pause();
-            } else if (state.isPausedState()) {
+            } else if (window.AudioState.isPausedState()) {
                 window.AudioPlayer.resume();
             } else {
-                if (state.getCurrentTrackIndex() >= 0) {
-                    window.AudioPlaylist.playTrack(state.getCurrentTrackIndex());
-                } else if (state.getPlaylist().length > 0) {
+                if (window.AudioState.getCurrentTrackIndex() >= 0) {
+                    window.AudioPlaylist.playTrack(window.AudioState.getCurrentTrackIndex());
+                } else if (window.AudioState.getPlaylist().length > 0) {
                     window.AudioPlaylist.playTrack(0);
                 }
             }
@@ -170,8 +170,8 @@ const AudioUI = (function() {
         if (toggleBtn) {
             toggleBtn.onclick = function(e) {
                 e.stopPropagation();
-                const newEngine = state.getPreferredEngine() === 'tone' ? 'native' : 'tone';
-                state.setPreferredEngine(newEngine);
+                const newEngine = window.AudioState.getPreferredEngine() === 'tone' ? 'native' : 'tone';
+                window.AudioState.setPreferredEngine(newEngine);
                 toggleBtn.textContent = 'Engine: ' + (newEngine === 'tone' ? 'Tone.js' : 'Native');
                 toggleBtn.style.background = newEngine === 'tone' ? 'var(--accent)' : '#444';
                 toggleBtn.style.color = newEngine === 'tone' ? '#000' : '#fff';
@@ -188,8 +188,8 @@ const AudioUI = (function() {
         if (speedDownBtn) {
             speedDownBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
-                log('Speed down clicked, current: ' + state.getPlaybackSpeed());
-                const newSpeed = Math.max(0.25, state.getPlaybackSpeed() - 0.25);
+                log('Speed down clicked, current: ' + window.AudioState.getPlaybackSpeed());
+                const newSpeed = Math.max(0.25, window.AudioState.getPlaybackSpeed() - 0.25);
                 window.AudioPlaylist.setPlaybackSpeed(newSpeed);
                 updatePlayerUI();
             });
@@ -200,8 +200,8 @@ const AudioUI = (function() {
         if (speedUpBtn) {
             speedUpBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
-                log('Speed up clicked, current: ' + state.getPlaybackSpeed());
-                const newSpeed = Math.min(4.0, state.getPlaybackSpeed() + 0.25);
+                log('Speed up clicked, current: ' + window.AudioState.getPlaybackSpeed());
+                const newSpeed = Math.min(4.0, window.AudioState.getPlaybackSpeed() + 0.25);
                 window.AudioPlaylist.setPlaybackSpeed(newSpeed);
                 updatePlayerUI();
             });
