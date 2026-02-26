@@ -15,6 +15,9 @@ const AudioPlayer = (function() {
         console.error('[Audio] ERROR: ' + msg);
     }
 
+    // Prevent multiple simultaneous play calls
+    let isPlayingCallInProgress = false;
+
     /**
      * Stop all playback
      */
@@ -156,24 +159,22 @@ const AudioPlayer = (function() {
      * Play MIDI file
      */
     async function playMIDI(midiUrl, name, startPosition) {
+        // Prevent overlapping play calls
+        if (isPlayingCallInProgress) {
+            log('playMIDI() - ALREADY IN PROGRESS, ignoring duplicate call');
+            return false;
+        }
+        isPlayingCallInProgress = true;
+        log('playMIDI() - call started, setting flag');
+
         log('========================================');
         log('>>> playMIDI() - ' + name + ' (from ' + startPosition + 'ms)');
         log('========================================');
 
         const state = window.AudioState;
 
-        // Save track index before stop() clears it
-        const savedTrackIndex = state.getCurrentTrackIndex();
-        log('playMIDI() - saved track index: ' + savedTrackIndex);
-
-        stop();
-
-        if (window.Tone && Tone.Transport) {
-            Tone.Transport.stop();
-            Tone.Transport.cancel();
-        }
-
         try {
+            // Initialize engine FIRST before stop() so toneSynth exists
             let engine = state.getPreferredEngine();
             log('playMIDI() - preferred engine: ' + engine);
 
@@ -191,6 +192,17 @@ const AudioPlayer = (function() {
             }
 
             log('playMIDI() - active engine: ' + state.getCurrentEngine());
+            log('playMIDI() - toneSynth available: ' + !!state.getToneSynth());
+
+            // NOW stop previous playback (toneSynth exists now)
+            log('playMIDI() - calling stop() to stop previous playback');
+            stop();
+
+            if (window.Tone && Tone.Transport) {
+                Tone.Transport.stop();
+                Tone.Transport.cancel();
+                log('playMIDI() - Tone.Transport cancelled');
+            }
 
             log('playMIDI() - fetching: ' + midiUrl);
             const response = await fetch(midiUrl);
@@ -224,8 +236,8 @@ const AudioPlayer = (function() {
 
             if (result) {
                 // Restore track index
-                state.setCurrentTrackIndex(savedTrackIndex);
-                log('playMIDI() - restored track index: ' + savedTrackIndex);
+                state.setCurrentTrackIndex(state.getCurrentTrackIndex() >= 0 ? state.getCurrentTrackIndex() : 0);
+                log('playMIDI() - track index: ' + state.getCurrentTrackIndex());
 
                 state.setPlaying(true);
                 state.setPaused(false);
@@ -256,6 +268,9 @@ const AudioPlayer = (function() {
             error('playMIDI() - stack: ' + e.stack);
             log('<<< playMIDI() error');
             return false;
+        } finally {
+            isPlayingCallInProgress = false;
+            log('playMIDI() - cleared flag');
         }
     }
 
