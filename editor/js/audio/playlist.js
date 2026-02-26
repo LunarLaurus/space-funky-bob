@@ -99,19 +99,40 @@ const AudioPlaylist = (function() {
      */
     function setPlaybackSpeed(speed) {
         const state = window.AudioState;
-        
+
         if (speed < 0.25 || speed > 4.0) {
             log('Invalid speed: ' + speed + ' (must be 0.25-4.0)');
             return false;
         }
-        
+
+        const wasPlaying = state.isPlayingState();
+        const wasPaused = state.isPausedState();
+        const currentPosition = state.isPausedState() ? state.getPausedAt() : 
+            (state.isPlayingState() ? (Tone.now() - state.getPlaybackStartTime()) * 1000 : 0);
+        const currentTrackIndex = state.getCurrentTrackIndex();
+        const playlist = state.getPlaylist();
+
         state.setPlaybackSpeed(speed);
-        
-        if (window.Tone && Tone.Transport) {
-            Tone.Transport.playbackRate = speed;
-        }
-        
+
         log('Playback speed set to ' + (speed * 100) + '%');
+
+        // If currently playing or paused, restart at new speed from current position
+        if ((wasPlaying || wasPaused) && currentTrackIndex >= 0 && playlist.length > 0) {
+            const track = playlist[currentTrackIndex];
+            log('Restarting playback at ' + speed + 'x speed from ' + Math.round(currentPosition) + 'ms');
+            
+            // Stop current playback
+            if (window.Tone && Tone.Transport) {
+                Tone.Transport.stop();
+                Tone.Transport.cancel();
+            }
+            
+            // Restart at new speed
+            if (window.AudioPlayer && window.AudioPlayer.playMIDI) {
+                window.AudioPlayer.playMIDI(track.url, track.name, currentPosition);
+            }
+        }
+
         return true;
     }
 

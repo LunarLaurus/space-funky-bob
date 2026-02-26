@@ -181,7 +181,12 @@ const AudioPlayback = (function() {
         
         if (!toneSynth || !window.Tone) return false;
 
+        // Cancel any existing scheduled events
         Tone.Transport.cancel();
+        
+        // Set playback speed BEFORE scheduling
+        const speed = state.getPlaybackSpeed();
+        Tone.Transport.playbackRate = speed;
 
         const events = parseMIDI(midiData);
         if (!events || events.length === 0) return false;
@@ -189,20 +194,24 @@ const AudioPlayback = (function() {
         events.sort((a, b) => a.time - b.time);
         const filtered = events.filter(e => e.time >= startPosition && e.time < 60000);
 
-        log('Tone.js: Scheduling ' + filtered.length + ' notes (from ' + startPosition + 'ms)');
+        log('Tone.js: Scheduling ' + filtered.length + ' notes (from ' + startPosition + 'ms, speed: ' + speed + 'x)');
 
+        // Schedule notes using Transport time (affected by playbackRate)
         filtered.forEach(event => {
+            // Convert to seconds, adjusted for start position
             const eventTime = (event.time - startPosition) / 1000;
             const freq = midiToFreq(event.note);
             const velocity = event.velocity / 127;
 
+            // Schedule via Transport (will be affected by playbackRate)
             Tone.Transport.schedule((time) => {
                 toneSynth.triggerAttackRelease(freq, "8n", time, velocity);
             }, eventTime);
         });
 
-        Tone.Transport.start();
-        log('Tone.js: Playback scheduled');
+        // Start transport from position 0
+        Tone.Transport.start(0);
+        log('Tone.js: Playback scheduled at ' + speed + 'x speed');
         return true;
     }
 
