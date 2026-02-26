@@ -223,7 +223,10 @@ const AudioPlayback = (function() {
         log('playViaTone() - cancelling Tone.Transport');
         Tone.Transport.cancel();
 
-        const events = parseMIDI(midiData);
+        // Parse MIDI and get events with correct tempo
+        const parseResult = parseMIDI(midiData);
+        const events = parseResult.events;
+        
         if (!events || events.length === 0) {
             log('playViaTone() - no events');
             return false;
@@ -232,7 +235,7 @@ const AudioPlayback = (function() {
         events.sort((a, b) => a.time - b.time);
         const filtered = events.filter(e => e.time >= startPosition && e.time < 60000);
 
-        log('playViaTone() - scheduling ' + filtered.length + ' notes from ' + startPosition + 'ms');
+        log('playViaTone() - scheduling ' + filtered.length + ' notes from ' + startPosition + 'ms (msPerTick: ' + parseResult.msPerTick.toFixed(4) + ')');
 
         // Schedule notes
         const now = Tone.now();
