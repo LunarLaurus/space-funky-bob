@@ -184,6 +184,10 @@ const AudioPlayback = (function() {
             return false;
         }
 
+        // Get current playback speed
+        const speed = state.getPlaybackSpeed();
+        log('playViaTone() - playback speed: ' + speed + 'x');
+
         log('playViaTone() - cancelling Tone.Transport');
         Tone.Transport.cancel();
 
@@ -201,16 +205,17 @@ const AudioPlayback = (function() {
         // Schedule notes
         const now = Tone.now();
         log('playViaTone() - Tone.now() = ' + now);
-        
+
         let scheduledCount = 0;
         filtered.forEach((event, i) => {
-            const eventTime = now + ((event.time - startPosition) / 1000);
+            // Apply speed: faster speed = shorter time between notes
+            const eventTime = now + (((event.time - startPosition) / 1000) / speed);
             const freq = midiToFreq(event.note);
             const velocity = event.velocity / 127;
 
             // Log first few and last few events
             if (i < 5 || i >= filtered.length - 5) {
-                log('playViaTone() - note[' + i + '] freq=' + freq + 'Hz time=' + eventTime.toFixed(3) + 's');
+                log('playViaTone() - note[' + i + '] freq=' + freq + 'Hz time=' + eventTime.toFixed(3) + 's (speed: ' + speed + 'x)');
             } else if (i === 5) {
                 log('playViaTone() - ... (' + (filtered.length - 10) + ' more notes) ...');
             }
@@ -224,7 +229,7 @@ const AudioPlayback = (function() {
         });
 
         log('playViaTone() - scheduled ' + scheduledCount + '/' + filtered.length + ' notes');
-        log('playViaTone() - playback scheduled');
+        log('playViaTone() - playback scheduled at ' + speed + 'x speed');
         return true;
     }
 

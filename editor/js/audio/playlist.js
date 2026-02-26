@@ -122,7 +122,7 @@ const AudioPlaylist = (function() {
         // If currently playing or paused, restart at new speed from current position
         if ((wasPlaying || wasPaused) && currentTrackIndex >= 0 && playlist.length > 0) {
             const track = playlist[currentTrackIndex];
-            log('setPlaybackSpeed() - restarting playback at ' + speed + 'x from ' + Math.round(currentPosition) + 'ms');
+            log('setPlaybackSpeed() - RESTARTING playback at ' + speed + 'x from ' + Math.round(currentPosition) + 'ms');
             
             // Stop current playback (without resetting track index)
             if (window.Tone && Tone.Transport) {
@@ -149,7 +149,7 @@ const AudioPlaylist = (function() {
                 }
             }, 50);
         } else {
-            log('setPlaybackSpeed() - not playing/paused or no track, just updating speed');
+            log('setPlaybackSpeed() - speed will apply on next playback (not currently playing)');
         }
 
         log('<<< setPlaybackSpeed() complete');
