@@ -22,7 +22,7 @@ const AudioPlayer = (function() {
      * Stop all playback
      */
     function stop() {
-        log('>>> stop() called');
+        log('>>> stop() called (isPlayingCallInProgress=' + isPlayingCallInProgress + ')');
         log('stop() - isPlaying=' + window.AudioState.isPlayingState());
         log('stop() - currentTrack=' + window.AudioState.getCurrentTrackIndex());
         log('stop() - activeSources=' + window.AudioState.getActiveSources().length);

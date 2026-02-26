@@ -23,13 +23,22 @@ document.write('<script src="js/audio/player.js"><\/script>');
 // Main Audio API (backward compatibility)
 window.Audio = {
     // Playback control
-    playMIDI: (url, name, pos) => window.AudioPlayer.playMIDI(url, name, pos),
-    playTrack: (index) => window.AudioPlaylist.playTrack(index),
+    playMIDI: (url, name, pos) => {
+        console.log('[Audio] Audio.playMIDI wrapper called -> AudioPlayer.playMIDI');
+        return window.AudioPlayer.playMIDI(url, name, pos);
+    },
+    playTrack: (index) => {
+        console.log('[Audio] Audio.playTrack(' + index + ')');
+        return window.AudioPlaylist.playTrack(index);
+    },
     playNext: () => window.AudioPlaylist.playNext(),
     playPrevious: () => window.AudioPlaylist.playPrevious(),
     pause: () => window.AudioPlayer.pause(),
     resume: () => window.AudioPlayer.resume(),
-    stop: () => window.AudioPlayer.stop(),
+    stop: () => {
+        console.log('[Audio] Audio.stop() called');
+        return window.AudioPlayer.stop();
+    },
 
     // Playlist management
     setPlaylist: (files) => window.AudioPlaylist.setPlaylist(files),
@@ -37,7 +46,10 @@ window.Audio = {
     getCurrentTrack: () => window.AudioPlaylist.getCurrentTrack(),
 
     // Playback speed
-    setPlaybackSpeed: (speed) => window.AudioPlaylist.setPlaybackSpeed(speed),
+    setPlaybackSpeed: (speed) => {
+        console.log('[Audio] Audio.setPlaybackSpeed(' + speed + ')');
+        return window.AudioPlaylist.setPlaybackSpeed(speed);
+    },
     getPlaybackSpeed: () => window.AudioPlaylist.getPlaybackSpeed(),
 
     // Settings
