@@ -127,11 +127,6 @@ const AudioPlayback = (function() {
 
                 const type = status & 0xF0;
                 eventsChecked++;
-                
-                // Log first few events for debugging
-                if (eventsChecked <= 10) {
-                    log('parseMIDI() - event[' + eventsChecked + '] status=0x' + status.toString(16).toUpperCase() + ' type=0x' + type.toString(16).toUpperCase() + ' offset=' + offset);
-                }
 
                 // Note On (0x90-0x9F)
                 if (type === 0x90 && offset + 1 < trackEnd) {
@@ -171,30 +166,25 @@ const AudioPlayback = (function() {
                     offset++;
                     if (offset < trackEnd) {
                         const metaType = bytes[offset++];
-                        // Read length as SINGLE BYTE only (no VLQ for meta events in standard MIDI)
+                        // Read length as SINGLE BYTE (standard MIDI format)
                         let len = 0;
                         if (offset < trackEnd) {
                             len = bytes[offset++];
                         }
-                        
-                        log('parseMIDI() - meta 0x' + metaType.toString(16).toUpperCase() + ' len=' + len + ' offset now=' + offset);
                         
                         // Tempo meta event (0x51): 3 bytes, microseconds per quarter note
                         if (metaType === 0x51 && len === 3 && offset + 3 <= trackEnd) {
                             tempo = (bytes[offset] << 16) | (bytes[offset+1] << 8) | bytes[offset+2];
                             msPerTick = tempo / (ticksPerBeat * 1000);
                             const bpm = 60000000 / tempo;
-                            log('parseMIDI() - tempo change: ' + bpm.toFixed(1) + ' BPM (' + tempo + ' µs/beat)');
-                            log('parseMIDI() - msPerTick updated: ' + msPerTick.toFixed(4));
+                            log('parseMIDI() - tempo change: ' + bpm.toFixed(1) + ' BPM');
                         }
                         
                         // Skip the meta event data
                         offset += len;
-                        log('parseMIDI() - after skipping ' + len + ' bytes, offset=' + offset + ' trackEnd=' + trackEnd);
                         
                         // Safety check - don't go past trackEnd
                         if (offset > trackEnd) {
-                            log('parseMIDI() - WARNING: offset (' + offset + ') > trackEnd (' + trackEnd + '), clamping');
                             offset = trackEnd;
                         }
                     }
@@ -218,23 +208,11 @@ const AudioPlayback = (function() {
                 }
             }
 
-            log('Track ' + track + ': ' + notesInTrack + ' notes (checked ' + eventsChecked + ' events)');
+            log('Track ' + track + ': ' + notesInTrack + ' notes');
             offset = trackEnd;
         }
 
         log('Total events parsed: ' + events.length);
-        
-        // If no events found, dump first 100 bytes for debugging
-        if (events.length === 0) {
-            log('parseMIDI() - NO EVENTS FOUND! Dumping first 200 bytes:');
-            let hexDump = '';
-            for (let i = 0; i < Math.min(200, bytes.length); i++) {
-                hexDump += bytes[i].toString(16).padStart(2, '0') + ' ';
-                if ((i + 1) % 16 === 0) hexDump += '\n';
-            }
-            log(hexDump);
-        }
-        
         return { events, msPerTick };
     }
 
@@ -335,7 +313,7 @@ const AudioPlayback = (function() {
         const now = ctx.currentTime;
         const filtered = events.filter(e => e.time >= startPosition && e.time < 60000);
 
-        log('playViaNative() - scheduling ' + filtered.length + ' notes (from ' + startPosition + 'ms, msPerTick: ' + tempoMsPerTick.toFixed(4) + ')');
+        log('playViaNative() - scheduling ' + filtered.length + ' notes');
 
         filtered.forEach(event => {
             const eventTime = now + 0.1 + ((event.time - startPosition) / 1000);
