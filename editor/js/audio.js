@@ -982,18 +982,19 @@ const Audio = (function() {
      * Render audio playlist UI
      */
     function renderAudioList(files) {
-        const list = document.getElementById('audioList');
-        if (!list) {
-            error('audioList element not found!');
-            return;
-        }
-        log('renderAudioList called with ' + (files ? files.length : 0) + ' files');
+        try {
+            const list = document.getElementById('audioList');
+            if (!list) {
+                error('audioList element not found!');
+                return;
+            }
+            log('renderAudioList called with ' + (files ? files.length : 0) + ' files');
 
-        // Set playlist
-        setPlaylist(files);
+            // Set playlist
+            setPlaylist(files);
 
-        let html = '<div style="color:var(--accent);padding:12px;font-size:13px;font-weight:bold;border-bottom:1px solid var(--border);">';
-        html += '♫ B.O.B. Soundtrack Jukebox</div>';
+            let html = '<div style="color:var(--accent);padding:12px;font-size:13px;font-weight:bold;border-bottom:1px solid var(--border);">';
+            html += '♫ B.O.B. Soundtrack Jukebox</div>';
 
         // Player controls
         html += '<div style="padding:15px;margin:12px;background:linear-gradient(135deg,var(--bg-toolbar) 0%,var(--bg-panel) 100%);border:1px solid var(--border);border-radius:6px;">';
@@ -1281,6 +1282,10 @@ const Audio = (function() {
         // UI
         renderAudioList: renderAudioList
     };
+} catch (e) {
+    error('renderAudioList error: ' + e.message);
+    error('Stack: ' + e.stack);
+}
 })();
 
 // Export to window
