@@ -170,33 +170,14 @@ const AudioPlayback = (function() {
                 else if (status === 0xFF) {
                     offset++;
                     if (offset < trackEnd) {
-                        const metaType = bytes[offset];
-                        log('parseMIDI() - meta type byte at offset ' + offset + ' = 0x' + metaType.toString(16).toUpperCase());
-                        offset++;
-                        
-                        // Read length - try simple single byte first
+                        const metaType = bytes[offset++];
+                        // Read length as SINGLE BYTE only (no VLQ for meta events in standard MIDI)
                         let len = 0;
-                        let lenOffset = offset;
                         if (offset < trackEnd) {
-                            len = bytes[offset];
-                            log('parseMIDI() - length byte at offset ' + offset + ' = 0x' + len.toString(16).toUpperCase() + ' (' + len + ')');
-                            offset++;
-                            
-                            // If high bit is set, it's variable-length
-                            if (len & 0x80) {
-                                let vlLen = len & 0x7F;
-                                while (offset < trackEnd) {
-                                    const nextByte = bytes[offset];
-                                    log('parseMIDI() - vlq length byte at offset ' + offset + ' = 0x' + nextByte.toString(16).toUpperCase());
-                                    offset++;
-                                    vlLen = (vlLen << 7) | (nextByte & 0x7F);
-                                    if (!(nextByte & 0x80)) break;
-                                }
-                                len = vlLen;
-                            }
+                            len = bytes[offset++];
                         }
                         
-                        log('parseMIDI() - meta 0x' + metaType.toString(16).toUpperCase() + ' final len=' + len + ' offset now=' + offset);
+                        log('parseMIDI() - meta 0x' + metaType.toString(16).toUpperCase() + ' len=' + len + ' offset now=' + offset);
                         
                         // Tempo meta event (0x51): 3 bytes, microseconds per quarter note
                         if (metaType === 0x51 && len === 3 && offset + 3 <= trackEnd) {
@@ -209,7 +190,13 @@ const AudioPlayback = (function() {
                         
                         // Skip the meta event data
                         offset += len;
-                        log('parseMIDI() - after skipping ' + len + ' bytes of meta data, offset=' + offset + ' trackEnd=' + trackEnd);
+                        log('parseMIDI() - after skipping ' + len + ' bytes, offset=' + offset + ' trackEnd=' + trackEnd);
+                        
+                        // Safety check - don't go past trackEnd
+                        if (offset > trackEnd) {
+                            log('parseMIDI() - WARNING: offset (' + offset + ') > trackEnd (' + trackEnd + '), clamping');
+                            offset = trackEnd;
+                        }
                     }
                 }
                 // SYSEX event (0xF0 or 0xF7)
@@ -236,6 +223,18 @@ const AudioPlayback = (function() {
         }
 
         log('Total events parsed: ' + events.length);
+        
+        // If no events found, dump first 100 bytes for debugging
+        if (events.length === 0) {
+            log('parseMIDI() - NO EVENTS FOUND! Dumping first 200 bytes:');
+            let hexDump = '';
+            for (let i = 0; i < Math.min(200, bytes.length); i++) {
+                hexDump += bytes[i].toString(16).padStart(2, '0') + ' ';
+                if ((i + 1) % 16 === 0) hexDump += '\n';
+            }
+            log(hexDump);
+        }
+        
         return { events, msPerTick };
     }
 
