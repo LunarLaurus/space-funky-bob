@@ -178,15 +178,14 @@ const AudioPlayback = (function() {
     async function playViaTone(midiData, startPosition) {
         const state = window.AudioState;
         const toneSynth = state.getToneSynth();
-        
-        if (!toneSynth || !window.Tone) return false;
+
+        if (!toneSynth || !window.Tone) {
+            log('Tone.js synth not available');
+            return false;
+        }
 
         // Cancel any existing scheduled events
         Tone.Transport.cancel();
-        
-        // Set playback speed BEFORE scheduling
-        const speed = state.getPlaybackSpeed();
-        Tone.Transport.playbackRate = speed;
 
         const events = parseMIDI(midiData);
         if (!events || events.length === 0) return false;
@@ -194,24 +193,19 @@ const AudioPlayback = (function() {
         events.sort((a, b) => a.time - b.time);
         const filtered = events.filter(e => e.time >= startPosition && e.time < 60000);
 
-        log('Tone.js: Scheduling ' + filtered.length + ' notes (from ' + startPosition + 'ms, speed: ' + speed + 'x)');
+        log('Tone.js: Scheduling ' + filtered.length + ' notes (from ' + startPosition + 'ms)');
 
-        // Schedule notes using Transport time (affected by playbackRate)
+        // Schedule notes
+        const now = Tone.now();
         filtered.forEach(event => {
-            // Convert to seconds, adjusted for start position
-            const eventTime = (event.time - startPosition) / 1000;
+            const eventTime = now + ((event.time - startPosition) / 1000);
             const freq = midiToFreq(event.note);
             const velocity = event.velocity / 127;
 
-            // Schedule via Transport (will be affected by playbackRate)
-            Tone.Transport.schedule((time) => {
-                toneSynth.triggerAttackRelease(freq, "8n", time, velocity);
-            }, eventTime);
+            toneSynth.triggerAttackRelease(freq, "8n", eventTime, velocity);
         });
 
-        // Start transport from position 0
-        Tone.Transport.start(0);
-        log('Tone.js: Playback scheduled at ' + speed + 'x speed');
+        log('Tone.js: Playback scheduled');
         return true;
     }
 

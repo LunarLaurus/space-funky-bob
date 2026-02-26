@@ -121,16 +121,26 @@ const AudioPlaylist = (function() {
             const track = playlist[currentTrackIndex];
             log('Restarting playback at ' + speed + 'x speed from ' + Math.round(currentPosition) + 'ms');
             
-            // Stop current playback
+            // Stop current playback (without resetting track index)
             if (window.Tone && Tone.Transport) {
-                Tone.Transport.stop();
                 Tone.Transport.cancel();
             }
+            state.getActiveSources().forEach(src => {
+                try {
+                    if (src.osc1) src.osc1.stop();
+                    if (src.osc2) src.osc2.stop();
+                } catch (e) {}
+            });
+            state.setActiveSources([]);
+            state.setPlaying(false);
             
-            // Restart at new speed
-            if (window.AudioPlayer && window.AudioPlayer.playMIDI) {
-                window.AudioPlayer.playMIDI(track.url, track.name, currentPosition);
-            }
+            // Small delay to ensure stop completes
+            setTimeout(() => {
+                // Restart at new speed
+                if (window.AudioPlayer && window.AudioPlayer.playMIDI) {
+                    window.AudioPlayer.playMIDI(track.url, track.name, currentPosition);
+                }
+            }, 50);
         }
 
         return true;
