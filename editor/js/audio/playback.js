@@ -53,6 +53,7 @@ const AudioPlayback = (function() {
 
     /**
      * Parse MIDI file
+     * @returns {Object} { events, msPerTick }
      */
     function parseMIDI(data) {
         const events = [];
@@ -60,7 +61,7 @@ const AudioPlayback = (function() {
 
         if (bytes[0] !== 0x4D || bytes[1] !== 0x54 || bytes[2] !== 0x68 || bytes[3] !== 0x64) {
             log('Invalid MIDI header');
-            return [];
+            return { events: [], msPerTick: 1.0 };
         }
 
         const format = (bytes[8] << 8) | bytes[9];
@@ -193,7 +194,7 @@ const AudioPlayback = (function() {
         }
 
         log('Total events parsed: ' + events.length);
-        return events;
+        return { events, msPerTick };
     }
 
     /**
@@ -267,19 +268,30 @@ const AudioPlayback = (function() {
     /**
      * Play via native Web Audio
      */
-    function playViaNative(midiData, name, startPosition) {
+    function playViaNative(midiData, name, startPosition, msPerTick) {
         const state = window.AudioState;
         const ctx = state.getAudioContext();
         
-        if (!ctx) return false;
+        if (!ctx) {
+            log('playViaNative() - audioContext not available');
+            return false;
+        }
 
-        const events = parseMIDI(midiData);
-        if (!events || events.length === 0) return false;
+        const parseResult = parseMIDI(midiData);
+        const events = parseResult.events;
+        
+        // Use provided msPerTick or fall back to parsed value
+        const tempoMsPerTick = msPerTick || parseResult.msPerTick;
+        
+        if (!events || events.length === 0) {
+            log('playViaNative() - no events');
+            return false;
+        }
 
         const now = ctx.currentTime;
         const filtered = events.filter(e => e.time >= startPosition && e.time < 60000);
 
-        log('Native: Scheduling ' + filtered.length + ' notes (from ' + startPosition + 'ms)');
+        log('playViaNative() - scheduling ' + filtered.length + ' notes (from ' + startPosition + 'ms, msPerTick: ' + tempoMsPerTick.toFixed(4) + ')');
 
         filtered.forEach(event => {
             const eventTime = now + 0.1 + ((event.time - startPosition) / 1000);
@@ -303,17 +315,17 @@ const AudioPlayback = (function() {
 
             osc1.connect(gain);
             osc2.connect(gain);
-            gain.connect(state.getMasterGain ? state.getMasterGain() : ctx.destination);
+            gain.connect(ctx.destination);
 
             osc1.start(eventTime);
             osc2.start(eventTime);
             osc1.stop(eventTime + 0.35);
             osc2.stop(eventTime + 0.35);
 
-            state.getActiveSources().push({ osc1, osc2 });
+            state.getActiveSources().push({ osc1, osc2, startTime: eventTime, stopTime: eventTime + 0.35 });
         });
 
-        log('Native: Playback scheduled');
+        log('playViaNative() - playback scheduled');
         return true;
     }
 

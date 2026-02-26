@@ -57,18 +57,26 @@ const AudioPlayer = (function() {
 
         // Stop native oscillators
         const sources = window.AudioState.getActiveSources();
-        log('stop() - stopping ' + sources.length + ' native oscillators');
+        const now = window.AudioState.getAudioContext() ? window.AudioState.getAudioContext().currentTime : 0;
+        log('stop() - stopping ' + sources.length + ' native oscillators (currentTime: ' + now.toFixed(3) + 's)');
         sources.forEach((src, i) => {
             try {
-                if (src.osc1) {
-                    log('stop() - osc1[' + i + '] state=' + src.osc1.state);
-                    if (src.osc1.state === 'started') src.osc1.stop();
-                    src.osc1.disconnect();
-                }
-                if (src.osc2) {
-                    log('stop() - osc2[' + i + '] state=' + src.osc2.state);
-                    if (src.osc2.state === 'started') src.osc2.stop();
-                    src.osc2.disconnect();
+                // Check if this oscillator is still pending or playing
+                const isPending = src.startTime && src.startTime > now;
+                const isPlaying = src.startTime && src.startTime <= now && src.stopTime && src.stopTime > now;
+                
+                if (isPending || isPlaying) {
+                    log('stop() - osc1[' + i + '] startTime=' + src.startTime.toFixed(3) + 's stopTime=' + src.stopTime.toFixed(3) + 's (stopping)');
+                    if (src.osc1) {
+                        src.osc1.stop();
+                        src.osc1.disconnect();
+                    }
+                    if (src.osc2) {
+                        src.osc2.stop();
+                        src.osc2.disconnect();
+                    }
+                } else {
+                    log('stop() - osc1[' + i + '] already finished (startTime=' + (src.startTime ? src.startTime.toFixed(3) : 'null') + 's)');
                 }
             } catch (e) {
                 log('stop() - error: ' + e.message);
@@ -231,7 +239,9 @@ const AudioPlayer = (function() {
                 result = await window.AudioPlayback.playViaTone(midiData, startPosition);
             } else {
                 log('playMIDI() - playing via native...');
-                result = window.AudioPlayback.playViaNative(midiData, name, startPosition);
+                // Parse MIDI first to get msPerTick
+                const parseResult = window.AudioPlayback.parseMIDI(midiData);
+                result = window.AudioPlayback.playViaNative(midiData, name, startPosition, parseResult.msPerTick);
             }
 
             if (result) {
@@ -244,9 +254,9 @@ const AudioPlayer = (function() {
                 state.setPlaybackStartTime(Tone.now() - (startPosition / 1000));
 
                 // Calculate duration
-                const events = window.AudioPlayback.parseMIDI(midiData);
-                if (events && events.length > 0) {
-                    const maxTime = Math.max(...events.map(e => e.time));
+                const parseResult = window.AudioPlayback.parseMIDI(midiData);
+                if (parseResult.events && parseResult.events.length > 0) {
+                    const maxTime = Math.max(...parseResult.events.map(e => e.time));
                     state.setTotalDuration(maxTime);
                 } else {
                     state.setTotalDuration(60000);
