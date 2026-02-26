@@ -91,7 +91,7 @@ const AudioPlayback = (function() {
                             (bytes[offset+6] << 8) | bytes[offset+7];
             const trackEnd = offset + 8 + trackLen;
 
-            log('Parsing track ' + track + ' (' + trackLen + ' bytes)');
+            log('Parsing track ' + track + ' (' + trackLen + ' bytes, offset=' + offset + ', trackEnd=' + trackEnd + ')');
             offset += 8;
 
             let currentTime = 0;
@@ -102,6 +102,7 @@ const AudioPlayback = (function() {
             while (offset < trackEnd - 2 && offset < bytes.length) {
                 let delta = 0;
                 for (let i = 0; i < 4; i++) {
+                    if (offset >= trackEnd) break;
                     delta = (delta << 7) | (bytes[offset] & 0x7F);
                     if ((bytes[offset] & 0x80) === 0) {
                         offset++;
@@ -111,7 +112,10 @@ const AudioPlayback = (function() {
                 }
                 currentTime += delta;
 
-                if (offset >= trackEnd) break;
+                if (offset >= trackEnd) {
+                    log('parseMIDI() - reached trackEnd after delta, offset=' + offset + ' trackEnd=' + trackEnd);
+                    break;
+                }
 
                 let status = bytes[offset];
                 if ((status & 0x80) === 0) {
@@ -164,20 +168,21 @@ const AudioPlayback = (function() {
                 }
                 // Meta event (0xFF)
                 else if (status === 0xFF) {
-                    // Meta event
                     offset++;
                     if (offset < trackEnd) {
                         const metaType = bytes[offset++];
+                        // Read variable-length length (standard MIDI format)
                         let len = 0;
-                        // Read variable-length length
-                        for (let i = 0; i < 4; i++) {
-                            len = (len << 7) | (bytes[offset] & 0x7F);
-                            if ((bytes[offset] & 0x80) === 0) {
-                                offset++;
-                                break;
-                            }
-                            offset++;
-                        }
+                        let byte;
+                        let lenBytes = 0;
+                        do {
+                            if (offset >= trackEnd) break;
+                            byte = bytes[offset++];
+                            len = (len << 7) | (byte & 0x7F);
+                            lenBytes++;
+                        } while (byte & 0x80);
+                        
+                        log('parseMIDI() - meta 0x' + metaType.toString(16).toUpperCase() + ' len=' + len + ' (read ' + lenBytes + ' bytes for length)');
                         
                         // Tempo meta event (0x51): 3 bytes, microseconds per quarter note
                         if (metaType === 0x51 && len === 3 && offset + 3 <= trackEnd) {
