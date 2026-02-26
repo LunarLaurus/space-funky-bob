@@ -180,32 +180,51 @@ const AudioPlayback = (function() {
         const toneSynth = state.getToneSynth();
 
         if (!toneSynth || !window.Tone) {
-            log('Tone.js synth not available');
+            log('playViaTone() - toneSynth not available');
             return false;
         }
 
-        // Cancel any existing scheduled events
+        log('playViaTone() - cancelling Tone.Transport');
         Tone.Transport.cancel();
 
         const events = parseMIDI(midiData);
-        if (!events || events.length === 0) return false;
+        if (!events || events.length === 0) {
+            log('playViaTone() - no events');
+            return false;
+        }
 
         events.sort((a, b) => a.time - b.time);
         const filtered = events.filter(e => e.time >= startPosition && e.time < 60000);
 
-        log('Tone.js: Scheduling ' + filtered.length + ' notes (from ' + startPosition + 'ms)');
+        log('playViaTone() - scheduling ' + filtered.length + ' notes from ' + startPosition + 'ms');
 
         // Schedule notes
         const now = Tone.now();
-        filtered.forEach(event => {
+        log('playViaTone() - Tone.now() = ' + now);
+        
+        let scheduledCount = 0;
+        filtered.forEach((event, i) => {
             const eventTime = now + ((event.time - startPosition) / 1000);
             const freq = midiToFreq(event.note);
             const velocity = event.velocity / 127;
 
-            toneSynth.triggerAttackRelease(freq, "8n", eventTime, velocity);
+            // Log first few and last few events
+            if (i < 5 || i >= filtered.length - 5) {
+                log('playViaTone() - note[' + i + '] freq=' + freq + 'Hz time=' + eventTime.toFixed(3) + 's');
+            } else if (i === 5) {
+                log('playViaTone() - ... (' + (filtered.length - 10) + ' more notes) ...');
+            }
+
+            try {
+                toneSynth.triggerAttackRelease(freq, "8n", eventTime, velocity);
+                scheduledCount++;
+            } catch (e) {
+                log('playViaTone() - error scheduling note ' + i + ': ' + e.message);
+            }
         });
 
-        log('Tone.js: Playback scheduled');
+        log('playViaTone() - scheduled ' + scheduledCount + '/' + filtered.length + ' notes');
+        log('playViaTone() - playback scheduled');
         return true;
     }
 
