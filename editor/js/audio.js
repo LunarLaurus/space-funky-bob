@@ -1067,48 +1067,65 @@ const Audio = (function() {
         list.innerHTML = html;
         log('HTML set to audioList, length: ' + html.length);
 
-        // Update UI functions
-        function updatePlayerUI() {
-            const playBtn = document.getElementById('btn-play-pause');
-            const nowPlaying = document.getElementById('now-playing');
-            const speedDisplay = document.getElementById('speed-display');
-            
-            log('updatePlayerUI called - isPlaying:' + isPlaying + ', currentTrack:' + currentTrackIndex);
+        // Initialize progress UI
+        initProgressUI();
 
-            if (playBtn) {
-                if (isPaused) {
-                    playBtn.textContent = '▶';
-                    playBtn.title = 'Resume (Space)';
-                    playBtn.style.background = 'var(--accent)';
-                } else if (isPlaying) {
-                    playBtn.textContent = '⏸';
-                    playBtn.title = 'Pause (Space)';
-                    playBtn.style.background = '#ff9900';
-                } else {
-                    playBtn.textContent = '▶';
-                    playBtn.title = 'Play (Space)';
-                    playBtn.style.background = 'var(--accent)';
-                }
+        // Initialize button handlers
+        initButtonHandlers();
+
+        // Initial UI update
+        log('Calling initial updatePlayerUI');
+        updatePlayerUI();
+
+        // Log ready state
+        log('Audio player ready - waiting for user interaction');
+    }
+
+    /**
+     * Update player UI (called from playMIDI, button handlers, etc.)
+     */
+    function updatePlayerUI() {
+        const playBtn = document.getElementById('btn-play-pause');
+        const nowPlaying = document.getElementById('now-playing');
+        const speedDisplay = document.getElementById('speed-display');
+
+        log('updatePlayerUI called - isPlaying:' + isPlaying + ', currentTrack:' + currentTrackIndex);
+
+        if (playBtn) {
+            if (isPaused) {
+                playBtn.textContent = '▶';
+                playBtn.title = 'Resume (Space)';
+                playBtn.style.background = 'var(--accent)';
+            } else if (isPlaying) {
+                playBtn.textContent = '⏸';
+                playBtn.title = 'Pause (Space)';
+                playBtn.style.background = '#ff9900';
             } else {
-                log('playBtn not found');
+                playBtn.textContent = '▶';
+                playBtn.title = 'Play (Space)';
+                playBtn.style.background = 'var(--accent)';
             }
+        } else {
+            log('playBtn not found');
+        }
 
-            if (nowPlaying) {
-                const track = getCurrentTrack();
-                log('getCurrentTrack returned: ' + JSON.stringify(track));
-                nowPlaying.textContent = track ? track.name : 'None';
-            } else {
-                log('nowPlaying element not found');
-            }
+        if (nowPlaying) {
+            const track = getCurrentTrack();
+            log('getCurrentTrack returned: ' + JSON.stringify(track));
+            nowPlaying.textContent = track ? track.name : 'None';
+        } else {
+            log('nowPlaying element not found');
+        }
 
-            // Update speed display
-            if (speedDisplay) {
-                speedDisplay.textContent = playbackSpeed.toFixed(2) + 'x';
-            } else {
-                log('speedDisplay element not found');
-            }
+        // Update speed display
+        if (speedDisplay) {
+            speedDisplay.textContent = playbackSpeed.toFixed(2) + 'x';
+        } else {
+            log('speedDisplay element not found');
+        }
 
-            // Update playlist highlighting
+        // Update playlist highlighting
+        if (typeof playlist !== 'undefined') {
             playlist.forEach((_, i) => {
                 const el = document.getElementById('track-' + i);
                 if (el) {
@@ -1140,12 +1157,16 @@ const Audio = (function() {
                 }
             });
         }
+    }
 
-        // Implement progress UI update
+    /**
+     * Implement progress UI update
+     */
+    function initProgressUI() {
         updateProgressUI = function(position, total, progress) {
             const timeDisplay = document.getElementById('time-display');
             const progressBar = document.getElementById('progress-bar');
-            
+
             if (timeDisplay) {
                 const posSec = Math.floor(position / 1000);
                 const totalSec = Math.floor(total / 1000);
@@ -1153,37 +1174,40 @@ const Audio = (function() {
                 const posRem = posSec % 60;
                 const totalMin = Math.floor(totalSec / 60);
                 const totalRem = totalSec % 60;
-                
-                timeDisplay.textContent = 
+
+                timeDisplay.textContent =
                     posMin + ':' + posRem.toString().padStart(2, '0') + ' / ' +
                     totalMin + ':' + totalRem.toString().padStart(2, '0');
             }
-            
+
             if (progressBar) {
                 progressBar.style.width = Math.min(progress, 100) + '%';
             }
         };
+    }
 
-        // Button handlers
-        let isPlayingToggle = false;  // Prevent multiple clicks
-        
+    /**
+     * Initialize button handlers (called from renderAudioList)
+     */
+    function initButtonHandlers() {
+        let isPlayingToggle = false;
+
         document.getElementById('btn-play-pause')?.addEventListener('click', () => {
-            if (isPlayingToggle) return;  // Prevent rapid clicks
+            if (isPlayingToggle) return;
             isPlayingToggle = true;
-            
+
             if (isPlaying) {
                 pause();
             } else if (isPaused) {
                 resume();
             } else {
-                // Play current track or first track
                 if (currentTrackIndex >= 0) {
                     playTrack(currentTrackIndex);
                 } else if (playlist.length > 0) {
                     playTrack(0);
                 }
             }
-            
+
             setTimeout(() => { isPlayingToggle = false; }, 100);
             updatePlayerUI();
         });
@@ -1216,13 +1240,13 @@ const Audio = (function() {
                 log('Engine switched to: ' + newEngine);
             };
         }
-        
+
         // Speed control
         const speedDownBtn = document.getElementById('btn-speed-down');
         const speedUpBtn = document.getElementById('btn-speed-up');
-        
+
         log('Speed buttons found: down=' + !!speedDownBtn + ', up=' + !!speedUpBtn);
-        
+
         if (speedDownBtn) {
             speedDownBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
@@ -1234,7 +1258,7 @@ const Audio = (function() {
         } else {
             log('btn-speed-down not found');
         }
-        
+
         if (speedUpBtn) {
             speedUpBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
@@ -1246,13 +1270,6 @@ const Audio = (function() {
         } else {
             log('btn-speed-up not found');
         }
-
-        // Initial UI update
-        log('Calling initial updatePlayerUI');
-        updatePlayerUI();
-        
-        // Log ready state
-        log('Audio player ready - waiting for user interaction');
     }
 
     return {
@@ -1264,20 +1281,20 @@ const Audio = (function() {
         pause: pause,
         resume: resume,
         stop: stop,
-        
+
         // Playlist management
         setPlaylist: setPlaylist,
         getPlaylist: getPlaylist,
         getCurrentTrack: getCurrentTrack,
-        
+
         // Playback speed
         setPlaybackSpeed: setPlaybackSpeed,
         getPlaybackSpeed: getPlaybackSpeed,
-        
+
         // Settings
         setPreferredEngine: setPreferredEngine,
         getEngineStatus: getEngineStatus,
-        
+
         // UI
         renderAudioList: renderAudioList
     };
