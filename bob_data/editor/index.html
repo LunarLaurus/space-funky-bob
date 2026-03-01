@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Space Funky B.O.B. Level Editor</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <div class="header">
+        <div>
+            <h1>Space Funky B.O.B.</h1>
+            <span class="subtitle">SNES Level Editor v1.0</span>
+        </div>
+        <div class="header-controls">
+            <button onclick="Logger.togglePanel()" style="background:var(--accent);color:#000;border:none;padding:4px 8px;cursor:pointer;font-size:10px;border-radius:3px;">Logs</button>
+            <span class="shortcut-hint">Ctrl+S Save</span>
+            <span class="shortcut-hint">Ctrl+Z Undo</span>
+            <span class="shortcut-hint">+/- Zoom</span>
+            <span class="shortcut-hint">R-Click Erase</span>
+            <span id="romInfo">ROM: B.O.B._edit.smc</span>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="sidebar">
+            <div class="sidebar-section">
+                <h3>Levels</h3>
+                <ul class="map-list" id="mapList">
+                    <li class="loading">Loading levels...</li>
+                </ul>
+            </div>
+            
+            <div class="sidebar-section">
+                <h3>Level Metadata</h3>
+                <div class="level-meta-form" id="levelMetaForm">
+                    <div>
+                        <label>Name</label>
+                        <input type="text" id="metaName" placeholder="Level name">
+                    </div>
+                    <div>
+                        <label>Theme</label>
+                        <select id="metaTheme">
+                            <option value="Ancient">Ancient</option>
+                            <option value="Borg">Borg</option>
+                            <option value="Bug">Bug</option>
+                            <option value="Jungle">Jungle</option>
+                            <option value="Lava">Lava</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>Author</label>
+                        <input type="text" id="metaAuthor" placeholder="Author">
+                    </div>
+                    <div>
+                        <label>Music</label>
+                        <select id="metaMusic">
+                            <option value="0">Track 1</option>
+                            <option value="1">Track 2</option>
+                            <option value="2">Track 3</option>
+                            <option value="3">Track 4</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="sidebar-section">
+                <h3>Data Reference</h3>
+                <ul class="map-list" id="dataList" style="max-height: 100px;">
+                    <li data-file="ENEMIES.json">Enemies (60+)</li>
+                    <li data-file="TILES.json">Tiles (256)</li>
+                    <li data-file="LEVELS.json">Levels (85)</li>
+                    <li data-file="TILESETS.json">Tilesets (12)</li>
+                </ul>
+                <div id="dataViewer" style="margin-top:8px;font-size:10px;display:none;">
+                    <div style="margin-bottom:4px;font-weight:bold;color:var(--accent);" id="dataTitle">-</div>
+                    <div style="max-height:200px;overflow-y:auto;background:var(--bg-dark);padding:4px;border:1px solid var(--border);" id="dataContent"></div>
+                </div>
+            </div>
+            
+            <div class="sidebar-section">
+                <h3>Tile Variations</h3>
+                <div style="font-size:10px;color:var(--text-dim);margin-bottom:5px;">
+                    <button onclick="loadAllTilesets()" style="background:var(--accent);border:none;padding:4px 8px;cursor:pointer;font-size:9px;">Scan ROM</button>
+                </div>
+                <div id="tilesetList" style="max-height:120px;overflow-y:auto;font-size:9px;">
+                    <div style="color:var(--text-dim);padding:4px;">Click Scan ROM to find tilesets</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="main">
+            <div class="toolbar">
+                <div class="toolbar-group">
+                    <button id="btnUndo" disabled title="Undo (Ctrl+Z)">Undo</button>
+                    <button id="btnRedo" disabled title="Redo (Ctrl+Y)">Redo</button>
+                </div>
+                <div class="toolbar-group">
+                    <button id="btnImport" disabled>Import</button>
+                    <button id="btnExport" title="Export JSON (Ctrl+S)">Export</button>
+                </div>
+                <div class="toolbar-group">
+                    <button id="btnZoomOut" title="Zoom Out (-)">-</button>
+                    <span class="zoom-display" id="zoomDisplay">4x</span>
+                    <button id="btnZoomIn" title="Zoom In (+)">+</button>
+                </div>
+                <div class="toolbar-group">
+                    <select id="tilesetSelect" title="Select Tileset" style="background:var(--bg-dark);color:var(--text);border:1px solid var(--accent);padding:4px;font-size:11px;">
+                        <option value="main_1">Main Graphics 1</option>
+                        <option value="main_2">Main Graphics 2</option>
+                        <option value="borg">Borg Tileset</option>
+                        <option value="bug">Bug Tileset</option>
+                        <option value="ancient">Ancient Tileset</option>
+                        <option value="lava">Lava Tileset</option>
+                        <option value="ultra">Ultra Tileset</option>
+                    </select>
+                </div>
+                <div class="toolbar-group">
+                    <button id="btnGrid" title="Toggle Grid (G)">Grid</button>
+                    <button id="btnSnap" class="active" title="Snap to Grid (S)">Snap</button>
+                    <button id="btnShowEnemies" title="Toggle Enemy Markers">Enemies</button>
+                </div>
+                <div class="toolbar-group">
+                    <button id="btnExportROM" title="Export to ROM">Export ROM</button>
+                </div>
+                <div class="toolbar-group">
+                    <button id="btnTileViewer" title="Tile Viewer">Tile Viewer</button>
+                </div>
+                <div class="toolbar-group">
+                    <button id="btnAudio" title="Play Audio">Audio</button>
+                </div>
+                <div class="toolbar-group">
+                    <button id="btnDocs" title="Documentation" onclick="window.open('/wiki.html', '_blank')">Docs</button>
+                </div>
+            </div>
+            
+            <div class="canvas-wrapper">
+                <div class="canvas-scroll" id="canvasScroll">
+                    <canvas id="levelCanvas" width="640" height="640"></canvas>
+                </div>
+                
+                <div class="minimap-container">
+                    <h4>Overview</h4>
+                    <canvas id="minimap" width="100" height="100"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <div class="info-panel">
+            <div>
+                <h3>Layer</h3>
+                <div class="layer-tabs">
+                    <div class="layer-tab active" data-layer="background">BG</div>
+                    <div class="layer-tab" data-layer="foreground">FG</div>
+                </div>
+            </div>
+            
+            <div>
+                <h3>Info</h3>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <label>Name</label>
+                        <span id="levelName">-</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Theme</label>
+                        <span id="levelTheme">-</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Tiles</label>
+                        <span id="levelTiles">0</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Size</label>
+                        <span id="levelSize">-</span>
+                    </div>
+                </div>
+                
+                <div class="tile-info">
+                    <div class="coords" id="tileCoords">Hover over canvas</div>
+                    <div class="tile-id" id="tileId">Tile: -</div>
+                </div>
+            </div>
+            
+            <div class="tileset-panel">
+                <div class="tileset-header">
+                    <h3>Tile Palette</h3>
+                    <span style="font-size:9px;color:var(--text-dim)" id="tileCount">255 tiles</span>
+                </div>
+                <div class="tileset-scroll">
+                    <div class="tileset-grid" id="tileset"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="status">
+        <div class="status-left">
+            <div class="status-item">
+                <span class="label">Mode:</span>
+                <span class="value" id="statusMode">Ready</span>
+            </div>
+            <div class="status-item">
+                <span class="label">Selected:</span>
+                <span class="value" id="statusTile">Tile 1</span>
+            </div>
+            <div class="status-item">
+                <span class="label">History:</span>
+                <span class="value" id="statusHistory">0/20</span>
+            </div>
+        </div>
+        <div id="status">Ready - Select a level to edit</div>
+    </div>
+    
+    <!-- Tile Viewer Modal -->
+    <div id="tileViewerModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:2000;overflow:auto;">
+        <div style="max-width:900px;margin:20px auto;background:var(--bg-panel);border:2px solid var(--accent);padding:20px;border-radius:8px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;">
+                <h2 style="color:var(--accent);margin:0;">Tile Viewer</h2>
+                <button onclick="document.getElementById('tileViewerModal').style.display='none'" style="background:var(--accent);border:none;padding:8px 16px;cursor:pointer;border-radius:4px;">Close</button>
+            </div>
+            <div style="margin-bottom:15px;">
+                <select id="tileViewerTileset" style="background:var(--bg-dark);color:var(--text);border:1px solid var(--accent);padding:8px;">
+                    <option value="">Select tileset...</option>
+                </select>
+                <button onclick="renderTileViewer()" style="background:var(--accent);border:none;padding:8px 16px;cursor:pointer;margin-left:10px;">Load</button>
+            </div>
+            <div id="tileViewerGrid" style="display:grid;grid-template-columns:repeat(16,1fr);gap:2px;max-height:500px;overflow:auto;background:#000;padding:10px;">
+                <div style="color:var(--text-dim);grid-column:1/-1;text-align:center;padding:40px;">Select a tileset and click Load</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Audio Player Modal -->
+    <div id="audioModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:2000;">
+        <div style="max-width:500px;margin:100px auto;background:var(--bg-panel);border:2px solid var(--accent);padding:20px;border-radius:8px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;">
+                <h2 style="color:var(--accent);margin:0;">Audio Files</h2>
+                <button onclick="document.getElementById('audioModal').style.display='none'" style="background:var(--accent);border:none;padding:8px 16px;cursor:pointer;border-radius:4px;">Close</button>
+            </div>
+            <div style="margin-bottom:10px;">
+                <button id="testAudioBtn" style="background:#f00;color:#fff;padding:10px 20px;border:none;cursor:pointer;">TEST AUDIO CLICK</button>
+            </div>
+            <div id="audioList" style="max-height:300px;overflow:auto;">
+                <div style="color:var(--text-dim);padding:20px;text-align:center;">Loading audio files...</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Documentation Modal -->
+    <div id="docsModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:2000;overflow:auto;">
+        <div style="max-width:900px;margin:20px auto;background:var(--bg-panel);border:2px solid var(--accent);padding:20px;border-radius:8px;max-height:90vh;overflow:auto;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;">
+                <h2 style="color:var(--accent);margin:0;">Space Funky B.O.B. - Technical Wiki</h2>
+                <button onclick="document.getElementById('docsModal').style.display='none'" style="background:var(--accent);border:none;padding:8px 16px;cursor:pointer;border-radius:4px;">Close</button>
+            </div>
+            <div id="wikiContent" style="font-size:12px;line-height:1.6;color:var(--text);">
+                <div style="color:var(--accent);padding:20px;text-align:center;">Loading wiki...</div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+    document.getElementById('btnDocs').onclick = function() {
+        document.getElementById('docsModal').style.display = 'block';
+        const content = document.getElementById('wikiContent');
+        if (content.innerHTML.includes('Loading')) {
+            fetch('/WIKI.md')
+                .then(r => r.text())
+                .then(md => {
+                    content.innerHTML = convertMarkdown(md);
+                })
+                .catch(e => {
+                    content.innerHTML = '<div style="color:red;">Failed to load wiki: ' + e.message + '</div>';
+                });
+        }
+    };
+    
+    function convertMarkdown(md) {
+        let html = md
+            .replace(/^### (.+)$/gm, '<h3 style="color:var(--accent);margin-top:20px;">$1</h3>')
+            .replace(/^## (.+)$/gm, '<h2 style="color:var(--accent);margin-top:30px;border-bottom:1px solid var(--accent);">$1</h2>')
+            .replace(/^# (.+)$/gm, '<h1 style="color:var(--accent);">$1</h1>')
+            .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\*(.+?)\*/g, '<em>$1</em>')
+            .replace(/`(.+?)`/g, '<code style="background:var(--bg-dark);padding:2px 4px;border-radius:3px;">$1</code>')
+            .replace(/^\| (.+) \|$/gm, '<tr><td>$1</td></tr>')
+            .replace(/^---$/gm, '<hr style="border-color:var(--accent);opacity:0.3;">');
+        
+        html = html.replace(/<table>/g, '<table style="width:100%;border-collapse:collapse;margin:10px 0;">');
+        html = html.replace(/<td>/g, '<td style="padding:6px 10px;border:1px solid var(--bg-dark);">');
+        
+        let lines = html.split('\n');
+        let out = [];
+        let inTable = false;
+        for (let line of lines) {
+            if (line.includes('|') && !line.startsWith('<')) {
+                if (!inTable) { out.push('<table style="width:100%;border-collapse:collapse;margin:10px 0;">'); inTable = true; }
+                let cells = line.split('|').filter(c => c.trim());
+                if (cells.every(c => /^[-:]+$/.test(c.trim()))) continue;
+                out.push('<tr>' + cells.map(c => '<td style="padding:6px 10px;border:1px solid var(--bg-dark);">' + c.trim() + '</td>').join('') + '</tr>');
+            } else {
+                if (inTable) { out.push('</table>'); inTable = false; }
+                if (line.trim()) out.push(line);
+            }
+        }
+        if (inTable) out.push('</table>');
+        
+        return out.join('\n');
+    }
+    </script>
+    
+    <!-- JavaScript Modules (order matters!) -->
+    <script src="/js/logger.js"></script>
+    <script src="/js/api.js"></script>
+    <script src="/js/audio.js?v=5"></script>
+    <script src="/js/renderer.js"></script>
+    <script src="/js/app.js"></script>
+</body>
+</html>

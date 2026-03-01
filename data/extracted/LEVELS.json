@@ -1,0 +1,803 @@
+{
+  "metadata": {
+    "game": "Space Funky B.O.B.",
+    "source": "ROM Analysis + Source Code (Disk C MAP files)",
+    "notes": "Level data from ROM at 0xD4000, 0xE4000, 0xF4000 (World 1-3)"
+  },
+  "worlds": [
+    {
+      "id": 1,
+      "name": "World 1 - Borg Factory",
+      "type": "borg",
+      "level_type_id": 0,
+      "offset": "0x0D4000",
+      "snes_address": "0x9AC000",
+      "size_bytes": 16384,
+      "dimensions": {"width": 80, "height": 80},
+      "total_tiles": 6400,
+      "music": "unknown",
+      "levels": [
+        {
+          "id": "BORG1",
+          "name": "Borg Level 1",
+          "map_file": "BORGMAPS/BORG1.MAP",
+          "type": "borg",
+          "level_number": 1,
+          "tileset": "borg",
+          "enemy_groups": ["borg_guard", "borg_patrol"]
+        },
+        {
+          "id": "BORG2",
+          "name": "Borg Level 2",
+          "map_file": "BORGMAPS/BORG2.MAP",
+          "type": "borg",
+          "level_number": 2,
+          "tileset": "borg",
+          "enemy_groups": ["borg_shooter", "borg_patrol"]
+        },
+        {
+          "id": "BORG3",
+          "name": "Borg Level 3",
+          "map_file": "BORGMAPS/BORG3.MAP",
+          "type": "borg",
+          "level_number": 3,
+          "tileset": "borg",
+          "enemy_groups": ["borg_jumper", "borg_flyer"]
+        },
+        {
+          "id": "BORG4",
+          "name": "Borg Level 4",
+          "map_file": "BORGMAPS/BORG4.MAP",
+          "type": "borg",
+          "level_number": 4,
+          "tileset": "borg",
+          "enemy_groups": ["borg_guard", "borg_tosser"]
+        },
+        {
+          "id": "BORG6",
+          "name": "Borg Level 6",
+          "map_file": "BORGMAPS/BORG6.MAP",
+          "type": "borg",
+          "level_number": 6,
+          "tileset": "borg",
+          "enemy_groups": ["borg_flyer", "borg_small"]
+        },
+        {
+          "id": "BORG7",
+          "name": "Borg Level 7",
+          "map_file": "BORGMAPS/BORG7.MAP",
+          "type": "borg",
+          "level_number": 7,
+          "tileset": "borg",
+          "enemy_groups": ["borg_ducker", "borg_patrol"]
+        },
+        {
+          "id": "BORG8",
+          "name": "Borg Level 8",
+          "map_file": "BORGMAPS/BORG8.MAP",
+          "type": "borg",
+          "level_number": 8,
+          "tileset": "borg",
+          "enemy_groups": ["borg_flyerv", "borg_shooter"]
+        },
+        {
+          "id": "BORG10",
+          "name": "Borg Level 10",
+          "map_file": "BORGMAPS/BORG10.MAP",
+          "type": "borg",
+          "level_number": 10,
+          "tileset": "borg",
+          "enemy_groups": ["borg_guard", "borg_tosser"]
+        },
+        {
+          "id": "BORG11",
+          "name": "Borg Level 11",
+          "map_file": "BORGMAPS/BORG11.MAP",
+          "type": "borg",
+          "level_number": 11,
+          "tileset": "borg",
+          "enemy_groups": ["borg_patrol", "borg_shooter"]
+        },
+        {
+          "id": "BORG12",
+          "name": "Borg Level 12",
+          "map_file": "BORGMAPS/BORG12.MAP",
+          "type": "borg",
+          "level_number": 12,
+          "tileset": "borg",
+          "enemy_groups": ["borg_jumper"]
+        },
+        {
+          "id": "BORG13",
+          "name": "Borg Level 13",
+          "map_file": "BORGMAPS/BORG13.MAP",
+          "type": "borg",
+          "level_number": 13,
+          "tileset": "borg",
+          "enemy_groups": ["borg_flyer", "borg_small"]
+        },
+        {
+          "id": "BORG17",
+          "name": "Borg Level 17",
+          "map_file": "BORGMAPS/BORG017.MAP",
+          "type": "borg",
+          "level_number": 17,
+          "tileset": "borg",
+          "enemy_groups": ["borg_patrol"]
+        },
+        {
+          "id": "BORG20",
+          "name": "Borg Level 20",
+          "map_file": "BORGMAPS/BORG20.MAP",
+          "type": "borg",
+          "level_number": 20,
+          "tileset": "borg",
+          "enemy_groups": ["borg_guard"]
+        },
+        {
+          "id": "BORG23",
+          "name": "Borg Level 23",
+          "map_file": "BORGMAPS/BORG23.MAP",
+          "type": "borg",
+          "level_number": 23,
+          "tileset": "borg",
+          "enemy_groups": ["borg_shooter"]
+        },
+        {
+          "id": "BORG31",
+          "name": "Borg Level 31",
+          "map_file": "BORGMAPS/BORG31.MAP",
+          "type": "borg",
+          "level_number": 31,
+          "tileset": "borg",
+          "enemy_groups": ["borg_patrol"]
+        },
+        {
+          "id": "BORG32",
+          "name": "Borg Level 32",
+          "map_file": "BORGMAPS/BORG32.MAP",
+          "type": "borg",
+          "level_number": 32,
+          "tileset": "borg",
+          "enemy_groups": ["borg_jumper"]
+        },
+        {
+          "id": "BORG33",
+          "name": "Borg Level 33",
+          "map_file": "BORGMAPS/BORG33.MAP",
+          "type": "borg",
+          "level_number": 33,
+          "tileset": "borg",
+          "enemy_groups": ["borg_flyer"]
+        },
+        {
+          "id": "BORG34",
+          "name": "Borg Level 34",
+          "map_file": "BORGMAPS/BORG34.MAP",
+          "type": "borg",
+          "level_number": 34,
+          "tileset": "borg",
+          "enemy_groups": ["borg_guard"]
+        },
+        {
+          "id": "BORG35",
+          "name": "Borg Level 35",
+          "map_file": "BORGMAPS/BORG35.MAP",
+          "type": "borg",
+          "level_number": 35,
+          "tileset": "borg",
+          "enemy_groups": ["borg_patrol"]
+        },
+        {
+          "id": "BORG39",
+          "name": "Borg Level 39",
+          "map_file": "BORGMAPS/BORG39.MAP",
+          "type": "borg",
+          "level_number": 39,
+          "tileset": "borg",
+          "enemy_groups": ["borg_shooter"]
+        },
+        {
+          "id": "BORG88",
+          "name": "Borg Level 88",
+          "map_file": "BORGMAPS/BORG88.MAP",
+          "type": "borg",
+          "level_number": 88,
+          "tileset": "borg",
+          "enemy_groups": ["borg_guard"]
+        },
+        {
+          "id": "BORG89",
+          "name": "Borg Level 89",
+          "map_file": "BORGMAPS/BORG89.MAP",
+          "type": "borg",
+          "level_number": 89,
+          "tileset": "borg",
+          "enemy_groups": ["borg_patrol"]
+        }
+      ],
+      "bosses": [
+        {
+          "id": "SNAKBOSS",
+          "name": "Snake Boss",
+          "map_file": "BORGMAPS/SNAKBOSS.MAP",
+          "type": "boss",
+          "enemy_id": 56,
+          "tileset": "borg"
+        },
+        {
+          "id": "TANKBOSS",
+          "name": "Tank Boss",
+          "map_file": "BORGMAPS/TANKBOSS.MAP",
+          "type": "boss",
+          "enemy_id": 51,
+          "tileset": "borg"
+        },
+        {
+          "id": "FLOWER",
+          "name": "Flower Boss",
+          "map_file": "BORGMAPS/FLOWER.MAP",
+          "type": "boss",
+          "enemy_id": 101,
+          "tileset": "borg"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "World 2 - Bug Planet",
+      "type": "bug",
+      "level_type_id": 1,
+      "offset": "0x0E4000",
+      "snes_address": "0x9CC000",
+      "size_bytes": 16384,
+      "dimensions": {"width": 80, "height": 80},
+      "total_tiles": 6400,
+      "music": "unknown",
+      "levels": [
+        {
+          "id": "BUG1",
+          "name": "Bug Level 1",
+          "map_file": "BUGMAPS/BUG1.MAP",
+          "type": "bug",
+          "level_number": 1,
+          "tileset": "bug",
+          "enemy_groups": ["cockroach", "worker_walk"]
+        },
+        {
+          "id": "BUG2",
+          "name": "Bug Level 2",
+          "map_file": "BUGMAPS/BUG2.MAP",
+          "type": "bug",
+          "level_number": 2,
+          "tileset": "bug",
+          "enemy_groups": ["worker_jump", "crab_walk"]
+        },
+        {
+          "id": "BUG7",
+          "name": "Bug Level 7",
+          "map_file": "BUGMAPS/BUG7.MAP",
+          "type": "bug",
+          "level_number": 7,
+          "tileset": "bug",
+          "enemy_groups": ["scorpion_walk", "dropper_left"]
+        },
+        {
+          "id": "BUG11",
+          "name": "Bug Level 11",
+          "map_file": "BUGMAPS/BUG11.MAP",
+          "type": "bug",
+          "level_number": 11,
+          "tileset": "bug",
+          "enemy_groups": ["worker_fire", "cockroach"]
+        },
+        {
+          "id": "BUG13",
+          "name": "Bug Level 13",
+          "map_file": "BUGMAPS/BUG13.MAP",
+          "type": "bug",
+          "level_number": 13,
+          "tileset": "bug",
+          "enemy_groups": ["crab_attack", "worker_jump"]
+        },
+        {
+          "id": "BUG26",
+          "name": "Bug Level 26",
+          "map_file": "BUGMAPS/BUG26.MAP",
+          "type": "bug",
+          "level_number": 26,
+          "tileset": "bug",
+          "enemy_groups": ["scorpion_stand", "worker_walk"]
+        }
+      ],
+      "bosses": [
+        {
+          "id": "QUEEN",
+          "name": "Queen Boss",
+          "map_file": "BUGMAPS/QUEEN.MAP",
+          "type": "boss",
+          "enemy_id": 59,
+          "tileset": "bug"
+        },
+        {
+          "id": "BUGQUEEN",
+          "name": "Bug Queen Boss",
+          "map_file": "BUGMAPS/BUGQUEEN.MAP",
+          "type": "boss",
+          "enemy_id": 59,
+          "tileset": "bug"
+        },
+        {
+          "id": "QUEEN2",
+          "name": "Queen Boss Phase 2",
+          "map_file": "BUGMAPS/QUEEN2.MAP",
+          "type": "boss",
+          "enemy_id": 59,
+          "tileset": "bug"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "World 3 - Ancient Ruins",
+      "type": "ancient",
+      "level_type_id": 4,
+      "offset": "0x0F4000",
+      "snes_address": "0x9EC000",
+      "size_bytes": 16384,
+      "dimensions": {"width": 80, "height": 80},
+      "total_tiles": 6400,
+      "music": "unknown",
+      "levels": [
+        {
+          "id": "ANC1",
+          "name": "Ancient Level 1",
+          "map_file": "ANCMAPS/ANC1.MAP",
+          "type": "ancient",
+          "level_number": 1,
+          "tileset": "ancient",
+          "enemy_groups": ["ancient_brick"]
+        },
+        {
+          "id": "ANC2",
+          "name": "Ancient Level 2",
+          "map_file": "ANCMAPS/ANC2.MAP",
+          "type": "ancient",
+          "level_number": 2,
+          "tileset": "ancient",
+          "enemy_groups": ["ancient_brick"]
+        },
+        {
+          "id": "ANC3",
+          "name": "Ancient Level 3",
+          "map_file": "ANCMAPS/ANC3.MAP",
+          "type": "ancient",
+          "level_number": 3,
+          "tileset": "ancient",
+          "enemy_groups": ["ancient_brick"]
+        },
+        {
+          "id": "ANC4",
+          "name": "Ancient Level 4",
+          "map_file": "ANCMAPS/ANC4.MAP",
+          "type": "ancient",
+          "level_number": 4,
+          "tileset": "ancient",
+          "enemy_groups": ["ancient_brick"]
+        },
+        {
+          "id": "ANC5",
+          "name": "Ancient Level 5",
+          "map_file": "ANCMAPS/ANC5.MAP",
+          "type": "ancient",
+          "level_number": 5,
+          "tileset": "ancient",
+          "enemy_groups": ["ancient_brick"]
+        },
+        {
+          "id": "ANC6",
+          "name": "Ancient Level 6",
+          "map_file": "ANCMAPS/ANC6.MAP",
+          "type": "ancient",
+          "level_number": 6,
+          "tileset": "ancient",
+          "enemy_groups": ["ancient_brick"]
+        },
+        {
+          "id": "ANC7",
+          "name": "Ancient Level 7",
+          "map_file": "ANCMAPS/ANC7.MAP",
+          "type": "ancient",
+          "level_number": 7,
+          "tileset": "ancient",
+          "enemy_groups": ["ancient_brick"]
+        },
+        {
+          "id": "ANC8",
+          "name": "Ancient Level 8",
+          "map_file": "ANCMAPS/ANC8.MAP",
+          "type": "ancient",
+          "level_number": 8,
+          "tileset": "ancient",
+          "enemy_groups": ["ancient_brick"]
+        },
+        {
+          "id": "ANC8A",
+          "name": "Ancient Level 8A",
+          "map_file": "ANCMAPS/ANC8A.MAP",
+          "type": "ancient",
+          "level_number": "8A",
+          "tileset": "ancient",
+          "enemy_groups": ["ancient_brick"]
+        }
+      ],
+      "bosses": [
+        {
+          "id": "ANCBOSS",
+          "name": "Ancient Boss",
+          "map_file": "ANCMAPS/ANCBOSS.MAP",
+          "type": "boss",
+          "enemy_id": 64,
+          "tileset": "ancient"
+        },
+        {
+          "id": "PODBOSS",
+          "name": "Pod Boss",
+          "map_file": "ANCMAPS/PODBOSS.MAP",
+          "type": "boss",
+          "enemy_id": 61,
+          "tileset": "ancient"
+        },
+        {
+          "id": "POPBOSS",
+          "name": "Pop Boss",
+          "map_file": "ANCMAPS/POPBOSS.MAP",
+          "type": "boss",
+          "enemy_id": 62,
+          "tileset": "ancient"
+        },
+        {
+          "id": "PUSSBOSS",
+          "name": "Puss Boss",
+          "map_file": "ANCMAPS/PUSSBOSS.MAP",
+          "type": "boss",
+          "enemy_id": 60,
+          "tileset": "ancient"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "name": "World 4 - Lava",
+      "type": "lava",
+      "level_type_id": 6,
+      "offset": "unknown",
+      "snes_address": "unknown",
+      "size_bytes": 16384,
+      "dimensions": {"width": 80, "height": 80},
+      "total_tiles": 6400,
+      "music": "unknown",
+      "levels": [
+        {
+          "id": "LAVA1",
+          "name": "Lava Level 1",
+          "map_file": "LAVAMAPS/LAVA1.MAP",
+          "type": "lava",
+          "level_number": 1,
+          "tileset": "lava",
+          "enemy_groups": ["lava_enemy"]
+        },
+        {
+          "id": "LAVA66",
+          "name": "Lava Level 66",
+          "map_file": "LAVAMAPS/LAVA66.MAP",
+          "type": "lava",
+          "level_number": 66,
+          "tileset": "lava",
+          "enemy_groups": ["lava_enemy"]
+        },
+        {
+          "id": "LAVA99",
+          "name": "Lava Level 99",
+          "map_file": "LAVAMAPS/LAVA99.MAP",
+          "type": "lava",
+          "level_number": 99,
+          "tileset": "lava",
+          "enemy_groups": ["lava_enemy"]
+        }
+      ],
+      "bosses": [
+        {
+          "id": "LAVABOSS",
+          "name": "Lava Boss",
+          "map_file": "LAVAMAPS/LAVABOSS.MAP",
+          "type": "boss",
+          "enemy_id": 63,
+          "tileset": "lava"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "name": "World 5 - Ultra Force",
+      "type": "ultra",
+      "level_type_id": 8,
+      "offset": "unknown",
+      "snes_address": "unknown",
+      "size_bytes": 16384,
+      "dimensions": {"width": 80, "height": 80},
+      "total_tiles": 6400,
+      "music": "unknown",
+      "levels": [
+        {
+          "id": "ULTRA1",
+          "name": "Ultra Level 1",
+          "map_file": "ULTRAMPA/ULTRA1.MAP",
+          "type": "ultra",
+          "level_number": 1,
+          "tileset": "ultra",
+          "enemy_groups": ["ultra_enemy"]
+        },
+        {
+          "id": "ULTRA2",
+          "name": "Ultra Level 2",
+          "map_file": "ULTRAMPA/ULTRA2.MAP",
+          "type": "ultra",
+          "level_number": 2,
+          "tileset": "ultra",
+          "enemy_groups": ["ultra_enemy"]
+        },
+        {
+          "id": "ULTRA3",
+          "name": "Ultra Level 3",
+          "map_file": "ULTRAMPA/ULTRA3.MAP",
+          "type": "ultra",
+          "level_number": 3,
+          "tileset": "ultra",
+          "enemy_groups": ["ultra_enemy"]
+        },
+        {
+          "id": "ULTRA4",
+          "name": "Ultra Level 4",
+          "map_file": "ULTRAMPA/ULTRA4.MAP",
+          "type": "ultra",
+          "level_number": 4,
+          "tileset": "ultra",
+          "enemy_groups": ["ultra_enemy"]
+        },
+        {
+          "id": "ULTRA5",
+          "name": "Ultra Level 5",
+          "map_file": "ULTRAMPA/ULTRA5.MAP",
+          "type": "ultra",
+          "level_number": 5,
+          "tileset": "ultra",
+          "enemy_groups": ["ultra_enemy"]
+        }
+      ],
+      "bosses": [
+        {
+          "id": "ULTRBOSS",
+          "name": "Ultra Boss",
+          "map_file": "ULTRAMPA/ULTRBOSS.MAP",
+          "type": "boss",
+          "enemy_id": 66,
+          "tileset": "ultra"
+        },
+        {
+          "id": "MUTOID",
+          "name": "Mutoid Boss",
+          "map_file": "ULTRAMPA/MUTOID.MAP",
+          "type": "boss",
+          "enemy_id": 65,
+          "tileset": "ultra"
+        },
+        {
+          "id": "PUSSBOSS",
+          "name": "Puss Boss",
+          "map_file": "ULTRAMPA/PUSSBOSS.MAP",
+          "type": "boss",
+          "enemy_id": 60,
+          "tileset": "ultra"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "name": "World 6 - Bubble Forest",
+      "type": "bubble",
+      "level_type_id": 9,
+      "offset": "unknown",
+      "snes_address": "unknown",
+      "size_bytes": 16384,
+      "dimensions": {"width": 80, "height": 80},
+      "total_tiles": 6400,
+      "music": "unknown",
+      "levels": [
+        {
+          "id": "BUB1",
+          "name": "Bubble Level 1",
+          "map_file": "JUNGLEMA/BUB1.MAP",
+          "type": "bubble",
+          "level_number": 1,
+          "tileset": "bubble",
+          "enemy_groups": ["bubble_enemy"]
+        },
+        {
+          "id": "BUB2",
+          "name": "Bubble Level 2",
+          "map_file": "JUNGLEMA/BUB2.MAP",
+          "type": "bubble",
+          "level_number": 2,
+          "tileset": "bubble",
+          "enemy_groups": ["bubble_enemy"]
+        },
+        {
+          "id": "BUB3",
+          "name": "Bubble Level 3",
+          "map_file": "JUNGLEMA/BUB3.MAP",
+          "type": "bubble",
+          "level_number": 3,
+          "tileset": "bubble",
+          "enemy_groups": ["bubble_enemy"]
+        },
+        {
+          "id": "BUBBLE1",
+          "name": "Bubble Forest 1",
+          "map_file": "JUNGLEMA/BUBBLE1.MAP",
+          "type": "bubble",
+          "level_number": 1,
+          "tileset": "bubble",
+          "enemy_groups": ["bubble_enemy"]
+        },
+        {
+          "id": "BUBBLE2",
+          "name": "Bubble Forest 2",
+          "map_file": "JUNGLEMA/BUBBLE2.MAP",
+          "type": "bubble",
+          "level_number": 2,
+          "tileset": "bubble",
+          "enemy_groups": ["bubble_enemy"]
+        },
+        {
+          "id": "BUBBLE3",
+          "name": "Bubble Forest 3",
+          "map_file": "JUNGLEMA/BUBBLE3.MAP",
+          "type": "bubble",
+          "level_number": 3,
+          "tileset": "bubble",
+          "enemy_groups": ["bubble_enemy"]
+        },
+        {
+          "id": "BUBPARA",
+          "name": "Bubble Parachute",
+          "map_file": "JUNGLEMA/BUBPARA.MAP",
+          "type": "bubble",
+          "level_number": "para",
+          "tileset": "bubble",
+          "enemy_groups": ["bubble_enemy"]
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "name": "World Maps",
+      "type": "world",
+      "level_type_id": 10,
+      "offset": "unknown",
+      "snes_address": "unknown",
+      "size_bytes": 16384,
+      "dimensions": {"width": 80, "height": 80},
+      "total_tiles": 6400,
+      "music": "unknown",
+      "levels": [
+        {
+          "id": "WOR1",
+          "name": "World Map 1",
+          "map_file": "WORLDMAP/WOR1.MAP",
+          "type": "world",
+          "level_number": 1,
+          "tileset": "world"
+        },
+        {
+          "id": "WOR2",
+          "name": "World Map 2",
+          "map_file": "WORLDMAP/WOR2.MAP",
+          "type": "world",
+          "level_number": 2,
+          "tileset": "world"
+        },
+        {
+          "id": "WOR3",
+          "name": "World Map 3",
+          "map_file": "WORLDMAP/WOR3.MAP",
+          "type": "world",
+          "level_number": 3,
+          "tileset": "world"
+        },
+        {
+          "id": "WOR1P",
+          "name": "World Map 1 Path",
+          "map_file": "WORLDMAP/WOR1P.MAP",
+          "type": "world",
+          "level_number": "1P",
+          "tileset": "world"
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "name": "Space Levels",
+      "type": "space",
+      "level_type_id": 3,
+      "offset": "unknown",
+      "snes_address": "unknown",
+      "size_bytes": 16384,
+      "dimensions": {"width": 80, "height": 80},
+      "total_tiles": 6400,
+      "music": "unknown",
+      "levels": [
+        {
+          "id": "SPAC1",
+          "name": "Space Level 1",
+          "map_file": "SPACEMAP/SPAC1.MAP",
+          "type": "space",
+          "level_number": 1,
+          "tileset": "space",
+          "enemy_groups": ["space_rock", "space_laser"]
+        },
+        {
+          "id": "SPAC2",
+          "name": "Space Level 2",
+          "map_file": "SPACEMAP/SPAC2.MAP",
+          "type": "space",
+          "level_number": 2,
+          "tileset": "space",
+          "enemy_groups": ["space_rock", "space_laser"]
+        }
+      ],
+      "bosses": [
+        {
+          "id": "BIGSHIP1",
+          "name": "Big Ship 1",
+          "map_file": "BORGMAPS/BIGSHIP1.MAP",
+          "type": "boss",
+          "tileset": "space"
+        },
+        {
+          "id": "BIGSHIP2",
+          "name": "Big Ship 2",
+          "map_file": "BORGMAPS/BIGSHIP2.MAP",
+          "type": "boss",
+          "tileset": "space"
+        },
+        {
+          "id": "BIGSHIP3",
+          "name": "Big Ship 3",
+          "map_file": "BORGMAPS/BIGSHIP3.MAP",
+          "type": "boss",
+          "tileset": "space"
+        }
+      ]
+    }
+  ],
+  "level_types": {
+    "0": "borg",
+    "1": "bug",
+    "3": "space",
+    "4": "ancient",
+    "6": "lava",
+    "8": "ultra",
+    "9": "bubble",
+    "10": "world",
+    "11": "world",
+    "12": "world"
+  },
+  "animation_sets": {
+    "0": "borg",
+    "1": "lava",
+    "2": "ultra",
+    "3": "borg3",
+    "4": "buglava"
+  }
+}

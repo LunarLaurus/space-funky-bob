@@ -1,0 +1,247 @@
+================================================================================
+BOB_DATA vs MAIN PROJECT COMPARISON REPORT
+Generated: 2026-02-23T20:20:50.654466
+================================================================================
+
+SUMMARY
+--------------------------------------------------------------------------------
+Main project files: 2859
+bob_data files: 539
+Files only in main project: 2395
+Files only in bob_data: 75
+Common files: 464
+Modified files (size differs): 1
+
+================================================================================
+FILES UNIQUE TO BOB_DATA ('pickle' branch content)
+================================================================================
+
+
+B.O.B..smc/
+----------------------------------------
+  + B.O.B..smc (1,048,576 bytes)
+
+B.O.B._edit.smc/
+----------------------------------------
+  + B.O.B._edit.smc (1,048,576 bytes)
+
+Space Funky B.O.B. Source Files/
+----------------------------------------
+  + Space Funky B.O.B. Source Files\Disk A.7z (104,011 bytes)
+  + Space Funky B.O.B. Source Files\Disk B (CPBACKUP001).7z (413,976 bytes)
+  + Space Funky B.O.B. Source Files\Disk C.7z (198,788 bytes)
+  + Space Funky B.O.B. Source Files\Disk D & E.7z (2,847,652 bytes)
+  + Space Funky B.O.B. Source Files\Disk F.zip (191,636 bytes)
+
+Space_Funky_BOB_Source_Code.7z/
+----------------------------------------
+  + Space_Funky_BOB_Source_Code.7z (3,803,296 bytes)
+
+backup/
+----------------------------------------
+  + backup\B.O.B..smc (1,048,576 bytes)
+
+branch-001-lz77.tar.gz/
+----------------------------------------
+  + branch-001-lz77.tar.gz (13,587 bytes)
+
+branch-002-level-pointers/
+----------------------------------------
+  + branch-002-level-pointers\README.md (1,052 bytes)
+  + branch-002-level-pointers\find_level_pointers.py (4,723 bytes)
+  + branch-002-level-pointers\level_import.py (3,107 bytes)
+
+branch-002-level-pointers.tar.gz/
+----------------------------------------
+  + branch-002-level-pointers.tar.gz (3,140 bytes)
+
+branch-003-rom-export/
+----------------------------------------
+  + branch-003-rom-export\resume_system.py (6,427 bytes)
+  + branch-003-rom-export\state\current.json (1,518 bytes)
+
+branch-003-rom-export.tar.gz/
+----------------------------------------
+  + branch-003-rom-export.tar.gz (2,557 bytes)
+
+data/
+----------------------------------------
+  + data\ENEMIES.json (12,372 bytes)
+  + data\LEVELS.json (21,581 bytes)
+  + data\TILES.json (21,820 bytes)
+  + data\TILESETS.json (5,574 bytes)
+
+editor/
+----------------------------------------
+  + editor\CORRELATION_MAP.md (5,886 bytes)
+  + editor\WIKI.md (8,159 bytes)
+  + editor\css\styles.css (11,576 bytes)
+  + editor\favicon.svg (332 bytes)
+  + editor\index.html (16,306 bytes)
+  + editor\js\JZZ.js (102,651 bytes)
+  + editor\js\Tone.js (349,169 bytes)
+  + editor\js\api.js (4,226 bytes)
+  + editor\js\app.js (47,514 bytes)
+  + editor\js\audio.js (13,796 bytes)
+  + editor\js\logger.js (4,579 bytes)
+  + editor\js\renderer.js (13,536 bytes)
+  + editor\level_editor.py (3,197 bytes)
+  + editor\lib\__init__.py (342 bytes)
+  + editor\lib\level_extract.py (7,183 bytes)
+  + editor\lib\lz77.py (7,421 bytes)
+  + editor\lib\rom_parser.py (8,544 bytes)
+  + editor\lib\tileset.py (6,543 bytes)
+  + editor\server.py (27,357 bytes)
+  + editor\wiki.html (45,092 bytes)
+
+extract_rom_levels.py/
+----------------------------------------
+  + extract_rom_levels.py (4,579 bytes)
+
+levels/
+----------------------------------------
+  + levels\all_levels.json (383,629 bytes)
+  + levels\world_1.json (103,343 bytes)
+  + levels\world_2.json (86,264 bytes)
+  + levels\world_3.json (97,830 bytes)
+
+tests/
+----------------------------------------
+  + tests\__init__.py (51 bytes)
+  + tests\test_data.py (9,523 bytes)
+  + tests\test_editor.py (9,599 bytes)
+
+tileset_extract.py/
+----------------------------------------
+  + tileset_extract.py (10,239 bytes)
+
+tilesets/
+----------------------------------------
+  + tilesets\candidates_report.json (4,175 bytes)
+  + tilesets\tileset_008000.json (8,659 bytes)
+  + tilesets\tileset_008000.png (303 bytes)
+  + tilesets\tileset_008600.json (17,173 bytes)
+  + tilesets\tileset_008600.png (426 bytes)
+  + tilesets\tileset_008800.json (17,175 bytes)
+  + tilesets\tileset_008800.png (389 bytes)
+  + tilesets\tileset_009600.json (17,171 bytes)
+  + tilesets\tileset_009600.png (345 bytes)
+  + tilesets\tileset_00AC00.json (17,150 bytes)
+  + tilesets\tileset_00AC00.png (357 bytes)
+  + tilesets\tileset_00B900.json (8,666 bytes)
+  + tilesets\tileset_00B900.png (279 bytes)
+  + tilesets\tileset_010000.json (17,228 bytes)
+  + tilesets\tileset_010000.png (483 bytes)
+  + tilesets\tileset_035C00.json (25,665 bytes)
+  + tilesets\tileset_035C00.png (372 bytes)
+  + tilesets\tileset_036F00.json (25,764 bytes)
+  + tilesets\tileset_036F00.png (355 bytes)
+  + tilesets\tileset_0FAA00.json (17,193 bytes)
+  + tilesets\tileset_0FAA00.png (276 bytes)
+  + tilesets\tileset_main_graphics_1.json (273,337 bytes)
+  + tilesets\tileset_main_graphics_1.png (3,848 bytes)
+  + tilesets\tileset_main_graphics_2.json (273,299 bytes)
+  + tilesets\tileset_main_graphics_2.png (9,175 bytes)
+
+
+================================================================================
+MODIFIED FILES (different from main project)
+================================================================================
+
+  ~ run_tests.py
+    Main: 5,310 bytes | bob_data: 1,070 bytes
+
+
+================================================================================
+BOB_DATA DIRECTORY STRUCTURE
+================================================================================
+
+Top-level directories and files:
+----------------------------------------
+  [FILE] B.O.B..smc (1,048,576 bytes)
+  [FILE] B.O.B._edit.smc (1,048,576 bytes)
+  [DIR]  backup/
+  [DIR]  branch-001-lz77/
+  [FILE] branch-001-lz77.tar.gz (13,587 bytes)
+  [DIR]  branch-002-level-pointers/
+  [FILE] branch-002-level-pointers.tar.gz (3,140 bytes)
+  [DIR]  branch-003-rom-export/
+  [FILE] branch-003-rom-export.tar.gz (2,557 bytes)
+  [DIR]  data/
+  [DIR]  editor/
+  [FILE] extract_rom_levels.py (4,579 bytes)
+  [DIR]  levels/
+  [FILE] run_tests.py (1,070 bytes)
+  [DIR]  Space Funky B.O.B. Source Files/
+  [FILE] Space_Funky_BOB_Source_Code.7z (3,803,296 bytes)
+  [DIR]  tests/
+  [FILE] tileset_extract.py (10,239 bytes)
+  [DIR]  tilesets/
+
+
+================================================================================
+KEY FEATURES IN BOB_DATA
+================================================================================
+
+
+The bob_data directory contains the following unique components:
+
+1. ROM FILES
+   - B.O.B..smc (original ROM)
+   - B.O.B._edit.smc (edited ROM)
+   - backup/B.O.B..smc
+
+2. BRANCH ARCHIVES
+   - branch-001-lz77.tar.gz
+   - branch-002-level-pointers.tar.gz
+   - branch-003-rom-export.tar.gz
+
+3. EXTRACTED DATA (JSON format)
+   - data/ENEMIES.json
+   - data/LEVELS.json
+   - data/TILES.json
+   - data/TILESETS.json
+
+4. LEVEL DATA
+   - levels/all_levels.json
+   - levels/world_1.json
+   - levels/world_2.json
+   - levels/world_3.json
+
+5. TILESET IMAGES
+   - tilesets/tileset_*.png (12 tileset images)
+   - tilesets/tileset_*.json (metadata)
+
+6. WEB-BASED LEVEL EDITOR
+   - editor/index.html
+   - editor/level_editor.py
+   - editor/server.py
+   - editor/js/*.js (app, renderer, audio, API)
+   - editor/css/styles.css
+   - editor/lib/*.py (level_extract, lz77, rom_parser, tileset)
+
+7. LEVEL EDITOR TOOLS
+   - branch-002-level-pointers/find_level_pointers.py
+   - branch-002-level-pointers/level_import.py
+   - extract_rom_levels.py
+   - tileset_extract.py
+
+8. ROM EXPORT SYSTEM
+   - branch-003-rom-export/resume_system.py
+   - branch-003-rom-export/state/current.json
+
+9. SOURCE CODE ARCHIVES
+   - Space Funky B.O.B. Source Files/Disk A-F
+   - Space_Funky_BOB_Source_Code.7z
+
+10. TEST SUITE
+    - tests/test_data.py
+    - tests/test_editor.py
+
+NOTE: There is NO 'pickle' branch in the git repository.
+      The bob_data directory appears to be a working directory for
+      feature development, possibly nicknamed 'pickle' branch.
+
+================================================================================
+END OF REPORT
+================================================================================

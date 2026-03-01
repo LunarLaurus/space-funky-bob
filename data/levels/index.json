@@ -1,0 +1,968 @@
+[
+  {
+    "index": 0,
+    "offset": 163840,
+    "filename": "tilemap_00_028000.bin",
+    "nonzero": 1023,
+    "unique": 54
+  },
+  {
+    "index": 1,
+    "offset": 165888,
+    "filename": "tilemap_01_028800.bin",
+    "nonzero": 1018,
+    "unique": 86
+  },
+  {
+    "index": 2,
+    "offset": 167936,
+    "filename": "tilemap_02_029000.bin",
+    "nonzero": 1016,
+    "unique": 116
+  },
+  {
+    "index": 3,
+    "offset": 169984,
+    "filename": "tilemap_03_029800.bin",
+    "nonzero": 935,
+    "unique": 126
+  },
+  {
+    "index": 4,
+    "offset": 172032,
+    "filename": "tilemap_04_02A000.bin",
+    "nonzero": 753,
+    "unique": 64
+  },
+  {
+    "index": 5,
+    "offset": 174080,
+    "filename": "tilemap_05_02A800.bin",
+    "nonzero": 793,
+    "unique": 82
+  },
+  {
+    "index": 6,
+    "offset": 176128,
+    "filename": "tilemap_06_02B000.bin",
+    "nonzero": 830,
+    "unique": 85
+  },
+  {
+    "index": 7,
+    "offset": 178176,
+    "filename": "tilemap_07_02B800.bin",
+    "nonzero": 726,
+    "unique": 75
+  },
+  {
+    "index": 8,
+    "offset": 180224,
+    "filename": "tilemap_08_02C000.bin",
+    "nonzero": 726,
+    "unique": 75
+  },
+  {
+    "index": 9,
+    "offset": 182272,
+    "filename": "tilemap_09_02C800.bin",
+    "nonzero": 262,
+    "unique": 34
+  },
+  {
+    "index": 10,
+    "offset": 229376,
+    "filename": "tilemap_10_038000.bin",
+    "nonzero": 1019,
+    "unique": 111
+  },
+  {
+    "index": 11,
+    "offset": 231424,
+    "filename": "tilemap_11_038800.bin",
+    "nonzero": 1020,
+    "unique": 67
+  },
+  {
+    "index": 12,
+    "offset": 233472,
+    "filename": "tilemap_12_039000.bin",
+    "nonzero": 1020,
+    "unique": 98
+  },
+  {
+    "index": 13,
+    "offset": 235520,
+    "filename": "tilemap_13_039800.bin",
+    "nonzero": 1022,
+    "unique": 103
+  },
+  {
+    "index": 14,
+    "offset": 237568,
+    "filename": "tilemap_14_03A000.bin",
+    "nonzero": 1024,
+    "unique": 112
+  },
+  {
+    "index": 15,
+    "offset": 239616,
+    "filename": "tilemap_15_03A800.bin",
+    "nonzero": 1006,
+    "unique": 101
+  },
+  {
+    "index": 16,
+    "offset": 241664,
+    "filename": "tilemap_16_03B000.bin",
+    "nonzero": 1013,
+    "unique": 107
+  },
+  {
+    "index": 17,
+    "offset": 243712,
+    "filename": "tilemap_17_03B800.bin",
+    "nonzero": 980,
+    "unique": 116
+  },
+  {
+    "index": 18,
+    "offset": 245760,
+    "filename": "tilemap_18_03C000.bin",
+    "nonzero": 1014,
+    "unique": 95
+  },
+  {
+    "index": 19,
+    "offset": 247808,
+    "filename": "tilemap_19_03C800.bin",
+    "nonzero": 972,
+    "unique": 108
+  },
+  {
+    "index": 20,
+    "offset": 294912,
+    "filename": "tilemap_20_048000.bin",
+    "nonzero": 1018,
+    "unique": 115
+  },
+  {
+    "index": 21,
+    "offset": 296960,
+    "filename": "tilemap_21_048800.bin",
+    "nonzero": 1015,
+    "unique": 127
+  },
+  {
+    "index": 22,
+    "offset": 299008,
+    "filename": "tilemap_22_049000.bin",
+    "nonzero": 1016,
+    "unique": 127
+  },
+  {
+    "index": 23,
+    "offset": 301056,
+    "filename": "tilemap_23_049800.bin",
+    "nonzero": 1019,
+    "unique": 125
+  },
+  {
+    "index": 24,
+    "offset": 303104,
+    "filename": "tilemap_24_04A000.bin",
+    "nonzero": 1023,
+    "unique": 124
+  },
+  {
+    "index": 25,
+    "offset": 305152,
+    "filename": "tilemap_25_04A800.bin",
+    "nonzero": 1023,
+    "unique": 127
+  },
+  {
+    "index": 26,
+    "offset": 307200,
+    "filename": "tilemap_26_04B000.bin",
+    "nonzero": 1016,
+    "unique": 127
+  },
+  {
+    "index": 27,
+    "offset": 309248,
+    "filename": "tilemap_27_04B800.bin",
+    "nonzero": 1024,
+    "unique": 121
+  },
+  {
+    "index": 28,
+    "offset": 311296,
+    "filename": "tilemap_28_04C000.bin",
+    "nonzero": 1018,
+    "unique": 124
+  },
+  {
+    "index": 29,
+    "offset": 313344,
+    "filename": "tilemap_29_04C800.bin",
+    "nonzero": 1012,
+    "unique": 126
+  },
+  {
+    "index": 30,
+    "offset": 360448,
+    "filename": "tilemap_30_058000.bin",
+    "nonzero": 1019,
+    "unique": 75
+  },
+  {
+    "index": 31,
+    "offset": 362496,
+    "filename": "tilemap_31_058800.bin",
+    "nonzero": 1013,
+    "unique": 122
+  },
+  {
+    "index": 32,
+    "offset": 364544,
+    "filename": "tilemap_32_059000.bin",
+    "nonzero": 974,
+    "unique": 69
+  },
+  {
+    "index": 33,
+    "offset": 366592,
+    "filename": "tilemap_33_059800.bin",
+    "nonzero": 1001,
+    "unique": 71
+  },
+  {
+    "index": 34,
+    "offset": 368640,
+    "filename": "tilemap_34_05A000.bin",
+    "nonzero": 832,
+    "unique": 102
+  },
+  {
+    "index": 35,
+    "offset": 370688,
+    "filename": "tilemap_35_05A800.bin",
+    "nonzero": 965,
+    "unique": 64
+  },
+  {
+    "index": 36,
+    "offset": 372736,
+    "filename": "tilemap_36_05B000.bin",
+    "nonzero": 1024,
+    "unique": 127
+  },
+  {
+    "index": 37,
+    "offset": 374784,
+    "filename": "tilemap_37_05B800.bin",
+    "nonzero": 1012,
+    "unique": 125
+  },
+  {
+    "index": 38,
+    "offset": 376832,
+    "filename": "tilemap_38_05C000.bin",
+    "nonzero": 1011,
+    "unique": 120
+  },
+  {
+    "index": 39,
+    "offset": 378880,
+    "filename": "tilemap_39_05C800.bin",
+    "nonzero": 1019,
+    "unique": 126
+  },
+  {
+    "index": 40,
+    "offset": 425984,
+    "filename": "tilemap_40_068000.bin",
+    "nonzero": 1009,
+    "unique": 120
+  },
+  {
+    "index": 41,
+    "offset": 428032,
+    "filename": "tilemap_41_068800.bin",
+    "nonzero": 1022,
+    "unique": 66
+  },
+  {
+    "index": 42,
+    "offset": 430080,
+    "filename": "tilemap_42_069000.bin",
+    "nonzero": 1019,
+    "unique": 78
+  },
+  {
+    "index": 43,
+    "offset": 432128,
+    "filename": "tilemap_43_069800.bin",
+    "nonzero": 943,
+    "unique": 49
+  },
+  {
+    "index": 44,
+    "offset": 434176,
+    "filename": "tilemap_44_06A000.bin",
+    "nonzero": 989,
+    "unique": 91
+  },
+  {
+    "index": 45,
+    "offset": 436224,
+    "filename": "tilemap_45_06A800.bin",
+    "nonzero": 1022,
+    "unique": 92
+  },
+  {
+    "index": 46,
+    "offset": 438272,
+    "filename": "tilemap_46_06B000.bin",
+    "nonzero": 1023,
+    "unique": 102
+  },
+  {
+    "index": 47,
+    "offset": 440320,
+    "filename": "tilemap_47_06B800.bin",
+    "nonzero": 1024,
+    "unique": 120
+  },
+  {
+    "index": 48,
+    "offset": 442368,
+    "filename": "tilemap_48_06C000.bin",
+    "nonzero": 949,
+    "unique": 103
+  },
+  {
+    "index": 49,
+    "offset": 444416,
+    "filename": "tilemap_49_06C800.bin",
+    "nonzero": 1020,
+    "unique": 91
+  },
+  {
+    "index": 50,
+    "offset": 491520,
+    "filename": "tilemap_50_078000.bin",
+    "nonzero": 1004,
+    "unique": 121
+  },
+  {
+    "index": 51,
+    "offset": 493568,
+    "filename": "tilemap_51_078800.bin",
+    "nonzero": 1019,
+    "unique": 125
+  },
+  {
+    "index": 52,
+    "offset": 495616,
+    "filename": "tilemap_52_079000.bin",
+    "nonzero": 1017,
+    "unique": 125
+  },
+  {
+    "index": 53,
+    "offset": 497664,
+    "filename": "tilemap_53_079800.bin",
+    "nonzero": 1018,
+    "unique": 126
+  },
+  {
+    "index": 54,
+    "offset": 499712,
+    "filename": "tilemap_54_07A000.bin",
+    "nonzero": 1023,
+    "unique": 126
+  },
+  {
+    "index": 55,
+    "offset": 501760,
+    "filename": "tilemap_55_07A800.bin",
+    "nonzero": 877,
+    "unique": 114
+  },
+  {
+    "index": 56,
+    "offset": 503808,
+    "filename": "tilemap_56_07B000.bin",
+    "nonzero": 397,
+    "unique": 59
+  },
+  {
+    "index": 57,
+    "offset": 505856,
+    "filename": "tilemap_57_07B800.bin",
+    "nonzero": 390,
+    "unique": 65
+  },
+  {
+    "index": 58,
+    "offset": 507904,
+    "filename": "tilemap_58_07C000.bin",
+    "nonzero": 552,
+    "unique": 44
+  },
+  {
+    "index": 59,
+    "offset": 509952,
+    "filename": "tilemap_59_07C800.bin",
+    "nonzero": 712,
+    "unique": 63
+  },
+  {
+    "index": 60,
+    "offset": 557056,
+    "filename": "tilemap_60_088000.bin",
+    "nonzero": 1012,
+    "unique": 115
+  },
+  {
+    "index": 61,
+    "offset": 559104,
+    "filename": "tilemap_61_088800.bin",
+    "nonzero": 1020,
+    "unique": 122
+  },
+  {
+    "index": 62,
+    "offset": 561152,
+    "filename": "tilemap_62_089000.bin",
+    "nonzero": 1016,
+    "unique": 117
+  },
+  {
+    "index": 63,
+    "offset": 563200,
+    "filename": "tilemap_63_089800.bin",
+    "nonzero": 1011,
+    "unique": 121
+  },
+  {
+    "index": 64,
+    "offset": 565248,
+    "filename": "tilemap_64_08A000.bin",
+    "nonzero": 1023,
+    "unique": 121
+  },
+  {
+    "index": 65,
+    "offset": 567296,
+    "filename": "tilemap_65_08A800.bin",
+    "nonzero": 1019,
+    "unique": 126
+  },
+  {
+    "index": 66,
+    "offset": 569344,
+    "filename": "tilemap_66_08B000.bin",
+    "nonzero": 1013,
+    "unique": 123
+  },
+  {
+    "index": 67,
+    "offset": 571392,
+    "filename": "tilemap_67_08B800.bin",
+    "nonzero": 1015,
+    "unique": 118
+  },
+  {
+    "index": 68,
+    "offset": 573440,
+    "filename": "tilemap_68_08C000.bin",
+    "nonzero": 1020,
+    "unique": 115
+  },
+  {
+    "index": 69,
+    "offset": 575488,
+    "filename": "tilemap_69_08C800.bin",
+    "nonzero": 1021,
+    "unique": 124
+  },
+  {
+    "index": 70,
+    "offset": 622592,
+    "filename": "tilemap_70_098000.bin",
+    "nonzero": 1024,
+    "unique": 99
+  },
+  {
+    "index": 71,
+    "offset": 624640,
+    "filename": "tilemap_71_098800.bin",
+    "nonzero": 797,
+    "unique": 112
+  },
+  {
+    "index": 72,
+    "offset": 626688,
+    "filename": "tilemap_72_099000.bin",
+    "nonzero": 568,
+    "unique": 47
+  },
+  {
+    "index": 73,
+    "offset": 628736,
+    "filename": "tilemap_73_099800.bin",
+    "nonzero": 873,
+    "unique": 92
+  },
+  {
+    "index": 74,
+    "offset": 630784,
+    "filename": "tilemap_74_09A000.bin",
+    "nonzero": 803,
+    "unique": 21
+  },
+  {
+    "index": 75,
+    "offset": 632832,
+    "filename": "tilemap_75_09A800.bin",
+    "nonzero": 966,
+    "unique": 47
+  },
+  {
+    "index": 76,
+    "offset": 634880,
+    "filename": "tilemap_76_09B000.bin",
+    "nonzero": 1023,
+    "unique": 122
+  },
+  {
+    "index": 77,
+    "offset": 636928,
+    "filename": "tilemap_77_09B800.bin",
+    "nonzero": 1021,
+    "unique": 128
+  },
+  {
+    "index": 78,
+    "offset": 638976,
+    "filename": "tilemap_78_09C000.bin",
+    "nonzero": 1021,
+    "unique": 122
+  },
+  {
+    "index": 79,
+    "offset": 641024,
+    "filename": "tilemap_79_09C800.bin",
+    "nonzero": 1019,
+    "unique": 122
+  },
+  {
+    "index": 80,
+    "offset": 688128,
+    "filename": "tilemap_80_0A8000.bin",
+    "nonzero": 1023,
+    "unique": 119
+  },
+  {
+    "index": 81,
+    "offset": 690176,
+    "filename": "tilemap_81_0A8800.bin",
+    "nonzero": 1017,
+    "unique": 127
+  },
+  {
+    "index": 82,
+    "offset": 692224,
+    "filename": "tilemap_82_0A9000.bin",
+    "nonzero": 1016,
+    "unique": 127
+  },
+  {
+    "index": 83,
+    "offset": 694272,
+    "filename": "tilemap_83_0A9800.bin",
+    "nonzero": 1019,
+    "unique": 123
+  },
+  {
+    "index": 84,
+    "offset": 696320,
+    "filename": "tilemap_84_0AA000.bin",
+    "nonzero": 1013,
+    "unique": 119
+  },
+  {
+    "index": 85,
+    "offset": 698368,
+    "filename": "tilemap_85_0AA800.bin",
+    "nonzero": 1016,
+    "unique": 127
+  },
+  {
+    "index": 86,
+    "offset": 700416,
+    "filename": "tilemap_86_0AB000.bin",
+    "nonzero": 1018,
+    "unique": 120
+  },
+  {
+    "index": 87,
+    "offset": 702464,
+    "filename": "tilemap_87_0AB800.bin",
+    "nonzero": 1017,
+    "unique": 124
+  },
+  {
+    "index": 88,
+    "offset": 704512,
+    "filename": "tilemap_88_0AC000.bin",
+    "nonzero": 1012,
+    "unique": 126
+  },
+  {
+    "index": 89,
+    "offset": 706560,
+    "filename": "tilemap_89_0AC800.bin",
+    "nonzero": 1013,
+    "unique": 122
+  },
+  {
+    "index": 90,
+    "offset": 753664,
+    "filename": "tilemap_90_0B8000.bin",
+    "nonzero": 1024,
+    "unique": 109
+  },
+  {
+    "index": 91,
+    "offset": 755712,
+    "filename": "tilemap_91_0B8800.bin",
+    "nonzero": 979,
+    "unique": 117
+  },
+  {
+    "index": 92,
+    "offset": 757760,
+    "filename": "tilemap_92_0B9000.bin",
+    "nonzero": 1023,
+    "unique": 90
+  },
+  {
+    "index": 93,
+    "offset": 759808,
+    "filename": "tilemap_93_0B9800.bin",
+    "nonzero": 1024,
+    "unique": 99
+  },
+  {
+    "index": 94,
+    "offset": 761856,
+    "filename": "tilemap_94_0BA000.bin",
+    "nonzero": 1000,
+    "unique": 34
+  },
+  {
+    "index": 95,
+    "offset": 763904,
+    "filename": "tilemap_95_0BA800.bin",
+    "nonzero": 992,
+    "unique": 83
+  },
+  {
+    "index": 96,
+    "offset": 765952,
+    "filename": "tilemap_96_0BB000.bin",
+    "nonzero": 1023,
+    "unique": 124
+  },
+  {
+    "index": 97,
+    "offset": 768000,
+    "filename": "tilemap_97_0BB800.bin",
+    "nonzero": 1024,
+    "unique": 128
+  },
+  {
+    "index": 98,
+    "offset": 770048,
+    "filename": "tilemap_98_0BC000.bin",
+    "nonzero": 1024,
+    "unique": 126
+  },
+  {
+    "index": 99,
+    "offset": 772096,
+    "filename": "tilemap_99_0BC800.bin",
+    "nonzero": 1024,
+    "unique": 128
+  },
+  {
+    "index": 100,
+    "offset": 819200,
+    "filename": "tilemap_100_0C8000.bin",
+    "nonzero": 999,
+    "unique": 103
+  },
+  {
+    "index": 101,
+    "offset": 821248,
+    "filename": "tilemap_101_0C8800.bin",
+    "nonzero": 1018,
+    "unique": 119
+  },
+  {
+    "index": 102,
+    "offset": 823296,
+    "filename": "tilemap_102_0C9000.bin",
+    "nonzero": 1024,
+    "unique": 128
+  },
+  {
+    "index": 103,
+    "offset": 825344,
+    "filename": "tilemap_103_0C9800.bin",
+    "nonzero": 1024,
+    "unique": 126
+  },
+  {
+    "index": 104,
+    "offset": 827392,
+    "filename": "tilemap_104_0CA000.bin",
+    "nonzero": 1023,
+    "unique": 127
+  },
+  {
+    "index": 105,
+    "offset": 829440,
+    "filename": "tilemap_105_0CA800.bin",
+    "nonzero": 832,
+    "unique": 107
+  },
+  {
+    "index": 106,
+    "offset": 831488,
+    "filename": "tilemap_106_0CB000.bin",
+    "nonzero": 1018,
+    "unique": 124
+  },
+  {
+    "index": 107,
+    "offset": 833536,
+    "filename": "tilemap_107_0CB800.bin",
+    "nonzero": 970,
+    "unique": 127
+  },
+  {
+    "index": 108,
+    "offset": 835584,
+    "filename": "tilemap_108_0CC000.bin",
+    "nonzero": 1015,
+    "unique": 102
+  },
+  {
+    "index": 109,
+    "offset": 837632,
+    "filename": "tilemap_109_0CC800.bin",
+    "nonzero": 1023,
+    "unique": 127
+  },
+  {
+    "index": 110,
+    "offset": 884736,
+    "filename": "tilemap_110_0D8000.bin",
+    "nonzero": 1009,
+    "unique": 99
+  },
+  {
+    "index": 111,
+    "offset": 886784,
+    "filename": "tilemap_111_0D8800.bin",
+    "nonzero": 1024,
+    "unique": 126
+  },
+  {
+    "index": 112,
+    "offset": 888832,
+    "filename": "tilemap_112_0D9000.bin",
+    "nonzero": 1024,
+    "unique": 127
+  },
+  {
+    "index": 113,
+    "offset": 890880,
+    "filename": "tilemap_113_0D9800.bin",
+    "nonzero": 1023,
+    "unique": 125
+  },
+  {
+    "index": 114,
+    "offset": 892928,
+    "filename": "tilemap_114_0DA000.bin",
+    "nonzero": 1018,
+    "unique": 110
+  },
+  {
+    "index": 115,
+    "offset": 894976,
+    "filename": "tilemap_115_0DA800.bin",
+    "nonzero": 972,
+    "unique": 127
+  },
+  {
+    "index": 116,
+    "offset": 897024,
+    "filename": "tilemap_116_0DB000.bin",
+    "nonzero": 932,
+    "unique": 111
+  },
+  {
+    "index": 117,
+    "offset": 899072,
+    "filename": "tilemap_117_0DB800.bin",
+    "nonzero": 1020,
+    "unique": 126
+  },
+  {
+    "index": 118,
+    "offset": 901120,
+    "filename": "tilemap_118_0DC000.bin",
+    "nonzero": 972,
+    "unique": 60
+  },
+  {
+    "index": 119,
+    "offset": 903168,
+    "filename": "tilemap_119_0DC800.bin",
+    "nonzero": 1014,
+    "unique": 94
+  },
+  {
+    "index": 120,
+    "offset": 950272,
+    "filename": "tilemap_120_0E8000.bin",
+    "nonzero": 1005,
+    "unique": 102
+  },
+  {
+    "index": 121,
+    "offset": 952320,
+    "filename": "tilemap_121_0E8800.bin",
+    "nonzero": 1024,
+    "unique": 128
+  },
+  {
+    "index": 122,
+    "offset": 954368,
+    "filename": "tilemap_122_0E9000.bin",
+    "nonzero": 1004,
+    "unique": 104
+  },
+  {
+    "index": 123,
+    "offset": 956416,
+    "filename": "tilemap_123_0E9800.bin",
+    "nonzero": 926,
+    "unique": 128
+  },
+  {
+    "index": 124,
+    "offset": 958464,
+    "filename": "tilemap_124_0EA000.bin",
+    "nonzero": 1017,
+    "unique": 124
+  },
+  {
+    "index": 125,
+    "offset": 960512,
+    "filename": "tilemap_125_0EA800.bin",
+    "nonzero": 970,
+    "unique": 128
+  },
+  {
+    "index": 126,
+    "offset": 962560,
+    "filename": "tilemap_126_0EB000.bin",
+    "nonzero": 1014,
+    "unique": 87
+  },
+  {
+    "index": 127,
+    "offset": 964608,
+    "filename": "tilemap_127_0EB800.bin",
+    "nonzero": 1022,
+    "unique": 126
+  },
+  {
+    "index": 128,
+    "offset": 966656,
+    "filename": "tilemap_128_0EC000.bin",
+    "nonzero": 958,
+    "unique": 124
+  },
+  {
+    "index": 129,
+    "offset": 968704,
+    "filename": "tilemap_129_0EC800.bin",
+    "nonzero": 1006,
+    "unique": 104
+  },
+  {
+    "index": 130,
+    "offset": 1015808,
+    "filename": "tilemap_130_0F8000.bin",
+    "nonzero": 856,
+    "unique": 16
+  },
+  {
+    "index": 131,
+    "offset": 1017856,
+    "filename": "tilemap_131_0F8800.bin",
+    "nonzero": 714,
+    "unique": 30
+  },
+  {
+    "index": 132,
+    "offset": 1019904,
+    "filename": "tilemap_132_0F9000.bin",
+    "nonzero": 740,
+    "unique": 71
+  },
+  {
+    "index": 133,
+    "offset": 1021952,
+    "filename": "tilemap_133_0F9800.bin",
+    "nonzero": 760,
+    "unique": 18
+  },
+  {
+    "index": 134,
+    "offset": 1024000,
+    "filename": "tilemap_134_0FA000.bin",
+    "nonzero": 670,
+    "unique": 60
+  },
+  {
+    "index": 135,
+    "offset": 1026048,
+    "filename": "tilemap_135_0FA800.bin",
+    "nonzero": 842,
+    "unique": 36
+  },
+  {
+    "index": 136,
+    "offset": 1028096,
+    "filename": "tilemap_136_0FB000.bin",
+    "nonzero": 1023,
+    "unique": 116
+  },
+  {
+    "index": 137,
+    "offset": 1030144,
+    "filename": "tilemap_137_0FB800.bin",
+    "nonzero": 836,
+    "unique": 106
+  }
+]

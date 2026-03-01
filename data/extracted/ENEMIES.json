@@ -1,0 +1,580 @@
+{
+  "metadata": {
+    "game": "Space Funky B.O.B.",
+    "source": "SNES ROM + Source Code Analysis",
+    "notes": "Enemy data extracted from BORG.A and related source files"
+  },
+  "enemies": [
+    {
+      "id": 1,
+      "name": "Borg Guard",
+      "category": "borg",
+      "behavior": "Patrols and shoots at player",
+      "health": 4,
+      "speed": 2,
+      "tiles_used": "unknown"
+    },
+    {
+      "id": 2,
+      "name": "Borg Patrol",
+      "category": "borg",
+      "behavior": "Walking patrol enemy",
+      "health": 3,
+      "speed": 2,
+      "tiles_used": "unknown"
+    },
+    {
+      "id": 3,
+      "name": "Borg Shooter",
+      "category": "borg",
+      "behavior": "Stationary shooting enemy",
+      "health": 3,
+      "speed": 0,
+      "tiles_used": "unknown"
+    },
+    {
+      "id": 4,
+      "name": "Borg Jumper",
+      "category": "borg",
+      "behavior": "Jumps and attacks player",
+      "health": 3,
+      "speed": 3,
+      "tiles_used": "unknown"
+    },
+    {
+      "id": 5,
+      "name": "Borg Small",
+      "category": "borg",
+      "behavior": "Small variant borg",
+      "health": 2,
+      "speed": 2,
+      "tiles_used": "unknown"
+    },
+    {
+      "id": 6,
+      "name": "Borg Flyer",
+      "category": "borg",
+      "behavior": "Flying borg enemy",
+      "health": 3,
+      "speed": 3,
+      "tiles_used": "unknown"
+    },
+    {
+      "id": 7,
+      "name": "Borg Ducker",
+      "category": "borg",
+      "behavior": "Ducks and weaves",
+      "health": 3,
+      "speed": 2,
+      "tiles_used": "unknown"
+    },
+    {
+      "id": 8,
+      "name": "Borg Flyer Vertical",
+      "category": "borg",
+      "behavior": "Vertical flying pattern",
+      "health": 3,
+      "speed": 2,
+      "tiles_used": "unknown"
+    },
+    {
+      "id": 9,
+      "name": "Borg Tosser",
+      "category": "borg",
+      "behavior": "Throws objects at player",
+      "health": 4,
+      "speed": 1,
+      "tiles_used": "unknown"
+    },
+    {
+      "id": 20,
+      "name": "Borg Bullet 5",
+      "category": "borg_projectile",
+      "behavior": "Projectile",
+      "health": 1,
+      "speed": 4,
+      "tiles_used": "unknown"
+    },
+    {
+      "id": 21,
+      "name": "Borg Bullet 6",
+      "category": "borg_projectile",
+      "behavior": "Projectile",
+      "health": 1,
+      "speed": 4,
+      "tiles_used": "unknown"
+    },
+    {
+      "id": 22,
+      "name": "Borg Bullet 7",
+      "category": "borg_projectile",
+      "behavior": "Projectile",
+      "health": 1,
+      "speed": 4,
+      "tiles_used": "unknown"
+    },
+    {
+      "id": 23,
+      "name": "Borg Bullet 8",
+      "category": "borg_projectile",
+      "behavior": "Projectile",
+      "health": 1,
+      "speed": 4,
+      "tiles_used": "unknown"
+    },
+    {
+      "id": 24,
+      "name": "Borg Bullet 9",
+      "category": "borg_projectile",
+      "behavior": "Projectile",
+      "health": 1,
+      "speed": 4,
+      "tiles_used": "unknown"
+    },
+    {
+      "id": 25,
+      "name": "Borg Bullet 1",
+      "category": "borg_projectile",
+      "behavior": "Projectile",
+      "health": 1,
+      "speed": 5,
+      "tiles_used": "unknown"
+    },
+    {
+      "id": 26,
+      "name": "Borg Bullet 2",
+      "category": "borg_projectile",
+      "behavior": "Projectile",
+      "health": 1,
+      "speed": 5,
+      "tiles_used": "unknown"
+    },
+    {
+      "id": 27,
+      "name": "Borg Bullet 3",
+      "category": "borg_projectile",
+      "behavior": "Projectile",
+      "health": 1,
+      "speed": 5,
+      "tiles_used": "unknown"
+    },
+    {
+      "id": 28,
+      "name": "Borg Bullet 4",
+      "category": "borg_projectile",
+      "behavior": "Projectile",
+      "health": 1,
+      "speed": 5,
+      "tiles_used": "unknown"
+    },
+    {
+      "id": 29,
+      "name": "Cockroach",
+      "category": "bug",
+      "behavior": "Small crawling enemy",
+      "health": 1,
+      "speed": 3,
+      "tiles_used": "unknown"
+    },
+    {
+      "id": 30,
+      "name": "Egg",
+      "category": "bug",
+      "behavior": "Hatching enemy egg",
+      "health": 2,
+      "speed": 0,
+      "tiles_used": "unknown"
+    },
+    {
+      "id": 31,
+      "name": "Worker Walk",
+      "category": "bug",
+      "behavior": "Walking bug worker",
+      "health": 2,
+      "speed": 2,
+      "tiles_used": "unknown"
+    },
+    {
+      "id": 32,
+      "name": "Worker Jump",
+      "category": "bug",
+      "behavior": "Jumping bug worker",
+      "health": 2,
+      "speed": 3,
+      "tiles_used": "unknown"
+    },
+    {
+      "id": 33,
+      "name": "Worker Land",
+      "category": "bug",
+      "behavior": "Landing animation",
+      "health": 2,
+      "speed": 0,
+      "tiles_used": "unknown"
+    },
+    {
+      "id": 34,
+      "name": "Worker Fire",
+      "category": "bug",
+      "behavior": "Fires projectile",
+      "health": 2,
+      "speed": 2,
+      "tiles_used": "unknown"
+    },
+    {
+      "id": 35,
+      "name": "Venom Ball",
+      "category": "bug_projectile",
+      "behavior": "Projectile",
+      "health": 1,
+      "speed": 4,
+      "tiles_used": "unknown"
+    },
+    {
+      "id": 36,
+      "name": "Worker Stand",
+      "category": "bug",
+      "behavior": "Standing bug",
+      "health": 2,
+      "speed": 0,
+      "tiles_used": "unknown"
+    },
+    {
+      "id": 37,
+      "name": "Dropper Left",
+      "category": "bug",
+      "behavior": "Drops from ceiling left",
+      "health": 2,
+      "speed": 2,
+      "tiles_used": "unknown"
+    },
+    {
+      "id": 38,
+      "name": "Backarm Emerge",
+      "category": "boss",
+      "behavior": "Arm boss emergence",
+      "health": 10,
+      "speed": 0,
+      "tiles_used": "unknown"
+    },
+    {
+      "id": 39,
+      "name": "Dropper Chew",
+      "category": "bug",
+      "behavior": "Chewing dropper",
+      "health": 3,
+      "speed": 1,
+      "tiles_used": "unknown"
+    },
+    {
+      "id": 40,
+      "name": "Hidden Gun Bullet",
+      "category": "borg_projectile",
+      "behavior": "Ceiling hidden gun shot",
+      "health": 1,
+      "speed": 5,
+      "tiles_used": "unknown"
+    },
+    {
+      "id": 41,
+      "name": "Bottom Larvae",
+      "category": "bug",
+      "behavior": "Ground-based larvae",
+      "health": 1,
+      "speed": 1,
+      "tiles_used": "unknown"
+    },
+    {
+      "id": 42,
+      "name": "Queen Sprout",
+      "category": "bug",
+      "behavior": "Queen enemy sprout",
+      "health": 5,
+      "speed": 0,
+      "tiles_used": "unknown"
+    },
+    {
+      "id": 43,
+      "name": "Crab Walk",
+      "category": "bug",
+      "behavior": "Crab-like walking",
+      "health": 3,
+      "speed": 2,
+      "tiles_used": "unknown"
+    },
+    {
+      "id": 44,
+      "name": "Crab Attack",
+      "category": "bug",
+      "behavior": "Crab attack mode",
+      "health": 3,
+      "speed": 3,
+      "tiles_used": "unknown"
+    },
+    {
+      "id": 45,
+      "name": "Crab Stand",
+      "category": "bug",
+      "behavior": "Crab stationary",
+      "health": 3,
+      "speed": 0,
+      "tiles_used": "unknown"
+    },
+    {
+      "id": 46,
+      "name": "Scorpion Stand",
+      "category": "bug",
+      "behavior": "Scorpion stationary",
+      "health": 4,
+      "speed": 0,
+      "tiles_used": "unknown"
+    },
+    {
+      "id": 47,
+      "name": "Scorpion Walk",
+      "category": "bug",
+      "behavior": "Scorpion walking",
+      "health": 4,
+      "speed": 2,
+      "tiles_used": "unknown"
+    },
+    {
+      "id": 50,
+      "name": "Mini Tank",
+      "category": "borg",
+      "behavior": "Small tank unit",
+      "health": 5,
+      "speed": 1,
+      "tiles_used": "unknown"
+    },
+    {
+      "id": 51,
+      "name": "Tank Walker",
+      "category": "borg",
+      "behavior": "Walking tank",
+      "health": 6,
+      "speed": 1,
+      "tiles_used": "unknown"
+    },
+    {
+      "id": 52,
+      "name": "Roman Candle",
+      "category": "borg",
+      "behavior": "Fires multiple projectiles",
+      "health": 3,
+      "speed": 0,
+      "tiles_used": "unknown"
+    },
+    {
+      "id": 53,
+      "name": "Hover Zapper",
+      "category": "borg",
+      "behavior": "Hovers and zaps",
+      "health": 4,
+      "speed": 2,
+      "tiles_used": "unknown"
+    },
+    {
+      "id": 54,
+      "name": "Flying Gun",
+      "category": "borg",
+      "behavior": "Flying shooting unit",
+      "health": 3,
+      "speed": 3,
+      "tiles_used": "unknown"
+    },
+    {
+      "id": 55,
+      "name": "Sine Wave Missile",
+      "category": "borg",
+      "behavior": "Sine wave movement",
+      "health": 2,
+      "speed": 3,
+      "tiles_used": "unknown"
+    },
+    {
+      "id": 56,
+      "name": "Snake Head",
+      "category": "boss",
+      "behavior": "Snake boss head",
+      "health": 12,
+      "speed": 2,
+      "tiles_used": "unknown"
+    },
+    {
+      "id": 57,
+      "name": "Snake Body",
+      "category": "boss",
+      "behavior": "Snake boss body segment",
+      "health": 8,
+      "speed": 2,
+      "tiles_used": "unknown"
+    },
+    {
+      "id": 58,
+      "name": "Snake Turret",
+      "category": "boss",
+      "behavior": "Snake boss turret",
+      "health": 6,
+      "speed": 0,
+      "tiles_used": "unknown"
+    },
+    {
+      "id": 59,
+      "name": "Queen Boss",
+      "category": "boss",
+      "behavior": "Bug Queen boss",
+      "health": 20,
+      "speed": 1,
+      "tiles_used": "unknown"
+    },
+    {
+      "id": 60,
+      "name": "Pussman",
+      "category": "boss",
+      "behavior": "Pussman boss",
+      "health": 15,
+      "speed": 2,
+      "tiles_used": "unknown"
+    },
+    {
+      "id": 61,
+      "name": "Pod Boss",
+      "category": "boss",
+      "behavior": "Pod boss",
+      "health": 12,
+      "speed": 1,
+      "tiles_used": "unknown"
+    },
+    {
+      "id": 62,
+      "name": "Pop Boss",
+      "category": "boss",
+      "behavior": "Pop boss",
+      "health": 10,
+      "speed": 2,
+      "tiles_used": "unknown"
+    },
+    {
+      "id": 63,
+      "name": "Lava Boss",
+      "category": "boss",
+      "behavior": "Lava level boss",
+      "health": 18,
+      "speed": 1,
+      "tiles_used": "unknown"
+    },
+    {
+      "id": 64,
+      "name": "Ancient Boss",
+      "category": "boss",
+      "behavior": "Ancient ruins boss",
+      "health": 15,
+      "speed": 2,
+      "tiles_used": "unknown"
+    },
+    {
+      "id": 65,
+      "name": "Mutoid Boss",
+      "category": "boss",
+      "behavior": "Mutoid boss",
+      "health": 16,
+      "speed": 2,
+      "tiles_used": "unknown"
+    },
+    {
+      "id": 66,
+      "name": "Virus Boss",
+      "category": "boss",
+      "behavior": "Virus boss (final)",
+      "health": 25,
+      "speed": 2,
+      "tiles_used": "unknown"
+    },
+    {
+      "id": 67,
+      "name": "Arm Boss",
+      "category": "boss",
+      "behavior": "Giant arm boss",
+      "health": 14,
+      "speed": 1,
+      "tiles_used": "unknown"
+    },
+    {
+      "id": 68,
+      "name": "Screen Lifter",
+      "category": "boss",
+      "behavior": "Screen lifting boss",
+      "health": 10,
+      "speed": 1,
+      "tiles_used": "unknown"
+    },
+    {
+      "id": 69,
+      "name": "Space Rock",
+      "category": "space",
+      "behavior": "Falling rock in space levels",
+      "health": 3,
+      "speed": 3,
+      "tiles_used": "unknown"
+    },
+    {
+      "id": 70,
+      "name": "Space Laser",
+      "category": "space",
+      "behavior": "Space ship laser",
+      "health": 1,
+      "speed": 6,
+      "tiles_used": "unknown"
+    },
+    {
+      "id": 100,
+      "name": "Ancient Brick Fall",
+      "category": "ancient",
+      "behavior": "Falling ancient brick",
+      "health": 1,
+      "speed": 4,
+      "tiles_used": "unknown"
+    },
+    {
+      "id": 101,
+      "name": "Ancient Flower",
+      "category": "ancient",
+      "behavior": "Flower boss attack",
+      "health": 8,
+      "speed": 0,
+      "tiles_used": "unknown"
+    },
+    {
+      "id": 102,
+      "name": "Bubble",
+      "category": "bubble",
+      "behavior": "Bubble platform/hazard",
+      "health": 1,
+      "speed": 1,
+      "tiles_used": "unknown"
+    }
+  ],
+  "enemy_behaviors": {
+    "borg_shoot": 1,
+    "borg_start": 2,
+    "borg_stop": 3,
+    "borg_prejump": 4,
+    "borg_land": 5,
+    "borg_jump": 6,
+    "borg_duck": 7,
+    "borg_getup": 0,
+    "borg_turn": 8,
+    "borg_minitank": 9,
+    "hiddengun_rise": 10,
+    "flygun_shoot": 11,
+    "zapperbeam": 12,
+    "queensplat": 13,
+    "queen_hole": 14,
+    "snakehead": 15,
+    "borg_stand": 16,
+    "borg_move": 17,
+    "falling_brick": 18,
+    "flower": 19
+  }
+}

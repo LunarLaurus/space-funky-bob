@@ -1,0 +1,143 @@
+{
+  "rom_file": "..\\rom\\B.O.B. (U) [!].smc",
+  "rom_size": 1048576,
+  "rom_title": "B.O.B.",
+  "has_header": false,
+  "header_offset": 0,
+  "rom_mapping": "LoROM",
+  "num_candidates": 11,
+  "candidates": [
+    {
+      "offset": "0x18000",
+      "offset_int": 98304,
+      "compressed_size": 1565,
+      "decompressed_size": 2048,
+      "success": true,
+      "entropy_compressed": 6.58,
+      "entropy_decompressed": 5.67,
+      "looks_like_tiles": true,
+      "encoder_verified": true,
+      "output_file": "decompressed_018000.bin"
+    },
+    {
+      "offset": "0x30000",
+      "offset_int": 196608,
+      "compressed_size": 1627,
+      "decompressed_size": 2048,
+      "success": true,
+      "entropy_compressed": 6.92,
+      "entropy_decompressed": 6.07,
+      "looks_like_tiles": true,
+      "encoder_verified": true,
+      "output_file": "decompressed_030000.bin"
+    },
+    {
+      "offset": "0x48000",
+      "offset_int": 294912,
+      "compressed_size": 1518,
+      "decompressed_size": 2048,
+      "success": true,
+      "entropy_compressed": 6.94,
+      "entropy_decompressed": 6.05,
+      "looks_like_tiles": true,
+      "encoder_verified": true,
+      "output_file": "decompressed_048000.bin"
+    },
+    {
+      "offset": "0x50e00",
+      "offset_int": 331264,
+      "compressed_size": 704,
+      "decompressed_size": 2048,
+      "success": true,
+      "entropy_compressed": 6.19,
+      "entropy_decompressed": 4.62,
+      "looks_like_tiles": true,
+      "encoder_verified": true,
+      "output_file": "decompressed_050E00.bin"
+    },
+    {
+      "offset": "0x60000",
+      "offset_int": 393216,
+      "compressed_size": 1195,
+      "decompressed_size": 2048,
+      "success": true,
+      "entropy_compressed": 6.96,
+      "entropy_decompressed": 5.05,
+      "looks_like_tiles": true,
+      "encoder_verified": true,
+      "output_file": "decompressed_060000.bin"
+    },
+    {
+      "offset": "0x66340",
+      "offset_int": 418624,
+      "compressed_size": 974,
+      "decompressed_size": 2048,
+      "success": true,
+      "entropy_compressed": 6.4,
+      "entropy_decompressed": 5.02,
+      "looks_like_tiles": true,
+      "encoder_verified": true,
+      "output_file": "decompressed_066340.bin"
+    },
+    {
+      "offset": "0x78000",
+      "offset_int": 491520,
+      "compressed_size": 837,
+      "decompressed_size": 2048,
+      "success": true,
+      "entropy_compressed": 6.51,
+      "entropy_decompressed": 2.82,
+      "looks_like_tiles": false,
+      "encoder_verified": true,
+      "output_file": "decompressed_078000.bin"
+    },
+    {
+      "offset": "0x88000",
+      "offset_int": 557056,
+      "compressed_size": 990,
+      "decompressed_size": 2048,
+      "success": true,
+      "entropy_compressed": 6.6,
+      "entropy_decompressed": 4.1,
+      "looks_like_tiles": true,
+      "encoder_verified": true,
+      "output_file": "decompressed_088000.bin"
+    },
+    {
+      "offset": "0x90000",
+      "offset_int": 589824,
+      "compressed_size": 1526,
+      "decompressed_size": 2048,
+      "success": true,
+      "entropy_compressed": 7.02,
+      "entropy_decompressed": 5.38,
+      "looks_like_tiles": true,
+      "encoder_verified": true,
+      "output_file": "decompressed_090000.bin"
+    },
+    {
+      "offset": "0xa0000",
+      "offset_int": 655360,
+      "compressed_size": 1055,
+      "decompressed_size": 2048,
+      "success": true,
+      "entropy_compressed": 6.93,
+      "entropy_decompressed": 3.97,
+      "looks_like_tiles": true,
+      "encoder_verified": true,
+      "output_file": "decompressed_0A0000.bin"
+    },
+    {
+      "offset": "0xa8000",
+      "offset_int": 688128,
+      "compressed_size": 765,
+      "decompressed_size": 2048,
+      "success": true,
+      "entropy_compressed": 6.76,
+      "entropy_decompressed": 3.92,
+      "looks_like_tiles": false,
+      "encoder_verified": true,
+      "output_file": "decompressed_0A8000.bin"
+    }
+  ]
+}

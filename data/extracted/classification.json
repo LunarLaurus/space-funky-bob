@@ -1,0 +1,19 @@
+{
+  "rom_file": "rom/B.O.B. (U) [!].smc",
+  "rom_size": 1048576,
+  "mapping": "LoROM",
+  "header_offset": 0,
+  "regions": [
+    {
+      "start": 0,
+      "end": 1048064,
+      "type": "code",
+      "entropy": 6.03,
+      "opcode_density": 1.0,
+      "size": 1048064
+    }
+  ],
+  "type_counts": {
+    "code": 1
+  }
+}

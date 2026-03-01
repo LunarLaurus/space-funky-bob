@@ -1,0 +1,165 @@
+{
+  "total_candidates": 20,
+  "candidates": [
+    {
+      "rom_offset": "0x035C00",
+      "size_bytes": 768,
+      "num_tiles": 24,
+      "unique_tiles": 8,
+      "confidence": 0.9,
+      "reason": "good_variation,not_mostly_empty,good_density"
+    },
+    {
+      "rom_offset": "0x036F00",
+      "size_bytes": 768,
+      "num_tiles": 24,
+      "unique_tiles": 12,
+      "confidence": 0.9,
+      "reason": "good_variation,not_mostly_empty,good_density"
+    },
+    {
+      "rom_offset": "0x008600",
+      "size_bytes": 512,
+      "num_tiles": 16,
+      "unique_tiles": 12,
+      "confidence": 0.9,
+      "reason": "good_variation,not_mostly_empty,good_density"
+    },
+    {
+      "rom_offset": "0x008800",
+      "size_bytes": 512,
+      "num_tiles": 16,
+      "unique_tiles": 12,
+      "confidence": 0.9,
+      "reason": "good_variation,not_mostly_empty,good_density"
+    },
+    {
+      "rom_offset": "0x009600",
+      "size_bytes": 512,
+      "num_tiles": 16,
+      "unique_tiles": 10,
+      "confidence": 0.9,
+      "reason": "good_variation,not_mostly_empty,good_density"
+    },
+    {
+      "rom_offset": "0x00AC00",
+      "size_bytes": 512,
+      "num_tiles": 16,
+      "unique_tiles": 12,
+      "confidence": 0.9,
+      "reason": "good_variation,not_mostly_empty,good_density"
+    },
+    {
+      "rom_offset": "0x010000",
+      "size_bytes": 512,
+      "num_tiles": 16,
+      "unique_tiles": 12,
+      "confidence": 0.9,
+      "reason": "good_variation,not_mostly_empty,good_density"
+    },
+    {
+      "rom_offset": "0x0FAA00",
+      "size_bytes": 512,
+      "num_tiles": 16,
+      "unique_tiles": 12,
+      "confidence": 0.9,
+      "reason": "good_variation,not_mostly_empty,good_density"
+    },
+    {
+      "rom_offset": "0x008000",
+      "size_bytes": 256,
+      "num_tiles": 8,
+      "unique_tiles": 12,
+      "confidence": 0.9,
+      "reason": "good_variation,not_mostly_empty,good_density"
+    },
+    {
+      "rom_offset": "0x00B900",
+      "size_bytes": 256,
+      "num_tiles": 8,
+      "unique_tiles": 12,
+      "confidence": 0.9,
+      "reason": "good_variation,not_mostly_empty,good_density"
+    },
+    {
+      "rom_offset": "0x015C00",
+      "size_bytes": 256,
+      "num_tiles": 8,
+      "unique_tiles": 12,
+      "confidence": 0.9,
+      "reason": "good_variation,not_mostly_empty,good_density"
+    },
+    {
+      "rom_offset": "0x02DE00",
+      "size_bytes": 256,
+      "num_tiles": 8,
+      "unique_tiles": 12,
+      "confidence": 0.9,
+      "reason": "good_variation,not_mostly_empty,good_density"
+    },
+    {
+      "rom_offset": "0x02DF00",
+      "size_bytes": 256,
+      "num_tiles": 8,
+      "unique_tiles": 12,
+      "confidence": 0.9,
+      "reason": "good_variation,not_mostly_empty,good_density"
+    },
+    {
+      "rom_offset": "0x035700",
+      "size_bytes": 256,
+      "num_tiles": 8,
+      "unique_tiles": 8,
+      "confidence": 0.9,
+      "reason": "good_variation,not_mostly_empty,good_density"
+    },
+    {
+      "rom_offset": "0x035800",
+      "size_bytes": 256,
+      "num_tiles": 8,
+      "unique_tiles": 9,
+      "confidence": 0.9,
+      "reason": "good_variation,not_mostly_empty,good_density"
+    },
+    {
+      "rom_offset": "0x035900",
+      "size_bytes": 256,
+      "num_tiles": 8,
+      "unique_tiles": 9,
+      "confidence": 0.9,
+      "reason": "good_variation,not_mostly_empty,good_density"
+    },
+    {
+      "rom_offset": "0x036000",
+      "size_bytes": 256,
+      "num_tiles": 8,
+      "unique_tiles": 12,
+      "confidence": 0.9,
+      "reason": "good_variation,not_mostly_empty,good_density"
+    },
+    {
+      "rom_offset": "0x036200",
+      "size_bytes": 256,
+      "num_tiles": 8,
+      "unique_tiles": 12,
+      "confidence": 0.9,
+      "reason": "good_variation,not_mostly_empty,good_density"
+    },
+    {
+      "rom_offset": "0x072C00",
+      "size_bytes": 256,
+      "num_tiles": 8,
+      "unique_tiles": 11,
+      "confidence": 0.9,
+      "reason": "good_variation,not_mostly_empty,good_density"
+    },
+    {
+      "rom_offset": "0x033900",
+      "size_bytes": 1792,
+      "num_tiles": 56,
+      "unique_tiles": 11,
+      "confidence": 0.8,
+      "reason": "good_variation,not_mostly_empty,large_block"
+    }
+  ]
+}

@@ -271,6 +271,10 @@
     async function loadDefaultLevel() {
         if (window.API) {
             try {
+                // First, populate the level list
+                await populateLevelList();
+                
+                // Then load the default level
                 const level = await window.API.getLevel('world_1');
                 if (level && window.LevelData) {
                     window.LevelData.loadLevel(level);
@@ -278,6 +282,67 @@
                 }
             } catch (error) {
                 Logger.warn('Could not load default level:', error);
+            }
+        }
+    }
+
+    /**
+     * Populate level list from API
+     */
+    async function populateLevelList() {
+        const mapList = document.getElementById('mapList');
+        if (!mapList) return;
+
+        try {
+            const levelsData = await window.API.getLevels();
+            mapList.innerHTML = '';
+
+            if (!levelsData || !levelsData.worlds) {
+                mapList.innerHTML = '<li class="loading">No levels found</li>';
+                return;
+            }
+
+            // Create level list grouped by world
+            levelsData.worlds.forEach(world => {
+                // World header
+                const worldHeader = document.createElement('li');
+                worldHeader.className = 'map-list-header';
+                worldHeader.textContent = `World ${world.world} (${world.levels} levels)`;
+                mapList.appendChild(worldHeader);
+
+                // Level items - use level_names array from backend
+                const levelNames = world.level_names || [];
+                levelNames.forEach((levelInfo) => {
+                    const li = document.createElement('li');
+                    li.dataset.level = 'map_' + String(levelInfo.map_number).padStart(3, '0');
+                    li.dataset.world = world.world;
+                    li.textContent = `${levelInfo.name} (Map ${levelInfo.map_number})`;
+                    li.onclick = () => loadLevelByName('map_' + String(levelInfo.map_number).padStart(3, '0'));
+                    mapList.appendChild(li);
+                });
+            });
+
+            Logger.info('App', 'Level list populated with ' + levelsData.metadata.total_maps + ' maps');
+        } catch (error) {
+            Logger.error('App', 'Failed to populate level list:', error);
+            mapList.innerHTML = '<li class="loading">Error loading levels</li>';
+        }
+    }
+
+    /**
+     * Load level by name from API
+     */
+    async function loadLevelByName(levelName) {
+        if (window.API && window.LevelData) {
+            try {
+                const level = await window.API.getLevel(levelName);
+                if (level) {
+                    window.LevelData.loadLevel(level);
+                    window.dispatchEvent(new CustomEvent('levelchange'));
+                    Logger.info('App', 'Loaded level: ' + levelName);
+                }
+            } catch (error) {
+                Logger.error('App', 'Failed to load level ' + levelName + ':', error);
             }
         }
     }
@@ -379,7 +444,9 @@
     // Export to window
     window.App = {
         initEditor,
-        exportLevel
+        exportLevel,
+        populateLevelList,
+        loadLevelByName
     };
 
     // Export feature navigation globally

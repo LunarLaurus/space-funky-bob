@@ -1,0 +1,218 @@
+{
+  "metadata": {
+    "game": "Space Funky B.O.B.",
+    "source": "ROM Analysis + tileset JSON files",
+    "notes": "Tileset graphics locations from ROM analysis"
+  },
+  "tilesets": [
+    {
+      "id": "main_graphics_1",
+      "name": "Main Graphics Set 1",
+      "rom_offset": "0x035800",
+      "snes_offset": "0x035800",
+      "size_bytes": 8192,
+      "num_tiles": 256,
+      "format": "8x8 4bpp",
+      "source": "existing_json"
+    },
+    {
+      "id": "main_graphics_2",
+      "name": "Main Graphics Set 2",
+      "rom_offset": "0x03D800",
+      "snes_offset": "0x03D800",
+      "size_bytes": 8192,
+      "num_tiles": 256,
+      "format": "8x8 4bpp",
+      "source": "existing_json"
+    },
+    {
+      "id": "tileset_008000",
+      "name": "Tileset 0x008000",
+      "rom_offset": "0x008000",
+      "snes_offset": "0x008000",
+      "size_bytes": 8192,
+      "num_tiles": 256,
+      "format": "8x8 4bpp",
+      "source": "existing_json"
+    },
+    {
+      "id": "tileset_008600",
+      "name": "Tileset 0x008600",
+      "rom_offset": "0x008600",
+      "snes_offset": "0x008600",
+      "size_bytes": 8192,
+      "num_tiles": 256,
+      "format": "8x8 4bpp",
+      "source": "existing_json"
+    },
+    {
+      "id": "tileset_008800",
+      "name": "Tileset 0x008800",
+      "rom_offset": "0x008800",
+      "snes_offset": "0x008800",
+      "size_bytes": 8192,
+      "num_tiles": 256,
+      "format": "8x8 4bpp",
+      "source": "existing_json"
+    },
+    {
+      "id": "tileset_009600",
+      "name": "Tileset 0x009600",
+      "rom_offset": "0x009600",
+      "snes_offset": "0x009600",
+      "size_bytes": 8192,
+      "num_tiles": 256,
+      "format": "8x8 4bpp",
+      "source": "existing_json"
+    },
+    {
+      "id": "tileset_00AC00",
+      "name": "Tileset 0x00AC00",
+      "rom_offset": "0x00AC00",
+      "snes_offset": "0x00AC00",
+      "size_bytes": 8192,
+      "num_tiles": 256,
+      "format": "8x8 4bpp",
+      "source": "existing_json"
+    },
+    {
+      "id": "tileset_00B900",
+      "name": "Tileset 0x00B900",
+      "rom_offset": "0x00B900",
+      "snes_offset": "0x00B900",
+      "size_bytes": 8192,
+      "num_tiles": 256,
+      "format": "8x8 4bpp",
+      "source": "existing_json"
+    },
+    {
+      "id": "tileset_010000",
+      "name": "Tileset 0x010000",
+      "rom_offset": "0x010000",
+      "snes_offset": "0x010000",
+      "size_bytes": 8192,
+      "num_tiles": 256,
+      "format": "8x8 4bpp",
+      "source": "existing_json"
+    },
+    {
+      "id": "tileset_036F00",
+      "name": "Tileset 0x036F00",
+      "rom_offset": "0x036F00",
+      "snes_offset": "0x036F00",
+      "size_bytes": 8192,
+      "num_tiles": 256,
+      "format": "8x8 4bpp",
+      "source": "existing_json"
+    },
+    {
+      "id": "tileset_035C00",
+      "name": "Tileset 0x035C00",
+      "rom_offset": "0x035C00",
+      "snes_offset": "0x035C00",
+      "size_bytes": 8192,
+      "num_tiles": 256,
+      "format": "8x8 4bpp",
+      "source": "existing_json"
+    },
+    {
+      "id": "tileset_0FAA00",
+      "name": "Tileset 0x0FAA00",
+      "rom_offset": "0x0FAA00",
+      "snes_offset": "0x0FAA00",
+      "size_bytes": 8192,
+      "num_tiles": 256,
+      "format": "8x8 4bpp",
+      "source": "existing_json"
+    }
+  ],
+  "level_tilesets": {
+    "borg": {
+      "graphics": ["main_graphics_1", "main_graphics_2"],
+      "palette": "borg_pal",
+      "description": "Factory/Industrial theme"
+    },
+    "bug": {
+      "graphics": ["main_graphics_1", "main_graphics_2"],
+      "palette": "bug_pal",
+      "description": "Bug planet/Sand theme"
+    },
+    "ancient": {
+      "graphics": ["main_graphics_1", "main_graphics_2"],
+      "palette": "ancient_pal",
+      "description": "Ancient ruins theme"
+    },
+    "lava": {
+      "graphics": ["main_graphics_1", "main_graphics_2"],
+      "palette": "lava_pal",
+      "description": "Volcanic/lava theme"
+    },
+    "ultra": {
+      "graphics": ["main_graphics_1", "main_graphics_2"],
+      "palette": "ultra_pal",
+      "description": "Ultra Force sci-fi theme"
+    },
+    "bubble": {
+      "graphics": ["main_graphics_1", "main_graphics_2"],
+      "palette": "bubble_pal",
+      "description": "Bubble forest/jungle theme"
+    },
+    "space": {
+      "graphics": ["main_graphics_1", "main_graphics_2"],
+      "palette": "space_pal",
+      "description": "Space/asteroid theme"
+    },
+    "world": {
+      "graphics": ["main_graphics_1", "main_graphics_2"],
+      "palette": "world_pal",
+      "description": "World map theme"
+    }
+  },
+  "palette_references": {
+    "borg_pal": {
+      "rom_offset": "unknown",
+      "colors": 16,
+      "description": "Borg factory palette"
+    },
+    "bug_pal": {
+      "rom_offset": "unknown",
+      "colors": 16,
+      "description": "Bug planet palette"
+    },
+    "ancient_pal": {
+      "rom_offset": "unknown",
+      "colors": 16,
+      "description": "Ancient ruins palette"
+    },
+    "lava_pal": {
+      "rom_offset": "unknown",
+      "colors": 16,
+      "description": "Lava level palette"
+    },
+    "ultra_pal": {
+      "rom_offset": "unknown",
+      "colors": 16,
+      "description": "Ultra Force palette"
+    },
+    "bubble_pal": {
+      "rom_offset": "unknown",
+      "colors": 16,
+      "description": "Bubble forest palette"
+    },
+    "space_pal": {
+      "rom_offset": "unknown",
+      "colors": 16,
+      "description": "Space level palette"
+    },
+    "world_pal": {
+      "rom_offset": "unknown",
+      "colors": 16,
+      "description": "World map palette"
+    }
+  },
+  "compression": {
+    "level_data": "none",
+    "tilesets": "none",
+    "sprites": "unknown"
+  }
+}
