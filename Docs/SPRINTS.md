@@ -1,7 +1,12 @@
 # Sprint Planning - B.O.B. ROM Analysis Toolkit
 
-## Sprint 0: Foundation (COMPLETED)
-**Duration**: Initial development  
+**Last Updated**: February 26, 2026
+**Current Version**: 0.5.0 (in development)
+
+---
+
+## Sprint 0: Foundation (COMPLETED ✅)
+**Duration**: Initial development
 **Goal**: Establish core functionality and MVP deliverables
 
 ### Stories Completed
@@ -41,43 +46,24 @@
 
 ---
 
-## Sprint 1: Enhancement & Validation (CURRENT)
-**Duration**: 2 weeks  
+## Sprint 1: Enhancement & Validation (COMPLETED ✅ - v0.2.0)
+**Duration**: 2 weeks
 **Goal**: Improve accuracy, add HTML visualization, expand testing
 
-### Planned Stories
+### Completed Stories
 
 #### High Priority
-- 🔄 **VIZ-001**: Complete HTML visualization implementation
+- ✅ **VIZ-001**: Complete HTML visualization implementation
   - **Points**: 5
-  - **Assignee**: TBD
-  - **Dependencies**: None
-  - **Acceptance Criteria**:
-    - Interactive ROM map with color-coded regions
-    - Hover tooltips showing region details
-    - Responsive design, works in all modern browsers
-    - Clickable regions that link to decompressed files
-  - **Status**: IN PROGRESS (skeleton exists, needs refinement)
+  - **Status**: DONE - Interactive HTML ROM map with color-coded regions
 
-- ⬜ **TEST-002**: Expand test suite with edge cases
+- ✅ **TEST-002**: Expand test suite with edge cases
   - **Points**: 3
-  - **Assignee**: TBD
-  - **Dependencies**: None
-  - **Acceptance Criteria**:
-    - Test truncated compressed streams
-    - Test ROMs with/without headers
-    - Test HiROM detection (if sample available)
-    - Test invalid distance/length combinations
-  - **Status**: NOT STARTED
+  - **Status**: DONE - Edge case tests for truncated streams, ROM headers
 
-- ⬜ **DOC-002**: Create API documentation
+- ✅ **DOC-002**: Create API documentation
   - **Points**: 2
-  - **Assignee**: TBD
-  - **Dependencies**: None
-  - **Acceptance Criteria**:
-    - Sphinx or similar documentation format
-    - All public functions documented
-    - Example code snippets for common use cases
+  - **Status**: DONE - Sphinx API docs in docs/api/
   - **Status**: NOT STARTED
 
 #### Medium Priority

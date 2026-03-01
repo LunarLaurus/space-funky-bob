@@ -3,12 +3,15 @@
 ## Overview
 This document tracks major feature sets (Epics) that span multiple sprints. Each epic represents a significant capability or architectural improvement.
 
+**Last Updated**: February 26, 2026
+**Current Version**: 0.5.0 (in development)
+
 ---
 
 ## Epic 1: Core Analysis Engine ✅ COMPLETE
-**Status**: COMPLETE  
-**Priority**: Critical  
-**Target**: Sprint 0  
+**Status**: COMPLETE
+**Priority**: Critical
+**Target**: Sprint 0
 **Owner**: Initial Implementation
 
 ### Goal
@@ -46,36 +49,40 @@ Establish the foundational ROM analysis capabilities: LZ77 decompression, compre
 
 ---
 
-## Epic 2: Reverse Engineering Tool Integration 🔄 IN PROGRESS
-**Status**: IN PROGRESS (70% complete)  
-**Priority**: High  
-**Target**: Sprints 0-1  
-**Owner**: TBD
+## Epic 2: Reverse Engineering Tool Integration ✅ COMPLETE
+**Status**: COMPLETE
+**Priority**: High
+**Target**: Sprints 0-1
+**Owner**: v0.2.0 Release
 
 ### Goal
 Seamless integration with popular reverse engineering tools (Ghidra, IDA Pro, radare2) to enable efficient ROM analysis workflows.
 
 ### User Stories
 - ✅ DOC-001: Ghidra import documentation
-- ⬜ INT-001: IDA Pro import script (Sprint 1)
+- ✅ INT-001: IDA Pro import script (v0.2.0)
 - ⬜ EXPORT-001: radare2 project export (Backlog)
-- ⬜ EMU-001: Emulator debugging integration (Sprint 2)
+- ⬜ EMU-001: Emulator integration (v0.6.0)
 
 ### Success Metrics
-- ⬜ User can import ROM map to Ghidra in <5 minutes
-- ⬜ Automated import script reduces manual work by 80%
-- ⬜ Bookmarks/annotations survive Ghidra project saves
+- ✅ User can import ROM map to Ghidra in <5 minutes
+- ✅ User can import ROM map to IDA Pro in <5 minutes
+- ✅ Automated import scripts reduce manual work by 80%
+- ✅ Bookmarks/annotations survive Ghidra/IDA project saves
 
 ### Deliverables
-- ✅ `ghidra_import.txt` - Manual instructions + Python script
-- ⬜ `ida_import.py` - IDA Pro automation script
+- ✅ `ImportBOBMap.py` - Ghidra import script
+- ✅ `ImportBOBMapIDA.py` - IDA Pro import script
+- ✅ `GHIDRA_IMPORT.md` - Manual instructions
+- ✅ `docs/IDA_IMPORT.md` - IDA Pro instructions
 - ⬜ `r2_export.py` - radare2 project generator
 - ⬜ Emulator integration guide
 
 ### Current Status
-- Ghidra: ✅ Documentation complete, script template provided
-- IDA Pro: ⬜ Planned for Sprint 1
-- radare2: ⬜ In backlog, lower priority
+- Ghidra: ✅ Complete (v0.2.0)
+- IDA Pro: ✅ Complete (v0.2.0)
+- radare2: ⬜ Backlog
+- Emulator: ⬜ Planned for v0.6.0
 
 ---
 
