@@ -113,15 +113,38 @@
      */
     function loadLevel(mapNumber) {
         if (window.API) {
-            window.API.getLevel(`map_${mapNumber.toString().padStart(3, '0')}`)
+            // Try to load from API - first try map number format, then world format
+            const levelName = `map_${mapNumber.toString().padStart(3, '0')}`;
+            
+            window.API.getLevel(levelName)
                 .then(data => {
-                    if (window.LevelData) {
+                    if (data && window.LevelData) {
                         window.LevelData.loadLevel(data);
                         window.dispatchEvent(new CustomEvent('levelchange'));
+                        Logger.info('LevelSequence', 'Loaded level: ' + levelName);
+                    } else {
+                        // Fallback: try to get level list and find by map number
+                        Logger.warn('LevelSequence', 'Level ' + levelName + ' not found, trying alternative...');
+                        return window.API.getLevels();
                     }
                 })
+                .then(levelsData => {
+                    if (levelsData && levelsData.worlds) {
+                        // Search all worlds for this map number
+                        for (const world of levelsData.worlds) {
+                            if (world.level_names) {
+                                const levelInfo = world.level_names.find(l => l.map_number === mapNumber);
+                                if (levelInfo) {
+                                    const foundName = 'map_' + String(levelInfo.map_number).padStart(3, '0');
+                                    return window.API.getLevel(foundName);
+                                }
+                            }
+                        }
+                    }
+                    Logger.error('LevelSequence', 'Level map_' + mapNumber + ' not found in any world');
+                })
                 .catch(error => {
-                    console.error('Failed to load level:', error);
+                    Logger.error('LevelSequence', 'Failed to load level:', error);
                 });
         }
     }
