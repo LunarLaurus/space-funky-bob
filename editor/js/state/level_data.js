@@ -15,7 +15,8 @@
         width: 80,
         height: 80,
         background: [],  // Array of {x, y, tile} objects
-        foreground: []   // Array of {x, y, tile} objects
+        foreground: [],   // Array of {x, y, tile} objects
+        enemies: []       // Array of {x, y, type, id} objects
     };
     
     /**
@@ -30,7 +31,8 @@
             width,
             height,
             background: [],
-            foreground: []
+            foreground: [],
+            enemies: []
         };
     }
     
@@ -52,6 +54,7 @@
         // Initialize empty background and foreground arrays
         levelData.background = [];
         levelData.foreground = [];
+        levelData.enemies = data.enemies || [];
 
         // Load tiles - convert from 2D array or sparse format to {x, y, tile} objects
         if (data.tiles && Array.isArray(data.tiles)) {
@@ -125,7 +128,8 @@
     function getAllTiles() {
         return {
             background: levelData.background,
-            foreground: levelData.foreground
+            foreground: levelData.foreground,
+            enemies: levelData.enemies
         };
     }
 
@@ -140,7 +144,8 @@
             width: levelData.width,
             height: levelData.height,
             background: levelData.background,
-            foreground: levelData.foreground
+            foreground: levelData.foreground,
+            enemies: levelData.enemies
         };
     }
 
@@ -155,7 +160,8 @@
             width: levelData.width,
             height: levelData.height,
             backgroundTiles: levelData.background.length,
-            foregroundTiles: levelData.foreground.length
+            foregroundTiles: levelData.foreground.length,
+            enemies: levelData.enemies.length
         };
     }
 
@@ -165,6 +171,7 @@
     function clearLevel() {
         levelData.background = [];
         levelData.foreground = [];
+        levelData.enemies = [];
     }
     
     // Export to window
