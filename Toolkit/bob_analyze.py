@@ -86,10 +86,10 @@ def main():
         return
     
     # Step 1: Scan ROM for compressed blocks
-        log("Step 1: Scanning ROM for compressed blocks...")
-        if not run_step("Scanner", f"python toolkit/bob_lz_scan.py --rom {rom_path} --output {output_dir}"):
-            log("Scanner failed, exiting")
-            return
+    log("Step 1: Scanning ROM for compressed blocks...")
+    if not run_step("Scanner", f"python toolkit/bob_lz_scan.py --rom {rom_path} --output {output_dir}"):
+        log("Scanner failed, exiting")
+        return
     
     if not args.skip_extract:
         # Step 2: Extract all blobs

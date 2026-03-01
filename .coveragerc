@@ -25,6 +25,7 @@ exclude_lines =
 precision = 1
 show_missing = True
 skip_covered = True
+fail_under = 70
 
 [html]
 directory = htmlcov
