@@ -8,13 +8,14 @@
 (function() {
     'use strict';
     
-    // Level data structure
+    // Level data structure - matches renderer expectations
     let levelData = {
         mapNumber: 0,
         name: '',
         width: 80,
         height: 80,
-        tiles: []  // 2D array: tiles[x][y] = { tileId, properties }
+        background: [],  // Array of {x, y, tile} objects
+        foreground: []   // Array of {x, y, tile} objects
     };
     
     /**
@@ -28,19 +29,9 @@
             name: '',
             width,
             height,
-            tiles: []
+            background: [],
+            foreground: []
         };
-        
-        // Initialize 2D tile array
-        for (let x = 0; x < width; x++) {
-            levelData.tiles[x] = [];
-            for (let y = 0; y < height; y++) {
-                levelData.tiles[x][y] = {
-                    tileId: 0,
-                    properties: {}
-                };
-            }
-        }
     }
     
     /**
@@ -52,37 +43,38 @@
             console.error('No level data provided');
             return false;
         }
-        
+
         levelData.mapNumber = data.map_number || 0;
         levelData.name = data.name || '';
         levelData.width = data.width || 80;
         levelData.height = data.height || 80;
-        
-        // Load tiles (sparse format: only non-zero tiles)
-        levelData.tiles = [];
-        for (let x = 0; x < levelData.width; x++) {
-            levelData.tiles[x] = [];
-            for (let y = 0; y < levelData.height; y++) {
-                levelData.tiles[x][y] = {
-                    tileId: 0,
-                    properties: {}
-                };
-            }
-        }
-        
-        // Apply tile data
-        if (data.tiles) {
+
+        // Initialize empty background and foreground arrays
+        levelData.background = [];
+        levelData.foreground = [];
+
+        // Load tiles - convert from 2D array or sparse format to {x, y, tile} objects
+        if (data.tiles && Array.isArray(data.tiles)) {
+            // Sparse format: tiles is array of {x, y, tile} objects
             data.tiles.forEach(tile => {
-                if (tile.x >= 0 && tile.x < levelData.width &&
-                    tile.y >= 0 && tile.y < levelData.height) {
-                    levelData.tiles[tile.x][tile.y] = {
-                        tileId: tile.tile || tile.tileId || 0,
-                        properties: tile.properties || {}
-                    };
+                const tileObj = {
+                    x: tile.x || 0,
+                    y: tile.y || 0,
+                    tile: tile.tile || tile.tileId || 0
+                };
+                // Assume layer property or default to background
+                if (tile.layer === 'foreground') {
+                    levelData.foreground.push(tileObj);
+                } else {
+                    levelData.background.push(tileObj);
                 }
             });
+        } else if (data.background) {
+            // Already in correct format
+            levelData.background = data.background;
+            levelData.foreground = data.foreground || [];
         }
-        
+
         return true;
     }
     
@@ -90,48 +82,53 @@
      * Get tile at position
      * @param {number} x - X coordinate
      * @param {number} y - Y coordinate
-     * @returns {Object} Tile data
+     * @param {string} layer - Layer ('background' or 'foreground', default 'background')
+     * @returns {Object} Tile data {x, y, tile}
      */
-    function getTile(x, y) {
+    function getTile(x, y, layer = 'background') {
         if (x < 0 || x >= levelData.width || y < 0 || y >= levelData.height) {
             return null;
         }
-        return levelData.tiles[x][y];
+        const tiles = layer === 'foreground' ? levelData.foreground : levelData.background;
+        return tiles.find(t => t.x === x && t.y === y) || null;
     }
-    
+
     /**
      * Set tile at position
      * @param {number} x - X coordinate
      * @param {number} y - Y coordinate
      * @param {number} tileId - Tile ID
+     * @param {string} layer - Layer ('background' or 'foreground', default 'background')
      */
-    function setTile(x, y, tileId) {
+    function setTile(x, y, tileId, layer = 'background') {
         if (x < 0 || x >= levelData.width || y < 0 || y >= levelData.height) {
             return;
         }
-        levelData.tiles[x][y].tileId = tileId;
-    }
-    
-    /**
-     * Get all non-zero tiles (sparse format)
-     * @returns {Array} Array of tile objects
-     */
-    function getNonZeroTiles() {
-        const tiles = [];
-        for (let x = 0; x < levelData.width; x++) {
-            for (let y = 0; y < levelData.height; y++) {
-                if (levelData.tiles[x][y].tileId !== 0) {
-                    tiles.push({
-                        x,
-                        y,
-                        tile: levelData.tiles[x][y].tileId
-                    });
-                }
-            }
+        const tiles = layer === 'foreground' ? levelData.foreground : levelData.background;
+        
+        // Remove existing tile at this position
+        const existingIndex = tiles.findIndex(t => t.x === x && t.y === y);
+        if (existingIndex !== -1) {
+            tiles.splice(existingIndex, 1);
         }
-        return tiles;
+        
+        // Add new tile if tileId is non-zero
+        if (tileId !== 0) {
+            tiles.push({ x, y, tile: tileId });
+        }
     }
-    
+
+    /**
+     * Get all tiles (both layers)
+     * @returns {Object} Object with background and foreground arrays
+     */
+    function getAllTiles() {
+        return {
+            background: levelData.background,
+            foreground: levelData.foreground
+        };
+    }
+
     /**
      * Get level data for export
      * @returns {Object} Complete level data
@@ -142,10 +139,11 @@
             name: levelData.name,
             width: levelData.width,
             height: levelData.height,
-            tiles: getNonZeroTiles()
+            background: levelData.background,
+            foreground: levelData.foreground
         };
     }
-    
+
     /**
      * Get level metadata
      * @returns {Object} Level metadata
@@ -156,21 +154,17 @@
             name: levelData.name,
             width: levelData.width,
             height: levelData.height,
-            totalTiles: levelData.width * levelData.height,
-            nonZeroTiles: getNonZeroTiles().length
+            backgroundTiles: levelData.background.length,
+            foregroundTiles: levelData.foreground.length
         };
     }
-    
+
     /**
      * Clear all tiles
      */
     function clearLevel() {
-        for (let x = 0; x < levelData.width; x++) {
-            for (let y = 0; y < levelData.height; y++) {
-                levelData.tiles[x][y].tileId = 0;
-                levelData.tiles[x][y].properties = {};
-            }
-        }
+        levelData.background = [];
+        levelData.foreground = [];
     }
     
     // Export to window
@@ -179,11 +173,11 @@
         loadLevel,
         getTile,
         setTile,
-        getNonZeroTiles,
+        getAllTiles,
         getExportData,
         getMetadata,
         clearLevel,
         getData: () => levelData
     };
-    
+
 })();
