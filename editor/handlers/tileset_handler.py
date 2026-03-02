@@ -22,6 +22,15 @@ TILESET_OFFSETS = {
     'borg4': 0x00C800,      # borgblocks4/doorblocks (Bank 17) - NEW
     'main_graphics_1': 0x035800,
     'main_graphics_2': 0x03D800,
+    # Auto-detected tilesets from extraction
+    '008600': 0x008600,
+    '009600': 0x009600,
+    '00AC00': 0x00AC00,
+    '00B900': 0x00B900,
+    '010000': 0x010000,
+    '035C00': 0x035C00,
+    '036F00': 0x036F00,
+    '0FAA00': 0x0FAA00,
 }
 
 # Background palettes from INITLEVE.A:bgpalletes (13 palettes)
@@ -144,7 +153,16 @@ class TilesetHandler:
             'world': '00C000',
             'borg4': '00C800',
             'main_graphics_1': 'main_graphics_1',
-            'main_graphics_2': 'main_graphics_2'
+            'main_graphics_2': 'main_graphics_2',
+            # Auto-detected tilesets use their hex names directly
+            '008600': '008600',
+            '009600': '009600',
+            '00AC00': '00AC00',
+            '00B900': '00B900',
+            '010000': '010000',
+            '035C00': '035C00',
+            '036F00': '036F00',
+            '0FAA00': '0FAA00'
         }
         
         hex_name = name_to_hex.get(tileset_name, tileset_name)

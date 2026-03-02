@@ -8,7 +8,7 @@
 (function() {
     'use strict';
     
-    // All 12 tileset types from source
+    // All 12 tileset types from source + auto-detected tilesets
     const TILESETS = [
         { id: 'borg', name: 'Borg Factory', offset: '0x008000' },
         { id: 'bug', name: 'Bug Planet', offset: '0x008800' },
@@ -21,7 +21,16 @@
         { id: 'world', name: 'World Map', offset: '0x00C000' },
         { id: 'borg4', name: 'Borg Door', offset: '0x00C800' },
         { id: 'main_graphics_1', name: 'Main Graphics 1', offset: '0x035800' },
-        { id: 'main_graphics_2', name: 'Main Graphics 2', offset: '0x03D800' }
+        { id: 'main_graphics_2', name: 'Main Graphics 2', offset: '0x03D800' },
+        // Auto-detected tilesets
+        { id: '008600', name: 'Tileset 0x008600', offset: '0x008600' },
+        { id: '009600', name: 'Tileset 0x009600', offset: '0x009600' },
+        { id: '00AC00', name: 'Tileset 0x00AC00', offset: '0x00AC00' },
+        { id: '00B900', name: 'Tileset 0x00B900', offset: '0x00B900' },
+        { id: '010000', name: 'Tileset 0x010000', offset: '0x010000' },
+        { id: '035C00', name: 'Tileset 0x035C00', offset: '0x035C00' },
+        { id: '036F00', name: 'Tileset 0x036F00', offset: '0x036F00' },
+        { id: '0FAA00', name: 'Tileset 0x0FAA00', offset: '0x0FAA00' }
     ];
     
     let currentTileset = 'borg';
